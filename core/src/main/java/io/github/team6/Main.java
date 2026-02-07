@@ -14,7 +14,7 @@ public class Main extends ApplicationAdapter {
     public void create() {
         batch = new SpriteBatch();
         image = new Texture("libgdx.png");
-        image2 = new Texture("droplet.png");
+        image2 = new Texture("droplet.png"); // added droplet test
     }
 
     @Override
