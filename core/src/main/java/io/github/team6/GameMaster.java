@@ -5,22 +5,26 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
 
-import io.github.team6.collision.CollisionManager;
-import io.github.team6.entities.EntityManager;
-import io.github.team6.input.InputManager;
-import io.github.team6.movement.MovementManager;
-import io.github.team6.output.OutputManager;
-import io.github.team6.scenes.SceneManager;
+import io.github.team6.managers.CollisionManager;
+import io.github.team6.managers.EntityManager;
+import io.github.team6.managers.InputManager;
+import io.github.team6.managers.MovementManager;
+import io.github.team6.managers.OutputManager;
+import io.github.team6.managers.SceneManager;
 
 
-public class GameMaster extends  ApplicationAdapter{
 
+public class GameMaster extends ApplicationAdapter{
+
+    // Declare Manager variables
     private InputManager inputManager;
     private OutputManager outputManager;
     private EntityManager entityManager;
     private CollisionManager collisionManager;
     private MovementManager movementManager;
     private SceneManager sceneManager;
+
+    private boolean running;
 
     private SpriteBatch batch;
     private Texture image, image2;
@@ -34,10 +38,13 @@ public class GameMaster extends  ApplicationAdapter{
         entityManager = new EntityManager();
         collisionManager = new CollisionManager();
         movementManager = new MovementManager();
+        
 
         batch = new SpriteBatch();
         image = new Texture("libgdx.png");
         image2 = new Texture("droplet.png"); // added droplet test!
+
+        running = true;
     }
 
     @Override

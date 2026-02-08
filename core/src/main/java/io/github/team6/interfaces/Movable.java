@@ -4,8 +4,7 @@
  */
 
 package io.github.team6.interfaces;
-
-import io.github.team6.movement.MovementManager;
+import io.github.team6.managers.MovementManager;
 
 /**
  *

@@ -1,6 +1,6 @@
 
 
-package io.github.team6.scenes;
+package io.github.team6.managers;
 
 
 public class SceneManager {

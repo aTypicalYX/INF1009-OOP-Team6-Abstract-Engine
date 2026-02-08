@@ -1,7 +1,9 @@
-package io.github.team6.entities;
+package io.github.team6.managers;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import io.github.team6.entities.Entity;
 
 
 

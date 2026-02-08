@@ -1,5 +1,5 @@
 
-package io.github.team6.movement;
+package io.github.team6.managers;
 
 /**
  *

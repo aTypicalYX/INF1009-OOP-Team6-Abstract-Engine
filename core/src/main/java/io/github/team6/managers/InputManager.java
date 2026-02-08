@@ -1,4 +1,4 @@
-package io.github.team6.input;
+package io.github.team6.managers;
 
 public class InputManager {
     

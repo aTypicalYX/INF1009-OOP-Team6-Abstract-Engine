@@ -4,11 +4,12 @@
  */
 
 package io.github.team6.interfaces;
+import com.badlogic.gdx.math.Rectangle;
 
 /**
  *
  * @author Yan Xu Doo
  */
 public interface Collidable {
-
+    Rectangle getBounds();
 }
