@@ -12,7 +12,8 @@ import io.github.team6.managers.MovementManager;
 import io.github.team6.managers.OutputManager;
 import io.github.team6.managers.SceneManager;
 
-
+import io.github.team6.entities.PlayableEntity;
+import io.github.team6.entities.NonPlayableEntity;
 
 public class GameMaster extends ApplicationAdapter{
 
@@ -27,7 +28,7 @@ public class GameMaster extends ApplicationAdapter{
     private boolean running;
 
     private SpriteBatch batch;
-    private Texture image, image2;
+    // private Texture image, image2;
 
     @Override
     public void create() {
@@ -41,8 +42,14 @@ public class GameMaster extends ApplicationAdapter{
         
 
         batch = new SpriteBatch();
-        image = new Texture("libgdx.png");
-        image2 = new Texture("droplet.png"); // added droplet test!
+        // image = new Texture("libgdx.png");
+        // image2 = new Texture("droplet.png"); // added droplet test!
+
+        PlayableEntity bucket = new PlayableEntity("bucket.png", 100, 220, 5, 50,50);
+
+        entityManager.addEntity(bucket);
+        entityManager.addPlayableEntity(bucket); // test
+        entityManager.addEntity(new NonPlayableEntity("droplet.png", 250, 220, 5, 50, 50));
 
         running = true;
     }
@@ -50,16 +57,19 @@ public class GameMaster extends ApplicationAdapter{
     @Override
     public void render() {
         ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
+
+        inputManager.update(entityManager.getPlayableEntityList());
+        movementManager.update(entityManager.getEntityList());
+        collisionManager.update(entityManager.getEntityList());
         batch.begin();
-        batch.draw(image, 140, 210);
-        batch.draw(image2, 100, 150);
+        entityManager.drawEntity(batch);
         batch.end();
     }
 
     @Override
     public void dispose() {
         batch.dispose();
-        image.dispose();
+        // image.dispose();
     }
     
 }

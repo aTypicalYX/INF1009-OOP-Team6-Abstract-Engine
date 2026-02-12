@@ -1,10 +1,14 @@
 
 package io.github.team6.managers;
 
-/**
- *
- * @author Yan Xu Doo
- */
-public class MovementManager {
+import java.util.List;
+import io.github.team6.entities.Entity;
 
+
+public class MovementManager {
+    public void update(List<Entity> entities) {
+        for (Entity e : entities) {
+            e.movement(); // Triggers the specific movement logic for that subclass
+        }
+    }
 }

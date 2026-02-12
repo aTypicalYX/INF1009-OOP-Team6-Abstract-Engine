@@ -4,13 +4,8 @@
  */
 
 package io.github.team6.interfaces;
-import io.github.team6.managers.MovementManager;
 
-/**
- *
- * @author Yan Xu Doo
- */
 public interface Movable {
     
-    void movement(MovementManager movementManager);
+    public void movement();
 }
