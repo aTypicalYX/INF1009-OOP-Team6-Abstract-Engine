@@ -56,6 +56,7 @@ public class GameMaster extends ApplicationAdapter{
     // render method to update the other managers like Input,movement, collision
     @Override
     public void render() {
+        // Clear Screen
         ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
 
         inputManager.update(entityManager.getPlayableEntityList());
@@ -66,6 +67,7 @@ public class GameMaster extends ApplicationAdapter{
         batch.end();
     }
 
+    // Dispose global resources if any
     @Override
     public void dispose() {
         batch.dispose();
