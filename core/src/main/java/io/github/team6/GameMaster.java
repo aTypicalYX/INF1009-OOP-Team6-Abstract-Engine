@@ -1,19 +1,17 @@
 package io.github.team6;
 
 import com.badlogic.gdx.ApplicationAdapter;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
 
+import io.github.team6.entities.NonPlayableEntity;
+import io.github.team6.entities.PlayableEntity;
 import io.github.team6.managers.CollisionManager;
 import io.github.team6.managers.EntityManager;
 import io.github.team6.managers.InputManager;
 import io.github.team6.managers.MovementManager;
 import io.github.team6.managers.OutputManager;
 import io.github.team6.managers.SceneManager;
-
-import io.github.team6.entities.PlayableEntity;
-import io.github.team6.entities.NonPlayableEntity;
 
 public class GameMaster extends ApplicationAdapter{
 
@@ -30,6 +28,7 @@ public class GameMaster extends ApplicationAdapter{
     private SpriteBatch batch;
     // private Texture image, image2;
 
+    // Create method to initialize all managers, create the entities from entityManager
     @Override
     public void create() {
 
@@ -54,6 +53,7 @@ public class GameMaster extends ApplicationAdapter{
         running = true;
     }
 
+    // render method to update the other managers like Input,movement, collision
     @Override
     public void render() {
         ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
