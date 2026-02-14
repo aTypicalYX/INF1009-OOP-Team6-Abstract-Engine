@@ -2,11 +2,26 @@ package io.github.team6.collision;
 
 import io.github.team6.entities.Entity;
 import io.github.team6.entities.NonPlayableEntity;
-import io.github.team6.entities.PlayableEntity;
 import io.github.team6.entities.NonPlayableEntity.DropletType;
+import io.github.team6.entities.PlayableEntity;
 
+
+/**
+ * Collision performs the math to check if two things touch.
+ * It does NOT manage lists of objects (Manager's job).
+ */
 public class Collision {
+
+    /**
+     * checkOverlap determines if two entities have collided.
+     * @param a The first entity
+     * @param b The second entity
+     */
+
     public void checkOverlap(Entity a, Entity b) {
+        // LibGDX's Rectangle class has a built-in .overlaps() method.
+        // Use getHitbox() to ensure we are checking the current position.
+
         if (!a.getHitbox().overlaps(b.getHitbox())) { // No collision
             return;
         }
@@ -16,6 +31,8 @@ public class Collision {
             resolveCollision(a, b);
             return;
         }
+
+        // If they touch, trigger the resolution logic
         resolveCollision(a, b);
     }
 
@@ -43,7 +60,13 @@ public class Collision {
         return false;
     }
 
+
+    /**
+     * resolveCollision handles what happens AFTER a collision is confirmed.
+     */
     public void resolveCollision(Entity a, Entity b) {
+        // If 'a' is a Bucket, it runs Bucket.onCollision().
+        // If 'a' is a Droplet, it runs Droplet.onCollision().
         a.onCollision(); 
         b.onCollision();
     }

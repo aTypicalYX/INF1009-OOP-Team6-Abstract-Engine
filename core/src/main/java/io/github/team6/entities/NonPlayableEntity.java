@@ -7,6 +7,9 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import io.github.team6.entities.behavior.CollisionBehavior;
 import io.github.team6.entities.behavior.MovementBehavior;
 
+/**
+ * NonPlayableEntity represents objects controlled by the Computer
+ */
 public class NonPlayableEntity extends Entity{
     
     public enum DropletType {
@@ -54,6 +57,10 @@ public class NonPlayableEntity extends Entity{
         batch.draw(tex, getX(), getY());
     }
 
+    /**
+     * movement() defines the non playable entity behavior.
+     * Unlike PlayableEntity (which is empty here), this has logic.
+     */
     @Override
     public void movement() {
         //setY(getY() - getSpeed());  //AI movement

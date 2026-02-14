@@ -50,14 +50,20 @@ public class Keyboard {
         return Gdx.input.isKeyPressed(Input.Keys.SPACE);
     }
 
+    /**
+     * getInput() calculates the movement vector based on keys pressed.
+     * @param e The entity to move (usually the player).
+     */
     public void getInput(Entity e) {
         Vector2 direction = new Vector2(0, 0);
 
+        // Calculate direction based on keys
         if (isLeft())  direction.x -= 5;
         if (isRight()) direction.x += 5;
         if (isUp())    direction.y += 5;
         if (isDown())  direction.y -= 5;
 
+        // Apply movement if a key was pressed
         if (!direction.isZero()) {
             direction.nor(); // Normalizes the vector to length 1
             //e.setX(e.getX() + direction.x * e.getSpeed());
@@ -65,10 +71,13 @@ public class Keyboard {
             float newX = e.getX() + direction.x * e.getSpeed();
             float newY = e.getY() + direction.y * e.getSpeed();
             
-            // Prevent the entity from moving outside the screen boundaries
+            // Boundary Checking: Prevent moving off-screen
+            // Math.max(0, ...) ensures it doesn't go negative (left/bottom edge)
+            // Math.min(..., Gdx.graphics.getWidth()) ensures it doesn't go past right/top edge
             newX = Math.max(0, Math.min(newX, Gdx.graphics.getWidth() - e.getWidth()));
             newY = Math.max(0, Math.min(newY, Gdx.graphics.getHeight() - e.getHeight()));
             
+            // Update the entity's position
             e.setX(newX);
             e.setY(newY);
         }

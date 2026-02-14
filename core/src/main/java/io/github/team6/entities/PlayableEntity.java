@@ -11,6 +11,10 @@ public class PlayableEntity extends Entity {
     public PlayableEntity() {
     }
     
+    /**
+     * Parameterized Constructor.
+     * Calls the super() constructor to set x, y, speed, etc in the parent Entity class.
+     */
     public PlayableEntity(String fileName, float x, float y, float speed, float width, float height) {
         super(x, y, speed, width, height);
         this.tex = new Texture(Gdx.files.internal(fileName));
@@ -22,19 +26,27 @@ public class PlayableEntity extends Entity {
     //setter
     // public void setTexture(Texture tex) { this.tex = tex; }
 
+    // --- Implementing Abstract Methods from Entity/Interfaces ---
+
     @Override
     public void draw(SpriteBatch batch) {
+        // Draw the texture at the entity's current X and Y coordinates
         batch.draw(tex, getX(), getY());
     }
 
     @Override
     public void movement() {
+        // This is empty because PlayableEntity is moved by InputManager/Keyboard.
+        // It doesn't move automatically on its own.
         
     }
 
+    /**
+     * onCollision() defines what happens when THIS specific object hits something.
+     */
     @Override
     public void onCollision() {
-        // upon collision, teleport back to coordinates 0,0
+        // When the bucket hits a droplet, it teleports back to (0,0).
         this.setX(0);
         this.setY(0);
     }
