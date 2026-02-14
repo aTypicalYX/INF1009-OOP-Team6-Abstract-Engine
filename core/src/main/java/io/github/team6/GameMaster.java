@@ -63,5 +63,7 @@ public class GameMaster extends ApplicationAdapter {
     @Override
     public void dispose() {
         // Dispose global resources if any
+        if (outputManager != null) outputManager.dispose();
+        if (batch != null) batch.dispose();
     }
 }

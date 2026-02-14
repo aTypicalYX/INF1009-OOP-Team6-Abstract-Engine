@@ -82,4 +82,43 @@ public class Keyboard {
             e.setY(newY);
         }
     }
+
+    public void getArrowInput(Entity e) {
+    Vector2 direction = new Vector2(0, 0);
+
+    if (isLeft())  direction.x -= 5;
+    if (isRight()) direction.x += 5;
+    if (isUp())    direction.y += 5;
+    if (isDown())  direction.y -= 5;
+
+    applyMovement(e, direction);
+    }
+
+    public void getWASDInput(Entity e) {
+        Vector2 direction = new Vector2(0, 0);
+
+        if (isA()) direction.x -= 5;
+        if (isD()) direction.x += 5;
+        if (isW()) direction.y += 5;
+        if (isS()) direction.y -= 5;
+
+        applyMovement(e, direction);
+        
+    }
+
+    // Extract your movement math into one shared method
+    private void applyMovement(Entity e, Vector2 direction) {
+        if (!direction.isZero()) {
+            direction.nor();
+
+            float newX = e.getX() + direction.x * e.getSpeed();
+            float newY = e.getY() + direction.y * e.getSpeed();
+
+            newX = Math.max(0, Math.min(newX, Gdx.graphics.getWidth() - e.getWidth()));
+            newY = Math.max(0, Math.min(newY, Gdx.graphics.getHeight() - e.getHeight()));
+
+            e.setX(newX);
+            e.setY(newY);
+        }
+    }
 }

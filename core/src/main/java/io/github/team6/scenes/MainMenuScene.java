@@ -13,6 +13,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import io.github.team6.managers.SceneManager;
 
+
 public class MainMenuScene extends Scene {
 
     private final SceneManager scenes;

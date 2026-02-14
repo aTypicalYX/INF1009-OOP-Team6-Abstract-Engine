@@ -17,17 +17,14 @@ public class InputManager {
     }
 
     public void update(List<Entity> playableEntityList) {
-        // We reset velocity first
-        // entity.setXVel(0);
+    if (playableEntityList == null || playableEntityList.isEmpty()) return;
 
-        // We ask the Keyboard class for the hardware state
-        // if (keyboard.isLeftPressed()) {
-        //     entity.setXVel(-entity.getSpeed());
-        // } else if (keyboard.isRightPressed()) {
-        //     entity.setXVel(entity.getSpeed());
-        // }
-        if (playableEntityList.size() == 1) {
-            keyboard.getInput(playableEntityList.get(0));
-        } 
+    // Player 1: Arrow keys
+    keyboard.getArrowInput(playableEntityList.get(0));
+
+    // Player 2 (optional): WASD
+    if (playableEntityList.size() >= 2) {
+        keyboard.getWASDInput(playableEntityList.get(1));
+        }
     }
 }
