@@ -1,5 +1,7 @@
 package io.github.team6.scenes;
 
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+
 import io.github.team6.managers.CollisionManager;
 import io.github.team6.managers.EntityManager;
 import io.github.team6.managers.InputManager;
@@ -33,7 +35,8 @@ public abstract class Scene {
     // Abstract methods the specific scenes MUST implement
     public abstract void onEnter();      // Setup (Spawn entities)
     public abstract void update(float dt); // Logic (Win condition, spawning)
-    public abstract void render();       // Draw (Calls entityManager.draw)
+    //public abstract void render();       // Draw (Calls entityManager.draw)
     public abstract void dispose();      // Cleanup
+    public abstract void render(SpriteBatch batch);
 
 }

@@ -1,5 +1,7 @@
 package io.github.team6.managers;
 
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+
 import io.github.team6.scenes.Scene;
 
 
@@ -52,9 +54,9 @@ public class SceneManager {
     }
 
     // Delegates the render loop to the currently active scene
-    public void render() {
+    public void render(SpriteBatch batch) {
         if (activeScene != null) {
-            activeScene.render();
+            activeScene.render(batch);
         }
     }
 }

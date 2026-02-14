@@ -6,9 +6,12 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 
 import io.github.team6.entities.NonPlayableEntity;
 import io.github.team6.entities.PlayableEntity;
+import io.github.team6.managers.SceneManager;
 import io.github.team6.entities.NonPlayableEntity.DropletType;
 import io.github.team6.entities.behavior.BouncingAroundDropletsMovementBehavior;
 import io.github.team6.entities.behavior.ChasingMovementBehavior;
@@ -16,8 +19,13 @@ import io.github.team6.entities.behavior.PermanentCollisionBehavior;
 import io.github.team6.entities.behavior.StationaryMovementBehavior;
 
 public class MainScene extends Scene {
+
+    private final SceneManager scenes;
+    private BitmapFont font;
+    public MainScene(SceneManager scenes) {
+        this.scenes = scenes;
+    }
     
-    //private SpriteBatch batch; // Each scene can manage its own rendering batch
     private static final int PERMANENT_STATIONARY_COUNT = 2;
     private static final int CHASING_COUNT = 2;
 
@@ -27,14 +35,14 @@ public class MainScene extends Scene {
     private static final float CHASING_DROPLET_HEIGHT = 30f;
     private static final float CHASING_DROPLET_SPEED = 0.5f;
 
-    private SpriteBatch batch;
+    //private SpriteBatch batch;
     private PlayableEntity bucket;
     private List<NonPlayableEntity> permanentObstacles;
 
     @Override
     public void onEnter() {
         System.out.println("Entering Main Scene...");
-        batch = new SpriteBatch();
+        font = new BitmapFont(); 
 
         // Create the entities
         //PlayableEntity bucket = new PlayableEntity("bucket.png", 100, 220, 5, 50, 50);
@@ -60,6 +68,11 @@ public class MainScene extends Scene {
 
     @Override
     public void update(float dt) {
+        // Press ESC to go back to main menu
+        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+            scenes.setScene(new MainMenuScene(scenes));
+            return;
+        }
         // Run the Managers
         inputManager.update(entityManager.getPlayableEntityList());
         movementManager.update(entityManager.getEntityList());
@@ -109,8 +122,10 @@ public class MainScene extends Scene {
     }
 
     @Override
-    public void render() {
+    public void render(SpriteBatch batch) {
         batch.begin();
+        font.draw(batch, "Arrow Keys to move", 40, Gdx.graphics.getHeight() - 40);
+        font.draw(batch, "ESC to return to menu", 40, Gdx.graphics.getHeight() - 80);
         entityManager.drawEntity(batch);
         batch.end();
     }
@@ -118,9 +133,10 @@ public class MainScene extends Scene {
     @Override
     public void dispose() {
         System.out.println("Disposed of scene...");
-        batch.dispose();
+        font.dispose();
         // Clear entities when leaving the scene so they don't persist to the Menu
         entityManager.getEntityList().clear(); 
         entityManager.getPlayableEntityList().clear();
+
     }
 }
