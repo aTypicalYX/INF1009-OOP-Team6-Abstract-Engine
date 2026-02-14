@@ -51,8 +51,17 @@ public class Keyboard {
 
         if (!direction.isZero()) {
             direction.nor(); // Normalizes the vector to length 1
-            e.setX(e.getX() + direction.x * e.getSpeed());
-            e.setY(e.getY() + direction.y * e.getSpeed());
+            //e.setX(e.getX() + direction.x * e.getSpeed());
+            //e.setY(e.getY() + direction.y * e.getSpeed());
+            float newX = e.getX() + direction.x * e.getSpeed();
+            float newY = e.getY() + direction.y * e.getSpeed();
+            
+            // Prevent the entity from moving outside the screen boundaries
+            newX = Math.max(0, Math.min(newX, Gdx.graphics.getWidth() - e.getWidth()));
+            newY = Math.max(0, Math.min(newY, Gdx.graphics.getHeight() - e.getHeight()));
+            
+            e.setX(newX);
+            e.setY(newY);
         }
     }
 }
