@@ -6,6 +6,15 @@ import com.badlogic.gdx.math.Vector2;
 
 import io.github.team6.entities.Entity;
 
+/**
+ * Keyboard is a Low-Level Input Wrapper.
+ * * ROLE:
+ * It wraps the LibGDX "Gdx.input" calls into easier-to-read methods.
+ * It currently handles translating Key Presses into Entity Position changes.
+ */
+
+
+ // These methods return true if the specific key is currently held down.
 public class Keyboard {
     public boolean isLeft() {
         return Gdx.input.isKeyPressed(Input.Keys.LEFT);

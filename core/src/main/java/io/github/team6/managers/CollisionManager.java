@@ -1,8 +1,16 @@
 package io.github.team6.managers;
 
 import java.util.List;
+
 import io.github.team6.collision.Collision;
 import io.github.team6.entities.Entity;
+
+/**
+ * CollisionManager handles the detection of overlaps between entities.
+ * * ROLE:
+ * It receives a list of entities and checks if any of them are touching.
+ */
+
 
 public class CollisionManager {
     private Collision collision;

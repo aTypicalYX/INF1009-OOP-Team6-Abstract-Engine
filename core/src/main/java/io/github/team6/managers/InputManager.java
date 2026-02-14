@@ -1,8 +1,13 @@
 package io.github.team6.managers;
 
 import java.util.List;
+
 import io.github.team6.entities.Entity;
 import io.github.team6.inputoutput.Keyboard;
+
+/**
+ * InputManager handles the link between keyboard keys and Game Objects.
+ */
 
 public class InputManager {
     private Keyboard keyboard;
