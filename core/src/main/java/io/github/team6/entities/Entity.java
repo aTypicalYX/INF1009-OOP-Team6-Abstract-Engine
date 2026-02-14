@@ -14,6 +14,7 @@ public abstract class Entity implements Movable, Renderable, Collidable{
     private float width;
     private float height;
     private Rectangle hitbox;
+    private boolean active;
 
     // Constructor Methods
     public Entity() {
@@ -23,6 +24,7 @@ public abstract class Entity implements Movable, Renderable, Collidable{
         this.width = 0;
         this.height = 0;
         this.hitbox = new Rectangle(x, y, width, height);
+        this.active = true;
     }
 
     public Entity(float x, float y, float speed, float width, float height) {
@@ -32,6 +34,7 @@ public abstract class Entity implements Movable, Renderable, Collidable{
         this.width = width;
         this.height = height;
         this.hitbox = new Rectangle(x, y, width, height);
+        this.active = true;
     }
 
     // getters
@@ -40,6 +43,7 @@ public abstract class Entity implements Movable, Renderable, Collidable{
     public float getSpeed() { return speed; }
     public float getWidth() { return width; }    
     public float getHeight() { return height; }
+    public boolean isActive() { return active; }
 
     // setters
     public void setX(float x) { this.x = x; }
@@ -47,6 +51,7 @@ public abstract class Entity implements Movable, Renderable, Collidable{
     public void setSpeed(float speed) { this.speed = speed; }
     public void setWidth(float width) { this.width = width; }
     public void setHeight(float height) { this.height = height; }
+    public void setActive(boolean active) { this.active = active; }
 
     // draw method
     public void draw(SpriteBatch batch) {}

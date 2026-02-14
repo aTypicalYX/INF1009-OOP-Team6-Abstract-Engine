@@ -35,6 +35,11 @@ public class EntityManager {
     }
   }
 
+  public void removeInactiveEntities() {
+    entityList.removeIf(entity -> !entity.isActive()); // Remove entities that are no longer active
+    playableEntityList.removeIf(entity -> !entity.isActive()); // Ensure playable entities are also removed from the playable list
+  }
+
   // Getters for other Managers to access the data
   public List<Entity> getEntityList() {
     return entityList;
