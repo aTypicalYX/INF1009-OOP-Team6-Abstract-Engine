@@ -66,7 +66,7 @@ public class MainScene extends Scene {
             entityManager.addEntity(createChasingDroplet());
         }
 
-        // Setup background music for gameplay (optional - may not exist yet)
+        // bgm for game
         try {
             MusicSource gameBgm = new MusicSource("background.wav");
             outputManager.setBgm(gameBgm);

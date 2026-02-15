@@ -6,12 +6,9 @@ import com.badlogic.gdx.math.Vector2;
 
 import io.github.team6.entities.Entity;
 
-/**
- * Keyboard is a Low-Level Input Wrapper.
- * * ROLE:
- * It wraps the LibGDX "Gdx.input" calls into easier-to-read methods.
- * It currently handles translating Key Presses into Entity Position changes.
- */
+
+// It currently handles translating Key Presses into Entity Position changes.
+
 
 
  // These methods return true if the specific key is currently held down.
@@ -50,20 +47,17 @@ public class Keyboard {
         return Gdx.input.isKeyPressed(Input.Keys.SPACE);
     }
 
-    /**
-     * getInput() calculates the movement vector based on keys pressed.
-     * @param e The entity to move (usually the player).
-     */
+
     public void getInput(Entity e) {
         Vector2 direction = new Vector2(0, 0);
 
-        // Calculate direction based on keys
+        // calculate direction based on keys
         if (isLeft())  direction.x -= 5;
         if (isRight()) direction.x += 5;
         if (isUp())    direction.y += 5;
         if (isDown())  direction.y -= 5;
 
-        // Apply movement if a key was pressed
+        // movement applies when key is pressed
         if (!direction.isZero()) {
             direction.nor(); // Normalizes the vector to length 1
             //e.setX(e.getX() + direction.x * e.getSpeed());
@@ -106,7 +100,6 @@ public class Keyboard {
         
     }
 
-    // Extract your movement math into one shared method
     private void applyMovement(Entity e, Vector2 direction) {
         if (!direction.isZero()) {
             direction.nor();

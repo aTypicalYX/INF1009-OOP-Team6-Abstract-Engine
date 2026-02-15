@@ -46,9 +46,8 @@ public class PlayableEntity extends Entity {
         
     }
 
-    /**
-     * onCollision() defines what happens when THIS specific object hits something.
-     */
+    //defines what happens when THIS specific object hits something.
+    
     @Override
     public void onCollision() {
         // Play collision sound
@@ -61,9 +60,7 @@ public class PlayableEntity extends Entity {
         this.setY(0);
     }
     
-    /**
-     * Set the OutputManager and load collision sound
-     */
+    // load collision sound
     public void setOutputManager(OutputManager outputManager) {
         this.outputManager = outputManager;
         try {
