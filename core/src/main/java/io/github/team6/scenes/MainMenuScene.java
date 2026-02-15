@@ -3,11 +3,13 @@ package io.github.team6.scenes;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
@@ -27,6 +29,9 @@ public class MainMenuScene extends Scene {
 
     @Override
     public void onEnter() {
+        // Stop any background music from previous scene
+        outputManager.stopBgm();
+        
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
 
@@ -40,30 +45,27 @@ public class MainMenuScene extends Scene {
         TextButton settingsBtn = new TextButton("Settings", skin);
         TextButton exitBtn = new TextButton("Exit", skin);
 
-        startBtn.addListener(e -> {
-            if (startBtn.isPressed()) {
+        startBtn.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
                 scenes.setScene(new MainScene(scenes));
-                return true;
             }
-            return false;
         });
 
 
-        settingsBtn.addListener(e -> {
-            if (settingsBtn.isPressed()) {
+        settingsBtn.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
                 scenes.setScene(new SettingsScene(scenes));
-                return true;
             }
-            return false;
         });
 
 
-        exitBtn.addListener(e -> {
-            if (exitBtn.isPressed()) {
+        exitBtn.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
                 Gdx.app.exit();
-                return true;
             }
-            return false;
         });
 
         //Configure Menu positions

@@ -5,18 +5,18 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import io.github.team6.entities.NonPlayableEntity;
-import io.github.team6.entities.PlayableEntity;
-import io.github.team6.managers.SceneManager;
 import io.github.team6.entities.NonPlayableEntity.DropletType;
-import io.github.team6.entities.behavior.BouncingAroundDropletsMovementBehavior;
+import io.github.team6.entities.PlayableEntity;
 import io.github.team6.entities.behavior.ChasingMovementBehavior;
 import io.github.team6.entities.behavior.PermanentCollisionBehavior;
 import io.github.team6.entities.behavior.StationaryMovementBehavior;
+import io.github.team6.inputoutput.MusicSource;
+import io.github.team6.managers.SceneManager;
 
 public class MainScene extends Scene {
 
@@ -50,6 +50,7 @@ public class MainScene extends Scene {
 
         // Add them to the EntityManager (inherited from Scene class)
         bucket = new PlayableEntity("bucket.png", 100, 220, 5, 50, 50);
+        bucket.setOutputManager(outputManager); // Set OutputManager to enable collision sound
         entityManager.addEntity(bucket);
         entityManager.addPlayableEntity(bucket);
         //entityManager.addEntity(droplet);
@@ -63,6 +64,17 @@ public class MainScene extends Scene {
 
         for (int i = 0; i < CHASING_COUNT; i++) {
             entityManager.addEntity(createChasingDroplet());
+        }
+
+        // Setup background music for gameplay (optional - may not exist yet)
+        try {
+            MusicSource gameBgm = new MusicSource("background.wav");
+            outputManager.setBgm(gameBgm);
+            outputManager.playBgm(true); // true = loop
+            System.out.println("[DEBUG] Game background.wav loaded and playing");
+        } catch (Exception e) {
+            System.out.println("[DEBUG] Warning: background.wav not found. Background music disabled.");
+            e.printStackTrace();
         }
     }
 

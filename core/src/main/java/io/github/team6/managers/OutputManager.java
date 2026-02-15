@@ -25,8 +25,8 @@ public class OutputManager {
     public OutputManager() {
         activeSfx = new ArrayList<>();
         masterVolume = 1f;
-        sfxVolume = 1f;
-        musicVolume = 0.5f;
+        sfxVolume = 1.0f;
+        musicVolume = 0.3f;  // Softer background music
     }
 
     // =========================
@@ -40,6 +40,7 @@ public class OutputManager {
         }
 
         float finalVolume = clamp(masterVolume * sfxVolume);
+        System.out.println("[DEBUG] Playing SFX - masterVolume: " + masterVolume + ", sfxVolume: " + sfxVolume + ", finalVolume: " + finalVolume);
         sfx.play(finalVolume);
     }
 

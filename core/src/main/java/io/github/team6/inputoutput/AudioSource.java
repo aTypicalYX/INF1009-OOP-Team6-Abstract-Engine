@@ -16,21 +16,27 @@ public class AudioSource {
     }
 
     public AudioSource(String internalAssetPath, boolean looping, float volume) {
+        System.out.println("[DEBUG AudioSource] Loading: " + internalAssetPath);
         FileHandle file = Gdx.files.internal(internalAssetPath);
+        System.out.println("[DEBUG AudioSource] File exists: " + file.exists() + ", Path: " + file.path());
         this.sound = Gdx.audio.newSound(file);
         this.looping = looping;
         this.volume = clamp01(volume);
+        System.out.println("[DEBUG AudioSource] Loaded successfully with volume: " + this.volume);
     }
 
     public void play(float masterVolume) {
         lastMaster = clamp01(masterVolume);
         float finalVol = clamp01(volume * lastMaster);
+        
+        System.out.println("[DEBUG AudioSource] Playing sound - volume: " + volume + ", masterVolume: " + masterVolume + ", finalVol: " + finalVol);
 
         if (looping) {
             stop();
             loopId = sound.loop(finalVol);
         } else {
             sound.play(finalVol);
+            System.out.println("[DEBUG AudioSource] sound.play() called with volume: " + finalVol);
         }
     }
 
