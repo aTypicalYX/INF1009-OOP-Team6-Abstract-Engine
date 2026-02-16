@@ -7,5 +7,7 @@ It has a single method, onCollision, which takes two parameters: the entity that
 This interface can be implemented by any entity that needs to define specific behavior when it collides with
 */
 public interface CollisionBehavior {
+    // Method signature: defines an abstract method that implementing classes must provide
+    // This method is called when a collision occurs between 'self' and 'other' entities
     void onCollision(Entity self, Entity other);
 }
