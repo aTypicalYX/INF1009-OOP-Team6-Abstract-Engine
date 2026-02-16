@@ -8,7 +8,7 @@ import io.github.team6.managers.InputManager;
 import io.github.team6.managers.MovementManager;
 import io.github.team6.managers.OutputManager;
 
-// Scene is used to define the Blueprint for what a game level must be.
+// Scene is an abstract class, used to define the Blueprint for what a game level must be.
 // It holds the references to the Managers so that child classes can access them without having to create them.
 
 public abstract class Scene {
