@@ -1,73 +1,52 @@
 package io.github.team6.collision;
 
 import io.github.team6.entities.Entity;
-import io.github.team6.entities.NonPlayableEntity;
-import io.github.team6.entities.NonPlayableEntity.DropletType;
-import io.github.team6.entities.PlayableEntity;
-
 
 /**
- * Collision performs the math to check if two things touch.
- * It does NOT manage lists of objects (Manager's job).
+ * Collision is responsible ONLY for the math of detecting overlaps
+ * It is now fully abstract and decoupled from specific game logic.
+ * Follows the "Single Responsibility Principle". It does not handle
+ * game logic (like resetting players or destroying enemies). 
+ * Instead, it delegates that logic back to the Entities themselves.
  */
+/*
+Manager: Collision -> checks overlap -> calls .onCollision()
+
+Entity: PlayableEntity -> has a -> ResetOnTouchBehavior
+
+Behavior: ResetOnTouchBehavior -> executes -> x=0, y=0
+*/
+
 public class Collision {
 
     /**
-     * checkOverlap determines if two entities have collided.
-     * @param a The first entity
-     * @param b The second entity
+     * checkOverlap checks if two entities are overlapping using their hitboxes.
+     * Flow: SceneManager -> CollisionManager -> Collision.checkOverlap(a, b)
+     * @param a The first entity (e.g., Player)
+     * @param b The second entity (e.g., Droplet)
      */
-
     public void checkOverlap(Entity a, Entity b) {
-        // LibGDX's Rectangle class has a built-in .overlaps() method.
-        // Use getHitbox() to ensure we are checking the current position.
-
-        if (!a.getHitbox().overlaps(b.getHitbox())) { // No collision
-            return;
-        }
-        if (isBucketWithChasingDroplet(a, b) || isBucketWithPermanentDroplet(a, b)) { 
-            // Collision between bucket and a droplet
-            System.out.println("Collided!!");
-            resolveCollision(a, b);
-            return;
+        // 1. Basic Box Collision Check
+        if (!a.getHitbox().overlaps(b.getHitbox())) { 
+            return; // No collision, exit early
         }
 
-        // If they touch, trigger the resolution logic
+        // 2. Resolution: If they hit, tell them both.
+        // We use "Polymorphism" here. We don't care if 'a' is a Player or an Enemy.
+        // We just know it is an Entity, so it has an 'onCollision' method.
         resolveCollision(a, b);
     }
 
-    private boolean isBucketWithChasingDroplet(Entity a, Entity b) {
-        // Check if one entity is the bucket and the other is a chasing droplet
-        return (isPlayable(a) && isDropletType(b, DropletType.CHASING))
-                || (isPlayable(b) && isDropletType(a, DropletType.CHASING));
-    }
-
-    private boolean isBucketWithPermanentDroplet(Entity a, Entity b) {
-        // Check if one entity is the bucket and the other is a permanent stationary droplet
-        return (isPlayable(a) && isDropletType(b, DropletType.PERMANENT_STATIONARY))
-                || (isPlayable(b) && isDropletType(a, DropletType.PERMANENT_STATIONARY));
-    }
-
-    private boolean isPlayable(Entity entity) {
-        return entity instanceof PlayableEntity;
-    }
-
-    private boolean isDropletType(Entity entity, DropletType expectedType) {
-        if (entity instanceof NonPlayableEntity) {
-            NonPlayableEntity nonPlayableEntity = (NonPlayableEntity) entity;
-            return nonPlayableEntity.getDropletType() == expectedType;
-        }
-        return false;
-    }
-
-
     /**
-     * resolveCollision handles what happens AFTER a collision is confirmed.
+     * Helper method to trigger the response.
+     * This follows the "Tell, Don't Ask" principle.
+     * We don't ask "Are you a player?", we just tell it "You hit 'b', handle it."
      */
     public void resolveCollision(Entity a, Entity b) {
-        // If 'a' is a Bucket, it runs Bucket.onCollision().
-        // If 'a' is a Droplet, it runs Droplet.onCollision().
-        a.onCollision(); 
-        b.onCollision();
+        // Notify 'a' that it hit 'b'
+        a.onCollision(b); 
+        
+        // Notify 'b' that it hit 'a'
+        b.onCollision(a);
     }
 }

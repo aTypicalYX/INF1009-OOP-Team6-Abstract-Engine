@@ -4,6 +4,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+import io.github.team6.entities.behavior.CollisionBehavior;
+import io.github.team6.entities.behavior.ResetOnTouchBehavior;
 import io.github.team6.inputoutput.AudioSource;
 import io.github.team6.managers.OutputManager;
 
@@ -11,6 +13,10 @@ public class PlayableEntity extends Entity {
     private Texture tex;
     private OutputManager outputManager;
     private AudioSource collisionSound;
+
+    // COMPOSITION: PlayableEntity "HAS A" CollisionBehavior.
+    // This is more flexible than inheritance.
+    private CollisionBehavior collisionBehavior;
 
     // Constructors
     public PlayableEntity() {
@@ -23,6 +29,10 @@ public class PlayableEntity extends Entity {
     public PlayableEntity(String fileName, float x, float y, float speed, float width, float height) {
         super(x, y, speed, width, height);
         this.tex = new Texture(Gdx.files.internal(fileName));
+
+        // ASSIGNMENT: We plug in the specific strategy we want.
+        // If we wanted the player to die instantly, we would plug in "DieOnTouchBehavior" instead.
+        this.collisionBehavior = new ResetOnTouchBehavior();
     }
 
     // getter
@@ -48,17 +58,24 @@ public class PlayableEntity extends Entity {
 
     //defines what happens when THIS specific object hits something.
     
+    /**
+     * Triggered by Collision.java when a hit is detected.
+     * @param other The object we hit.
+     */
     @Override
-    public void onCollision() {
+    public void onCollision(Entity other) {
         // Play collision sound
         if (outputManager != null && collisionSound != null) {
             outputManager.play(collisionSound);
         }
         
-        // When the bucket hits a droplet, it teleports back to (0,0).
-        this.setX(0);
-        this.setY(0);
+        // Delegate Logic (Pass the job to the Behavior)
+        // This keeps PlayableEntity clean. It doesn't need to know HOW to reset,
+        // it just asks its behavior object to handle it.
+        if (collisionBehavior != null) {
+            collisionBehavior.onCollision(this, other);
     }
+}
     
     // load collision sound
     public void setOutputManager(OutputManager outputManager) {

@@ -22,6 +22,10 @@ public class MainScene extends Scene {
 
     private final SceneManager scenes;
     private BitmapFont font;
+
+    private float timeSurvived;
+    private int score;
+
     public MainScene(SceneManager scenes) {
         this.scenes = scenes;
     }
@@ -90,6 +94,11 @@ public class MainScene extends Scene {
         movementManager.update(entityManager.getEntityList());
         collisionManager.update(entityManager.getEntityList());
         entityManager.removeInactiveEntities();
+        
+        // Increase score based on survival time
+        timeSurvived += dt;
+        score = (int) timeSurvived * 10;
+        
     }
 
     private NonPlayableEntity createPermanentStationaryDroplet() {
@@ -139,6 +148,12 @@ public class MainScene extends Scene {
         font.draw(batch, "Arrow Keys to move", 40, Gdx.graphics.getHeight() - 40);
         font.draw(batch, "ESC to return to menu", 40, Gdx.graphics.getHeight() - 80);
         entityManager.drawEntity(batch);
+
+        // DRAW HUD
+        font.setColor(1, 1, 1, 1); // White
+        font.getData().setScale(1.5f);
+        font.draw(batch, "SCORE: " + score, 20, Gdx.graphics.getHeight() - 20);
+
         batch.end();
     }
 

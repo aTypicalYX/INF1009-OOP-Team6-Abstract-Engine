@@ -63,4 +63,6 @@ public abstract class Entity implements Movable, Renderable, Collidable{
         return hitbox;
     }
 
+    public abstract void onCollision(Entity other);
+
 }

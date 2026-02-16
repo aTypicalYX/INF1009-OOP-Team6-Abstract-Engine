@@ -4,7 +4,7 @@ import io.github.team6.entities.Entity;
 
 public class PermanentCollisionBehavior implements CollisionBehavior {
     @Override
-    public void onCollision(Entity self) {
+    public void onCollision(Entity self, Entity other) {
         // Intentionally empty: this entity remains after collision.
     }
 }

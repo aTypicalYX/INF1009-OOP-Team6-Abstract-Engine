@@ -6,6 +6,8 @@
 package io.github.team6.interfaces;
 import com.badlogic.gdx.math.Rectangle;
 
+import io.github.team6.entities.Entity;
+
 /**
  * Interface: Collidable
  * Defines requirements for objects that can interact physically.
@@ -15,5 +17,5 @@ import com.badlogic.gdx.math.Rectangle;
 
 public interface Collidable {
     public Rectangle getHitbox();
-    public void onCollision();
+    public void onCollision(Entity other);
 }

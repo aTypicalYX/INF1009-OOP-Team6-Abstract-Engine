@@ -71,10 +71,10 @@ public class NonPlayableEntity extends Entity{
     }
 
     @Override
-    public void onCollision() {
-        // implement post collision logic
+    public void onCollision(Entity other) {
+        /// implement post collision logic
         if (collisionBehavior != null) {
-            collisionBehavior.onCollision(this);
+            collisionBehavior.onCollision(this, other);
         }
     }
 }
