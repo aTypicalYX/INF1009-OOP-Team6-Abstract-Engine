@@ -38,7 +38,6 @@ public abstract class Entity implements Movable, Renderable, Collidable{
     public float getHeight() { return height; }
     public boolean isActive() { return active; }
     public String getTag() { return tag; }
-    public void setTag(String tag) { this.tag = tag; }
 
     // setters
     public void setX(float x) { this.x = x; }
@@ -47,6 +46,7 @@ public abstract class Entity implements Movable, Renderable, Collidable{
     public void setWidth(float width) { this.width = width; }
     public void setHeight(float height) { this.height = height; }
     public void setActive(boolean active) { this.active = active; }
+    public void setTag(String tag) { this.tag = tag; }
 
     @Override
     // draw method

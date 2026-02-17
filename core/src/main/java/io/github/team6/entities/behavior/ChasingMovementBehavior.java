@@ -9,7 +9,7 @@ import io.github.team6.entities.Entity;
 
 public class ChasingMovementBehavior implements MovementBehavior {
     
-    // PHASE 3 FIX: Generic Entity List
+    // List of obstacles that the entity should avoid while chasing the target
     private List<Entity> obstacles; 
 
     public ChasingMovementBehavior(List<Entity> obstacles) {

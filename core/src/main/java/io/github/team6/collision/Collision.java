@@ -15,6 +15,8 @@ Manager: Collision -> checks overlap -> calls .onCollision()
 Entity: PlayableEntity -> has a -> ResetOnTouchBehavior
 
 Behavior: ResetOnTouchBehavior -> executes -> x=0, y=0
+
+Summary: Pure overlap detection math — no game logic
 */
 
 public class Collision {

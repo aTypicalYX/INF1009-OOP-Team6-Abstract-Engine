@@ -9,6 +9,8 @@ import io.github.team6.entities.Entity;
  * CollisionManager handles the detection of overlaps between entities.
  * * ROLE:
  * It receives a list of entities and checks if any of them are touching.
+ * 
+ * Drives overlap checks across all entities
  */
 
 
