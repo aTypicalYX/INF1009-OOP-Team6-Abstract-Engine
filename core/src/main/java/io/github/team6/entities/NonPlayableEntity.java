@@ -12,49 +12,35 @@ import io.github.team6.entities.behavior.MovementBehavior;
  */
 public class NonPlayableEntity extends Entity{
     
-    public enum DropletType {
-        CHASING,
-        STATIONARY,
-        PERMANENT_STATIONARY
-    }
 
     private Texture tex;
     private MovementBehavior movementBehavior;
     private CollisionBehavior collisionBehavior;
     private Entity target;
-    private DropletType dropletType;
 
     // Constructors
     public NonPlayableEntity() {
+        super();
     }
 
-    public NonPlayableEntity(String fileName, float x, float y, float speed, float width, float height) {
-        super(x, y, speed, width, height);
+    
+    public NonPlayableEntity(String fileName, float x, float y, float speed, float width, float height, String tag) {
+        super(x, y, speed, width, height, tag);
         this.tex = new Texture(Gdx.files.internal(fileName));
     }
 
-    public NonPlayableEntity(String fileName, float x, float y, float speed, float width, float height,
-            MovementBehavior movementBehavior, CollisionBehavior collisionBehavior, Entity target, DropletType dropletType) {
-        this(fileName, x, y, speed, width, height);
+    public NonPlayableEntity(String fileName, float x, float y, float speed, float width, float height, String tag,
+            MovementBehavior movementBehavior, CollisionBehavior collisionBehavior, Entity target) {
+        this(fileName, x, y, speed, width, height, tag);
         this.movementBehavior = movementBehavior;
         this.collisionBehavior = collisionBehavior;
         this.target = target;
-        this.dropletType = dropletType;
     }
 
-    // getter
-    // public Texture getTexture() { return tex; }
-
-    //setter
-    // public void setTexture(Texture tex) { this.tex = tex; }
-
-    public DropletType getDropletType() {
-        return dropletType;
-    }
 
     @Override
     public void draw(SpriteBatch batch) {
-        batch.draw(tex, getX(), getY());
+        if (tex != null) batch.draw(tex, getX(), getY());
     }
 
     /**
@@ -63,8 +49,6 @@ public class NonPlayableEntity extends Entity{
      */
     @Override
     public void movement() {
-        //setY(getY() - getSpeed());  //AI movement
-        //if (getY() < 0) setY(480);
         if (movementBehavior != null) {
             movementBehavior.move(this, target);
         }

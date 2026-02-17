@@ -8,31 +8,24 @@ import io.github.team6.interfaces.Movable;
 import io.github.team6.interfaces.Renderable;
 
 public abstract class Entity implements Movable, Renderable, Collidable{
-    private float x;
-    private float y;
-    private float speed;
-    private float width;
-    private float height;
+    private float x, y, speed, width, height;
     private Rectangle hitbox;
     private boolean active;
 
+    private String tag;
+
     // Constructor Methods
     public Entity() {
-        this.x = 0;
-        this.y = 0;
-        this.speed = 0;
-        this.width = 0;
-        this.height = 0;
-        this.hitbox = new Rectangle(x, y, width, height);
-        this.active = true;
+        this(0, 0, 0, 0, 0, "DEFAULT");
     }
 
-    public Entity(float x, float y, float speed, float width, float height) {
+    public Entity(float x, float y, float speed, float width, float height, String tag) {
         this.x = x;
         this.y = y;
         this.speed = speed;
         this.width = width;
         this.height = height;
+        this.tag = tag; // Assign the tag
         this.hitbox = new Rectangle(x, y, width, height);
         this.active = true;
     }
@@ -44,6 +37,8 @@ public abstract class Entity implements Movable, Renderable, Collidable{
     public float getWidth() { return width; }    
     public float getHeight() { return height; }
     public boolean isActive() { return active; }
+    public String getTag() { return tag; }
+    public void setTag(String tag) { this.tag = tag; }
 
     // setters
     public void setX(float x) { this.x = x; }
@@ -53,6 +48,7 @@ public abstract class Entity implements Movable, Renderable, Collidable{
     public void setHeight(float height) { this.height = height; }
     public void setActive(boolean active) { this.active = active; }
 
+    @Override
     // draw method
     public void draw(SpriteBatch batch) {}
 
@@ -63,6 +59,7 @@ public abstract class Entity implements Movable, Renderable, Collidable{
         return hitbox;
     }
 
+    @Override
     public abstract void onCollision(Entity other);
 
 }

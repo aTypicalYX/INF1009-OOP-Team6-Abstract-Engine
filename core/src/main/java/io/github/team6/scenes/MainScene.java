@@ -9,11 +9,12 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+import io.github.team6.entities.Entity;
 import io.github.team6.entities.NonPlayableEntity;
-import io.github.team6.entities.NonPlayableEntity.DropletType;
 import io.github.team6.entities.PlayableEntity;
 import io.github.team6.entities.behavior.ChasingMovementBehavior;
 import io.github.team6.entities.behavior.PermanentCollisionBehavior;
+import io.github.team6.entities.behavior.ResetOnTouchBehavior;
 import io.github.team6.entities.behavior.StationaryMovementBehavior;
 import io.github.team6.inputoutput.MusicSource;
 import io.github.team6.managers.SceneManager;
@@ -41,7 +42,7 @@ public class MainScene extends Scene {
 
     //private SpriteBatch batch;
     private PlayableEntity bucket;
-    private List<NonPlayableEntity> permanentObstacles;
+    private List<Entity> permanentObstacles;
 
     @Override
     public void onEnter() {
@@ -53,8 +54,15 @@ public class MainScene extends Scene {
         //NonPlayableEntity droplet = new NonPlayableEntity("droplet.png", 250, 220, 5, 50, 50);
 
         // Add them to the EntityManager (inherited from Scene class)
-        bucket = new PlayableEntity("bucket.png", 100, 220, 5, 50, 50);
-        bucket.setOutputManager(outputManager); // Set OutputManager to enable collision sound
+        // We inject: "bucket.png", "collision.wav", outputManager, and ResetOnTouchBehavior.
+        bucket = new PlayableEntity(
+            "bucket.png",          // Texture
+            "collision.wav",       // Sound
+            outputManager,         // Audio Manager
+            new ResetOnTouchBehavior(), // The specific Logic for this game
+            100, 220, 5, 50, 50, "PLAYER"
+        );
+        bucket.setOutputManager(outputManager); 
         entityManager.addEntity(bucket);
         entityManager.addPlayableEntity(bucket);
         //entityManager.addEntity(droplet);
@@ -74,7 +82,7 @@ public class MainScene extends Scene {
         try {
             MusicSource gameBgm = new MusicSource("background.wav");
             outputManager.setBgm(gameBgm);
-            outputManager.playBgm(true); // true = loop
+            outputManager.playBgm(true); 
             System.out.println("[DEBUG] Game background.wav loaded and playing");
         } catch (Exception e) {
             System.out.println("[DEBUG] Warning: background.wav not found. Background music disabled.");
@@ -103,22 +111,22 @@ public class MainScene extends Scene {
 
     private NonPlayableEntity createPermanentStationaryDroplet() {
         float[] position = getSafeSpawnPosition(PERMANENT_DROPLET_WIDTH, PERMANENT_DROPLET_HEIGHT);
+        // PHASE 1 CHANGE: Pass "ENEMY" (or "OBSTACLE") tag. Removed DropletType.
         return new NonPlayableEntity(
-                "droplet.png", position[0], position[1], 0, PERMANENT_DROPLET_WIDTH, PERMANENT_DROPLET_HEIGHT,
+                "droplet.png", position[0], position[1], 0, PERMANENT_DROPLET_WIDTH, PERMANENT_DROPLET_HEIGHT, "ENEMY",
                 new StationaryMovementBehavior(),
                 new PermanentCollisionBehavior(),
-                bucket,
-                DropletType.PERMANENT_STATIONARY);
+                bucket);
     }
 
     private NonPlayableEntity createChasingDroplet() {
         float[] position = getSafeSpawnPosition(CHASING_DROPLET_WIDTH, CHASING_DROPLET_HEIGHT);
+        // PHASE 1 CHANGE: Pass "ENEMY" tag. Removed DropletType.
         return new NonPlayableEntity(
-                "droplet.png", position[0], position[1], CHASING_DROPLET_SPEED, CHASING_DROPLET_WIDTH, CHASING_DROPLET_HEIGHT,
+                "droplet.png", position[0], position[1], CHASING_DROPLET_SPEED, CHASING_DROPLET_WIDTH, CHASING_DROPLET_HEIGHT, "ENEMY",
                 new ChasingMovementBehavior(permanentObstacles),
                 new PermanentCollisionBehavior(),
-                bucket,
-                DropletType.CHASING);
+                bucket);
     }
 
     private float[] getSafeSpawnPosition(float width, float height) {
