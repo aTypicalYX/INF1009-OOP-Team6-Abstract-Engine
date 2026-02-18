@@ -6,9 +6,18 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.maps.MapLayer;
+import com.badlogic.gdx.maps.MapObject;
+import com.badlogic.gdx.maps.objects.RectangleMapObject;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Rectangle;
 
+import io.github.team6.collision.WorldCollision;
 import io.github.team6.entities.Entity;
 import io.github.team6.entities.NonPlayableEntity;
 import io.github.team6.entities.PlayableEntity;
@@ -33,6 +42,18 @@ public class MainScene extends Scene {
     // Game State Data
     private float timeSurvived;
     private int score;
+
+    // Tiled visuals + world collision
+    private TiledMap map;
+    private OrthogonalTiledMapRenderer mapRenderer;
+    private OrthographicCamera camera;
+    private final List<Rectangle> worldColliders = new ArrayList<>();
+    private float mapPixelWidth;
+    private float mapPixelHeight;
+
+    // Camera viewport
+    private static final float VIEW_W = 1280f;
+    private static final float VIEW_H = 720f;
 
     public MainScene(SceneManager scenes) {
         this.scenes = scenes;
@@ -62,6 +83,36 @@ public class MainScene extends Scene {
     public void onEnter() {
         System.out.println("Entering Main Scene...");
         font = new BitmapFont(); 
+
+        // Load Tiled map (visuals) + collision rectangles (platform feel)
+        map = new TmxMapLoader().load("maps/level1.tmx");
+        mapRenderer = new OrthogonalTiledMapRenderer(map);
+
+        camera = new OrthographicCamera();
+        camera.setToOrtho(false, VIEW_W, VIEW_H);
+        camera.position.set(VIEW_W / 2f, VIEW_H / 2f, 0);
+        camera.update();
+
+        // Map pixel size for bounds + camera clamping
+        int wTiles = map.getProperties().get("width", Integer.class);
+        int hTiles = map.getProperties().get("height", Integer.class);
+        int tW = map.getProperties().get("tilewidth", Integer.class);
+        int tH = map.getProperties().get("tileheight", Integer.class);
+        mapPixelWidth = wTiles * tW;
+        mapPixelHeight = hTiles * tH;
+
+        // Load world colliders from Tiled object layer "Collisions"
+        worldColliders.clear();
+        MapLayer colLayer = map.getLayers().get("Collisions");
+        if (colLayer != null) {
+            for (MapObject obj : colLayer.getObjects()) {
+                if (obj instanceof RectangleMapObject) {
+                    RectangleMapObject rmo = (RectangleMapObject) obj;
+                    worldColliders.add(new Rectangle(rmo.getRectangle()));
+                }
+            }
+        }
+        System.out.println("[DEBUG] World colliders loaded: " + worldColliders.size());
 
         // 1. Create Player Entity
         // Inject dependencies (Texture, Sound, Behavior) here.
@@ -115,17 +166,46 @@ public class MainScene extends Scene {
             scenes.setScene(new MainMenuScene(scenes));
             return;
         }
+
+        // Keep previous position for world-collision resolution (platform feel)
+        float prevX = bucket.getX();
+        float prevY = bucket.getY();
+
         // Run the Managers
         inputManager.update(entityManager.getPlayableEntityList());
         movementManager.update(entityManager.getEntityList());
+        keepEnemiesInBounds();
         collisionManager.update(entityManager.getEntityList());
+        keepEnemiesInBounds();
         entityManager.removeInactiveEntities();
-        
+
+        // World collision + camera follow (handled outside managers to keep engine abstract)
+        WorldCollision.resolvePlayerVsWorld(bucket, prevX, prevY, worldColliders, mapPixelWidth, mapPixelHeight);
+        WorldCollision.followCameraToPlayer(camera, bucket, mapPixelWidth, mapPixelHeight);
+
         // Increase score based on survival time
         timeSurvived += dt;
         score = (int) timeSurvived * 10;
         
     }
+
+    private void keepEnemiesInBounds() {
+        for (Entity e : entityManager.getEntityList()) {
+
+            if (!(e instanceof NonPlayableEntity)) continue;
+
+            float maxX = mapPixelWidth - e.getWidth();
+            float maxY = mapPixelHeight - e.getHeight();
+
+            if (e.getX() < 0) e.setX(0);
+            if (e.getX() > maxX) e.setX(maxX);
+
+            if (e.getY() < 0) e.setY(0);
+            if (e.getY() > maxY) e.setY(maxY);
+        }
+    }
+
+
 
     // Helper Factory Method to create a specific type of enemy
     private NonPlayableEntity createPermanentStationaryDroplet() {
@@ -151,8 +231,8 @@ public class MainScene extends Scene {
 
     // Algorithm to find a spawn point that isn't colliding with the player
     private float[] getSafeSpawnPosition(float width, float height) {
-        float maxX = Math.max(0, Gdx.graphics.getWidth() - width);
-        float maxY = Math.max(0, Gdx.graphics.getHeight() - height);
+        float maxX = Math.max(0, mapPixelWidth - width);
+        float maxY = Math.max(0, mapPixelHeight - height);
 
         for (int attempt = 0; attempt < 20; attempt++) {
             float randomX = ThreadLocalRandom.current().nextFloat() * maxX;
@@ -173,11 +253,18 @@ public class MainScene extends Scene {
 
     @Override
     public void render(SpriteBatch batch) {
+        // Render map FIRST (do not wrap inside batch.begin)
+        mapRenderer.setView(camera);
+        mapRenderer.render();
+
+        // Ensure entities render with the same camera as the map
+        batch.setProjectionMatrix(camera.combined);
+
         batch.begin();
 
         // UI Rendering
-        font.draw(batch, "Arrow Keys to move", 40, Gdx.graphics.getHeight() - 40);
-        font.draw(batch, "ESC to return to menu", 40, Gdx.graphics.getHeight() - 80);
+        font.draw(batch, "Arrow Keys to move", 200, Gdx.graphics.getHeight() - 40);
+        font.draw(batch, "ESC to return to menu", 200, Gdx.graphics.getHeight() - 80);
         entityManager.drawEntity(batch);
 
         // DRAW HUD
@@ -192,6 +279,10 @@ public class MainScene extends Scene {
     public void dispose() {
         System.out.println("Disposed of scene...");
         font.dispose();
+        // Dispose Tiled resources
+        if (mapRenderer != null) mapRenderer.dispose();
+        if (map != null) map.dispose();
+
         // Clear entities when leaving the scene so they don't persist to the Menu
         entityManager.getEntityList().clear(); 
         entityManager.getPlayableEntityList().clear();

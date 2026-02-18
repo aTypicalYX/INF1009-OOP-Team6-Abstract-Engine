@@ -22,8 +22,8 @@ public class ResetOnTouchBehavior implements CollisionBehavior {
             System.out.println("Hit Hazard! Resetting position.");
 
             // Execute the reset logic
-            self.setX(0);
-            self.setY(0);
+            self.setX(100);
+            self.setY(150);
         }
     }
 }

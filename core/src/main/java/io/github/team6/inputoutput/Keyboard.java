@@ -130,8 +130,8 @@ public class Keyboard {
             float newX = e.getX() + direction.x * e.getSpeed();
             float newY = e.getY() + direction.y * e.getSpeed();
 
-            newX = Math.max(0, Math.min(newX, Gdx.graphics.getWidth() - e.getWidth()));
-            newY = Math.max(0, Math.min(newY, Gdx.graphics.getHeight() - e.getHeight()));
+            //newX = Math.max(0, Math.min(newX, Gdx.graphics.getWidth() - e.getWidth()));
+           // newY = Math.max(0, Math.min(newY, Gdx.graphics.getHeight() - e.getHeight()));
 
             e.setX(newX);
             e.setY(newY);
