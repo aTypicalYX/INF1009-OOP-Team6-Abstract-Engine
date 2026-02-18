@@ -8,6 +8,5 @@ package io.github.team6.interfaces;
  * The MovementManager uses this to tell objects "Update your position now".
  */
 public interface Movable {
-    
     public void movement();
 }
