@@ -5,18 +5,19 @@ import io.github.team6.entities.Entity;
 
 /**
  * Implements: CollisionBehavior
- * This defines the specific reaction of "Resetting to start" when hit.
- * Used By: PlayableEntity (The Bucket)
- * * This allows us to swap behaviors easily.
- * Uses Tags instead of Class Types (OCP Compliant).
+ * Resets the entity to the starting position (0,0) if it hits a specific hazard.
+ * Used By: PlayableEntity
+ * OOP Concept: Open/Closed Principle (OCP).
+ * By using Tags ("ENEMY", "HAZARD") instead of 'instanceof' checks, this class 
+ * is Open for extension, we can add new hazard types, but Closed for modification
+ * (we don't need to change this code to handle new types).
  */
 public class ResetOnTouchBehavior implements CollisionBehavior {
 
     @Override
     public void onCollision(Entity self, Entity other) {
-        // PHASE 3 FIX: Check the TAG, not the Class.
-        // This allows "Spikes", "Lava", or "Enemies" to all trigger this logic
-        // without changing the code here.
+        // We identify the 'type' of the other object using a String tag.
+        // This decouples the logic from specific Java classes.
         if (other.getTag().equals("ENEMY") || other.getTag().equals("HAZARD")) {
             System.out.println("Hit Hazard! Resetting position.");
 

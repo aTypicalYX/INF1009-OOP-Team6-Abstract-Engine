@@ -7,12 +7,19 @@ import com.badlogic.gdx.math.Vector2;
 import io.github.team6.entities.Entity;
 
 
-// It currently handles translating Key Presses into Entity Position changes.
-
-
-
- // These methods return true if the specific key is currently held down.
+/**
+ * Class: Keyboard
+ * Handles User Input detection and mapping to Entity movement.
+ * OOP Concept: Single Responsibility (Input Handling).
+ * * Logic Flow:
+ * 1. Checks current state of hardware keys (Polling).
+ * 2. Maps keys to a Direction Vector.
+ * 3. Applies speed and boundary checks to the Entity.
+ */
 public class Keyboard {
+
+    // --- Raw Input Polling Methods ---
+    // These abstract the specific LibGDX key codes (Input.Keys.LEFT) from the game logic.
     public boolean isLeft() {
         return Gdx.input.isKeyPressed(Input.Keys.LEFT);
     }
@@ -48,6 +55,15 @@ public class Keyboard {
     }
 
 
+    /**
+     * getInput(Entity e)
+     * General purpose movement handler.
+     * Logic: 
+     * 1. Constructs a vector based on pressed keys.
+     * 2. Normalizes vector (so diagonal movement isn't faster).
+     * 3. Calculates new position (X = oldX + direction * speed).
+     * 4. Clamps position to Screen Width/Height to prevent going out of bounds.
+     */
     public void getInput(Entity e) {
         Vector2 direction = new Vector2(0, 0);
 
@@ -57,7 +73,7 @@ public class Keyboard {
         if (isUp())    direction.y += 5;
         if (isDown())  direction.y -= 5;
 
-        // movement applies when key is pressed
+        // Apply logic only if a key was pressed
         if (!direction.isZero()) {
             direction.nor(); // Normalizes the vector to length 1
             //e.setX(e.getX() + direction.x * e.getSpeed());
@@ -77,6 +93,9 @@ public class Keyboard {
         }
     }
 
+    /**
+     * Control Scheme: Arrow Keys
+     */
     public void getArrowInput(Entity e) {
     Vector2 direction = new Vector2(0, 0);
 
@@ -88,6 +107,9 @@ public class Keyboard {
     applyMovement(e, direction);
     }
 
+    /**
+     * Control Scheme: WASD Keys
+     */
     public void getWASDInput(Entity e) {
         Vector2 direction = new Vector2(0, 0);
 
@@ -100,6 +122,7 @@ public class Keyboard {
         
     }
 
+    // Helper method to apply physics and boundary checks, reducing code duplication
     private void applyMovement(Entity e, Vector2 direction) {
         if (!direction.isZero()) {
             direction.nor();

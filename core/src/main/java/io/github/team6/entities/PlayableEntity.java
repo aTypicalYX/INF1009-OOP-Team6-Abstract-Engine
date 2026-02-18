@@ -8,13 +8,21 @@ import io.github.team6.entities.behavior.CollisionBehavior;
 import io.github.team6.inputoutput.AudioSource;
 import io.github.team6.managers.OutputManager;
 
+
+/**
+ * Class: PlayableEntity
+ * Represents the player-controlled character.
+ * OOP Concept: Dependency Injection & Composition.
+ * * This class demonstrates Constructor Injection, where external dependencies 
+ * (OutputManager, AudioSource, Behaviors) are passed in rather than hardcoded.
+ */
 public class PlayableEntity extends Entity {
     private Texture tex;
     private OutputManager outputManager;
     private AudioSource collisionSound;
 
     // COMPOSITION: PlayableEntity "HAS A" CollisionBehavior.
-    // This is more flexible than inheritance.
+    // This allows us to change how the player reacts to collisions dynamically.
     private CollisionBehavior collisionBehavior;
 
     // Constructors
@@ -24,14 +32,10 @@ public class PlayableEntity extends Entity {
     
     /**
      * Parameterized Constructor.
-     * Calls the super() constructor to set x, y, speed, etc in the parent Entity class.
-     */
-    /**
-     * Parameterized Constructor.
-     * Now accepts: 
-     * 1. soundPath (String) -> Decouples the specific sound file.
-     * 2. outputManager (Manager) -> Required to play the sound.
-     * 3. behavior (CollisionBehavior) -> Decouples the game logic (Reset vs Die vs Bounce).
+     * Fully injects all dependencies.
+     * Class does not rely on global state or hardcoded file paths.
+     * @param outputManager Used to play sounds via the audio system.
+     * @param behavior      Defines what happens when the player is hit.
      */
     public PlayableEntity(String texturePath, String soundPath, OutputManager outputManager, CollisionBehavior behavior, float x, float y, float speed, float width, float height, String tag) {
         super(x, y, speed, width, height, tag);
@@ -64,14 +68,22 @@ public class PlayableEntity extends Entity {
         batch.draw(tex, getX(), getY());
     }
 
+
+    /**
+     * movement()
+     * Intentionally empty for PlayableEntity.
+     * Reason: The player is controlled by the InputManager (Keyboard), not by an automated algorithm.
+     * This method exists to satisfy the 'Movable' interface contract.
+     */
     @Override
     public void movement() {
-        // This is empty because PlayableEntity is moved by InputManager/Keyboard.
     }
 
     /**
-     * Triggered by Collision.java when a hit is detected.
-     * @param other The object we hit.
+     * onCollision()
+     * Triggered by CollisionManager.
+     * 1. Plays a sound effect (Audio Feedback).
+     * 2. Delegates the logic response to collisionBehavior (Strategy Pattern).
      */
     @Override
     public void onCollision(Entity other) {
@@ -86,7 +98,7 @@ public class PlayableEntity extends Entity {
         }
     }
     
-    // load collision sound
+    // Helper method to set OutputManager if not done via constructor
     public void setOutputManager(OutputManager outputManager) {
         this.outputManager = outputManager;
         try {

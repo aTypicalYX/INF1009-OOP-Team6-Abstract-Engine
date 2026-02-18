@@ -8,12 +8,19 @@ import io.github.team6.entities.behavior.CollisionBehavior;
 import io.github.team6.entities.behavior.MovementBehavior;
 
 /**
- * NonPlayableEntity represents objects controlled by the Computer
+ * Class: NonPlayableEntity
+ * Represents objects controlled by the computer (AI, obstacles, projectiles).
+ * OOP Concept: Composition over Inheritance.
+ * Instead of extending "MovingEnemy" or "StationaryEnemy", this class uses Composition.
+ * It "HAS-A" MovementBehavior and "HAS-A" CollisionBehavior. This allows us to 
+ * mix and match behaviors to create unique enemies without creating new classes.
  */
 public class NonPlayableEntity extends Entity{
     
 
     private Texture tex;
+
+    // Strategy Interfaces: These hold the specific logic for this instance.
     private MovementBehavior movementBehavior;
     private CollisionBehavior collisionBehavior;
     private Entity target;
@@ -23,12 +30,13 @@ public class NonPlayableEntity extends Entity{
         super();
     }
 
-    
+    // Basic Constructor
     public NonPlayableEntity(String fileName, float x, float y, float speed, float width, float height, String tag) {
         super(x, y, speed, width, height, tag);
         this.tex = new Texture(Gdx.files.internal(fileName));
     }
 
+    // Full Constructor: Performs Dependency Injection for behaviors.    
     public NonPlayableEntity(String fileName, float x, float y, float speed, float width, float height, String tag,
             MovementBehavior movementBehavior, CollisionBehavior collisionBehavior, Entity target) {
         this(fileName, x, y, speed, width, height, tag);
@@ -44,8 +52,8 @@ public class NonPlayableEntity extends Entity{
     }
 
     /**
-     * movement() defines the non playable entity behavior.
-     * Unlike PlayableEntity (which is empty here), this has logic.
+     * movement()
+     * Delegates the movement logic to the assigned MovementBehavior strategy.
      */
     @Override
     public void movement() {
@@ -56,7 +64,7 @@ public class NonPlayableEntity extends Entity{
 
     @Override
     public void onCollision(Entity other) {
-        /// implement post collision logic
+        // Delegates collision logic to the assigned CollisionBehavior strategy.
         if (collisionBehavior != null) {
             collisionBehavior.onCollision(this, other);
         }

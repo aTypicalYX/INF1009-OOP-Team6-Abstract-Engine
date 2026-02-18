@@ -8,20 +8,28 @@ import io.github.team6.managers.InputManager;
 import io.github.team6.managers.MovementManager;
 import io.github.team6.managers.OutputManager;
 
-// Scene is an abstract class, used to define the Blueprint for what a game level must be.
-// It holds the references to the Managers so that child classes can access them without having to create them.
-
+/**
+ * Class: Scene (Abstract Base Class)
+ * Defines the blueprint/template for all game levels or menu screens.
+ * OOP Concept: Abstraction.
+ * * Design Pattern: Template Method / Dependency Injection.
+ * - initialize() acts as a setup method to inject global dependencies (Managers).
+ * - abstract methods (update, render, onEnter) force subclasses to define specific logic.
+ */
 public abstract class Scene {
 
-    // Protected so subclasses can use them
+    // Protected Access: Allows subclasses (MainScene, MainMenuScene) to access these managers directly.
     protected InputManager inputManager;
     protected OutputManager outputManager;
     protected EntityManager entityManager;
     protected CollisionManager collisionManager;
     protected MovementManager movementManager;
 
-    // Called automatically by SceneManager
-    // SceneManager calls this method to inject the global managers into this scene
+    /**
+     * initialize()
+     * Called by SceneManager immediately after creating a new scene.
+     * Injects the single instances of the managers so state is preserved across scenes.
+     */
     public void initialize(InputManager input, OutputManager output, EntityManager entity, CollisionManager collision, MovementManager movement) {
         this.inputManager = input;
         this.outputManager = output;
@@ -33,10 +41,11 @@ public abstract class Scene {
     }
 
     // Abstract methods the specific scenes MUST implement
-    public abstract void onEnter();      // Setup (Spawn entities)
-    public abstract void update(float dt); // Logic (Win condition, spawning)
-    //public abstract void render();       // Draw (Calls entityManager.draw)
-    public abstract void dispose();      // Cleanup
-    public abstract void render(SpriteBatch batch);
+
+    public abstract void onEnter();      // Called once when the scene starts (load assets, spawn entities)
+    public abstract void update(float dt); // Called every frame (handle logic, win conditions)
+
+    public abstract void dispose();       // Called when leaving the scene (unload assets)
+    public abstract void render(SpriteBatch batch); // Called every frame (draw images)
 
 }

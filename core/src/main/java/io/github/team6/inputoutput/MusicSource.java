@@ -3,6 +3,14 @@ package io.github.team6.inputoutput;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 
+
+/**
+ * Class: MusicSource
+ * Wrapper for Background Music (Long audio streams).
+ * Difference from AudioSource: 'Music' is streamed from disk, 'Sound' is loaded into RAM.
+ * * OOP Concept: Encapsulation. 
+ * External classes (OutputManager) interact with this class, not the raw LibGDX Music class.
+ */
 public class MusicSource {
     private final Music music;
 

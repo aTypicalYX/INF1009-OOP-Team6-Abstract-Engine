@@ -7,18 +7,29 @@ import io.github.team6.interfaces.Collidable;
 import io.github.team6.interfaces.Movable;
 import io.github.team6.interfaces.Renderable;
 
+
+/**
+ * Class: Entity (Abstract Base Class)
+ * Defines the common attributes and behaviors shared by ALL game objects.
+ * OOP Concept: Abstraction & Inheritance.
+ * * This class implements multiple interfaces (Movable, Renderable, Collidable), forcing all subclasses (Playable/NonPlayable) to adhere to these contracts.
+ */
 public abstract class Entity implements Movable, Renderable, Collidable{
+
+    // Encapsulation: Fields are private to prevent direct external modification. Access is controlled via Getters and Setters.
     private float x, y, speed, width, height;
     private Rectangle hitbox;
     private boolean active;
 
+    // Tag System allows identification of objects (e.g., "PLAYER", "ENEMY") without relying on class-checking logic.
     private String tag;
 
-    // Constructor Methods
+    // Default Constructor chaining
     public Entity() {
         this(0, 0, 0, 0, 0, "DEFAULT");
     }
 
+    // Main Constructor
     public Entity(float x, float y, float speed, float width, float height, String tag) {
         this.x = x;
         this.y = y;
@@ -54,11 +65,12 @@ public abstract class Entity implements Movable, Renderable, Collidable{
 
     @Override
     public Rectangle getHitbox() {
-        // Sync the hitbox position with the entity's current coordinates
+        // Updates the internal hitbox position to match the entity's current location before returning it for collision checks
         hitbox.setPosition(this.x, this.y);
         return hitbox;
     }
 
+    // Abstract Method: Subclasses MUST implement their own reaction to collisions.
     @Override
     public abstract void onCollision(Entity other);
 

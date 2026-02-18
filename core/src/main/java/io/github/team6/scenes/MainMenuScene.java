@@ -16,12 +16,17 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import io.github.team6.managers.SceneManager;
 
 
+/**
+ * Class: MainMenuScene
+ * Handles the user interface for the Start Screen.
+ * Uses LibGDX "Scene2D" library (Stage, Actors, Tables) for UI layout.
+ */
 public class MainMenuScene extends Scene {
 
     private final SceneManager scenes;
 
-    private Stage stage;
-    private Skin skin;
+    private Stage stage; // Scene2D container for UI elements
+    private Skin skin;   // JSON style definitions for buttons/fonts
 
     public MainMenuScene(SceneManager scenes) {
         this.scenes = scenes;
@@ -33,10 +38,11 @@ public class MainMenuScene extends Scene {
         outputManager.stopBgm();
         
         stage = new Stage(new ScreenViewport());
-        Gdx.input.setInputProcessor(stage);
+        Gdx.input.setInputProcessor(stage);   // Divert input from game logic to UI logic
 
         skin = new Skin(Gdx.files.internal("uiskin.json"));
 
+        // UI Element Creation
         Label title = new Label("Team 06 OOP Part 1", skin);
         title.setAlignment(Align.center);
         title.setFontScale(1.4f);
@@ -45,9 +51,12 @@ public class MainMenuScene extends Scene {
         TextButton settingsBtn = new TextButton("Settings", skin);
         TextButton exitBtn = new TextButton("Exit", skin);
 
+        // Event Listener (Observer Pattern): React to button clicks
         startBtn.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+
+                // Switch State: Load the Main Game
                 scenes.setScene(new MainScene(scenes));
             }
         });
@@ -56,6 +65,8 @@ public class MainMenuScene extends Scene {
         settingsBtn.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+
+                // Switch State: Load Settings
                 scenes.setScene(new SettingsScene(scenes));
             }
         });
@@ -87,7 +98,7 @@ public class MainMenuScene extends Scene {
 
     @Override
     public void update(float dt) {
-        stage.act(dt);
+        stage.act(dt);  // Update UI animations
     }
 
     @Override

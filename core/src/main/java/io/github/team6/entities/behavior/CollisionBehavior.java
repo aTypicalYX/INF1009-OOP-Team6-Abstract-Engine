@@ -1,13 +1,17 @@
 package io.github.team6.entities.behavior;
 
 import io.github.team6.entities.Entity;
-/*
-CollisionBehaviour is an interface that defines the behavior of an entity when it collides with another entity.
-It has a single method, onCollision, which takes two parameters: the entity that is colliding (self) and the entity that is being collided with (other).
-This interface can be implemented by any entity that needs to define specific behavior when it collides with
-*/
+/**
+ * Interface: CollisionBehavior
+ * Defines a contract for how an Entity reacts when it hits something.
+ * OOP Concept: Strategy Pattern.
+ * It adheres to the Open/Closed Principle. We can add new collision reactions without modifying the Entity class source code.
+ */
 public interface CollisionBehavior {
-    // Method signature: defines an abstract method that implementing classes must provide
-    // This method is called when a collision occurs between 'self' and 'other' entities
+    /**
+     * Triggered by CollisionManager when an overlap is detected.
+     * @param self  The entity triggering the behavior.
+     * @param other The entity that was hit.
+     */
     void onCollision(Entity self, Entity other);
 }
