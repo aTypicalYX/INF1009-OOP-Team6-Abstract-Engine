@@ -35,21 +35,7 @@ public class Keyboard {
     public boolean isDown() {
         return Gdx.input.isKeyPressed(Input.Keys.DOWN);
     }
-    public boolean isW() {
-        return Gdx.input.isKeyPressed(Input.Keys.W);
-    }
 
-    public boolean isA() {
-        return Gdx.input.isKeyPressed(Input.Keys.A);
-    }
-
-    public boolean isS() {
-        return Gdx.input.isKeyPressed(Input.Keys.S);
-    }
-
-    public boolean isD() {
-        return Gdx.input.isKeyPressed(Input.Keys.D);
-    }
     public boolean isSpacebar() {
         return Gdx.input.isKeyPressed(Input.Keys.SPACE);
     }
@@ -73,24 +59,7 @@ public class Keyboard {
         if (isUp())    direction.y += 5;
         if (isDown())  direction.y -= 5;
 
-        // Apply logic only if a key was pressed
-        if (!direction.isZero()) {
-            direction.nor(); // Normalizes the vector to length 1
-            //e.setX(e.getX() + direction.x * e.getSpeed());
-            //e.setY(e.getY() + direction.y * e.getSpeed());
-            float newX = e.getX() + direction.x * e.getSpeed();
-            float newY = e.getY() + direction.y * e.getSpeed();
-            
-            // Boundary Checking: Prevent moving off-screen
-            // Math.max(0, ...) ensures it doesn't go negative (left/bottom edge)
-            // Math.min(..., Gdx.graphics.getWidth()) ensures it doesn't go past right/top edge
-            newX = Math.max(0, Math.min(newX, Gdx.graphics.getWidth() - e.getWidth()));
-            newY = Math.max(0, Math.min(newY, Gdx.graphics.getHeight() - e.getHeight()));
-            
-            // Update the entity's position
-            e.setX(newX);
-            e.setY(newY);
-        }
+        
     }
 
     /**
@@ -107,22 +76,9 @@ public class Keyboard {
     applyMovement(e, direction);
     }
 
-    /**
-     * Control Scheme: WASD Keys
-     */
-    public void getWASDInput(Entity e) {
-        Vector2 direction = new Vector2(0, 0);
 
-        if (isA()) direction.x -= 5;
-        if (isD()) direction.x += 5;
-        if (isW()) direction.y += 5;
-        if (isS()) direction.y -= 5;
 
-        applyMovement(e, direction);
-        
-    }
-
-    // Helper method to apply physics and boundary checks, reducing code duplication
+    // // Apply logic only if a key was pressed
     private void applyMovement(Entity e, Vector2 direction) {
         if (!direction.isZero()) {
             direction.nor();
