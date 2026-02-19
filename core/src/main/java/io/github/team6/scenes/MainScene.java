@@ -301,15 +301,21 @@ public class MainScene extends Scene {
         mapRenderer.setView(camera);
         mapRenderer.render();
 
-        // Ensure entities render with the same camera as the map
+        // 1) WORLD RENDER (camera space)
         batch.setProjectionMatrix(camera.combined);
+        batch.begin();
+        entityManager.drawEntity(batch);
+        batch.end();
+
+        // 2) UI RENDER (screen space)
+        batch.setProjectionMatrix(new com.badlogic.gdx.math.Matrix4().setToOrtho2D(
+                0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
 
         batch.begin();
 
         // UI Rendering
         font.draw(batch, "Arrow Keys to move", 200, Gdx.graphics.getHeight() - 40);
         font.draw(batch, "ESC to return to menu", 200, Gdx.graphics.getHeight() - 80);
-        entityManager.drawEntity(batch);
 
         // DRAW HUD
         font.setColor(1, 1, 1, 1); // White
