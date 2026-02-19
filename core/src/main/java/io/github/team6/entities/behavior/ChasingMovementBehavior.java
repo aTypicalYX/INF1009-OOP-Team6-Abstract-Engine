@@ -89,8 +89,8 @@ public class ChasingMovementBehavior implements MovementBehavior {
         float newY = self.getY() + finalDirection.y * self.getSpeed();
 
         // Boundary Checking (Keep within screen)
-        newX = Math.max(0, Math.min(newX, Gdx.graphics.getWidth() - self.getWidth()));
-        newY = Math.max(0, Math.min(newY, Gdx.graphics.getHeight() - self.getHeight()));
+        //newX = Math.max(0, Math.min(newX, Gdx.graphics.getWidth() - self.getWidth()));
+        //newY = Math.max(0, Math.min(newY, Gdx.graphics.getHeight() - self.getHeight()));
 
         self.setX(newX);
         self.setY(newY);
