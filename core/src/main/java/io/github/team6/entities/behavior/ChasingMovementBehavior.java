@@ -2,7 +2,7 @@ package io.github.team6.entities.behavior;
 
 import java.util.List;
 
-import com.badlogic.gdx.Gdx;
+//import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 
 import io.github.team6.entities.Entity;
