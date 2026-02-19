@@ -28,7 +28,6 @@ import io.github.team6.entities.behavior.StationaryMovementBehavior;
 import io.github.team6.inputoutput.MusicSource;
 import io.github.team6.managers.SceneManager;
 
-
 /**
  * Class: MainScene
  * The core Gameplay State.
@@ -58,7 +57,7 @@ public class MainScene extends Scene {
     public MainScene(SceneManager scenes) {
         this.scenes = scenes;
     }
-    
+
     // Constants for configuration
     private static final int PERMANENT_STATIONARY_COUNT = 2;
     private static final int CHASING_COUNT = 2;
@@ -73,7 +72,6 @@ public class MainScene extends Scene {
     private PlayableEntity bucket;
     private List<Entity> permanentObstacles;
 
-
     /**
      * onEnter()
      * Setup: Creates the Player (Bucket) and Enemies (Droplets).
@@ -82,7 +80,7 @@ public class MainScene extends Scene {
     @Override
     public void onEnter() {
         System.out.println("Entering Main Scene...");
-        font = new BitmapFont(); 
+        font = new BitmapFont();
 
         // Load Tiled map (visuals) + collision rectangles (platform feel)
         map = new TmxMapLoader().load("maps/level1.tmx");
@@ -117,36 +115,42 @@ public class MainScene extends Scene {
         // 1. Create Player Entity
         // Inject dependencies (Texture, Sound, Behavior) here.
         bucket = new PlayableEntity(
-            "bucket.png",          // Texture
-            "collision.wav",       // Sound
-            outputManager,         // Audio Manager
-            new ResetOnTouchBehavior(), // Reset position on hit
-            100, 220, 5, 50, 50, "PLAYER"   
+            "bucket.png",                // Texture
+            "collision.wav",             // Sound
+            outputManager,               // Audio Manager
+            new ResetOnTouchBehavior(),  // Reset position on hit
+            100, 220, 5, 50, 50, "PLAYER"
         );
-        bucket.setOutputManager(outputManager); 
+        bucket.setOutputManager(outputManager);
 
         // 2. Register with EntityManager so it gets updated/drawn
         entityManager.addEntity(bucket);
         entityManager.addPlayableEntity(bucket);
-        //entityManager.addEntity(droplet);
+        // entityManager.addEntity(droplet);
         permanentObstacles = new ArrayList<>();
 
         // 3. Factory Logic: Create Obstacles
-        for (int i = 0; i < PERMANENT_STATIONARY_COUNT; i++) {
-            NonPlayableEntity permanentStationaryDroplet = createPermanentStationaryDroplet();
-            entityManager.addEntity(permanentStationaryDroplet);
-            permanentObstacles.add(permanentStationaryDroplet);
-        }
+        // Preferred: spawn from Tiled layer "Spawns"
+        boolean spawnedFromTiled = spawnDropletsFromTiled();
 
-        for (int i = 0; i < CHASING_COUNT; i++) {
-            entityManager.addEntity(createChasingDroplet());
+        // Fallback: if no spawn objects were found, use your original random spawning
+        if (!spawnedFromTiled) {
+            for (int i = 0; i < PERMANENT_STATIONARY_COUNT; i++) {
+                NonPlayableEntity permanentStationaryDroplet = createPermanentStationaryDroplet();
+                entityManager.addEntity(permanentStationaryDroplet);
+                permanentObstacles.add(permanentStationaryDroplet);
+            }
+
+            for (int i = 0; i < CHASING_COUNT; i++) {
+                entityManager.addEntity(createChasingDroplet());
+            }
         }
 
         // 4. Start Background Music
         try {
             MusicSource gameBgm = new MusicSource("background.wav");
             outputManager.setBgm(gameBgm);
-            outputManager.playBgm(true); 
+            outputManager.playBgm(true);
             System.out.println("[DEBUG] Game background.wav loaded and playing");
         } catch (Exception e) {
             System.out.println("[DEBUG] Warning: background.wav not found. Background music disabled.");
@@ -167,55 +171,37 @@ public class MainScene extends Scene {
             return;
         }
 
-        // Keep previous position for world-collision resolution (platform feel)
+        // Keep previous position for world-collision resolution
         float prevX = bucket.getX();
         float prevY = bucket.getY();
 
         // Run the Managers
         inputManager.update(entityManager.getPlayableEntityList());
         movementManager.update(entityManager.getEntityList());
-        keepEnemiesInBounds();
         collisionManager.update(entityManager.getEntityList());
-        keepEnemiesInBounds();
+
         entityManager.removeInactiveEntities();
 
-        // World collision + camera follow (handled outside managers to keep engine abstract)
+        // World collision + camera follow
         WorldCollision.resolvePlayerVsWorld(bucket, prevX, prevY, worldColliders, mapPixelWidth, mapPixelHeight);
         WorldCollision.followCameraToPlayer(camera, bucket, mapPixelWidth, mapPixelHeight);
 
         // Increase score based on survival time
         timeSurvived += dt;
         score = (int) timeSurvived * 10;
-        
     }
-
-    private void keepEnemiesInBounds() {
-        for (Entity e : entityManager.getEntityList()) {
-
-            if (!(e instanceof NonPlayableEntity)) continue;
-
-            float maxX = mapPixelWidth - e.getWidth();
-            float maxY = mapPixelHeight - e.getHeight();
-
-            if (e.getX() < 0) e.setX(0);
-            if (e.getX() > maxX) e.setX(maxX);
-
-            if (e.getY() < 0) e.setY(0);
-            if (e.getY() > maxY) e.setY(maxY);
-        }
-    }
-
-
 
     // Helper Factory Method to create a specific type of enemy
     private NonPlayableEntity createPermanentStationaryDroplet() {
         float[] position = getSafeSpawnPosition(PERMANENT_DROPLET_WIDTH, PERMANENT_DROPLET_HEIGHT);
         // PHASE 1 CHANGE: Pass "ENEMY" (or "OBSTACLE") tag. Removed DropletType.
         return new NonPlayableEntity(
-                "droplet.png", position[0], position[1], 0, PERMANENT_DROPLET_WIDTH, PERMANENT_DROPLET_HEIGHT, "ENEMY",
-                new StationaryMovementBehavior(),
-                new PermanentCollisionBehavior(),
-                bucket);
+            "droplet.png", position[0], position[1], 0,
+            PERMANENT_DROPLET_WIDTH, PERMANENT_DROPLET_HEIGHT, "ENEMY",
+            new StationaryMovementBehavior(),
+            new PermanentCollisionBehavior(),
+            bucket
+        );
     }
 
     // Helper Factory Method to create a Chasing Enemy
@@ -223,10 +209,12 @@ public class MainScene extends Scene {
         float[] position = getSafeSpawnPosition(CHASING_DROPLET_WIDTH, CHASING_DROPLET_HEIGHT);
         // PHASE 1 CHANGE: Pass "ENEMY" tag. Removed DropletType.
         return new NonPlayableEntity(
-                "droplet.png", position[0], position[1], CHASING_DROPLET_SPEED, CHASING_DROPLET_WIDTH, CHASING_DROPLET_HEIGHT, "ENEMY",
-                new ChasingMovementBehavior(permanentObstacles),
-                new PermanentCollisionBehavior(),
-                bucket);
+            "droplet.png", position[0], position[1], CHASING_DROPLET_SPEED,
+            CHASING_DROPLET_WIDTH, CHASING_DROPLET_HEIGHT, "ENEMY",
+            new ChasingMovementBehavior(permanentObstacles),
+            new PermanentCollisionBehavior(),
+            bucket
+        );
     }
 
     // Algorithm to find a spawn point that isn't colliding with the player
@@ -251,6 +239,62 @@ public class MainScene extends Scene {
         return new float[] { 0, 0 };
     }
 
+    /**
+     * Spawns droplets based on Tiled Object Layer "Spawns".
+     * Each object must have a custom property: type = enemy_chasing OR enemy_stationary
+     *
+     * Returns true if at least one droplet was spawned from Tiled.
+     */
+    private boolean spawnDropletsFromTiled() {
+        MapLayer spawnLayer = map.getLayers().get("Spawns");
+        if (spawnLayer == null) {
+            System.out.println("[DEBUG] No Spawns layer found. Using random spawns.");
+            return false;
+        }
+
+        boolean spawned = false;
+
+        for (MapObject obj : spawnLayer.getObjects()) {
+            String type = obj.getProperties().get("type", String.class);
+            if (type == null) continue;
+
+            Float xObj = obj.getProperties().get("x", Float.class);
+            Float yObj = obj.getProperties().get("y", Float.class);
+            if (xObj == null || yObj == null) continue;
+
+            float x = xObj;
+            float y = yObj;
+
+            if ("enemy_stationary".equals(type)) {
+                NonPlayableEntity e = new NonPlayableEntity(
+                    "droplet.png", x, y, 0,
+                    PERMANENT_DROPLET_WIDTH, PERMANENT_DROPLET_HEIGHT, "ENEMY",
+                    new StationaryMovementBehavior(),
+                    new PermanentCollisionBehavior(),
+                    bucket
+                );
+                entityManager.addEntity(e);
+                permanentObstacles.add(e);
+                spawned = true;
+            }
+
+            if ("enemy_chasing".equals(type)) {
+                NonPlayableEntity e = new NonPlayableEntity(
+                    "droplet.png", x, y, CHASING_DROPLET_SPEED,
+                    CHASING_DROPLET_WIDTH, CHASING_DROPLET_HEIGHT, "ENEMY",
+                    new ChasingMovementBehavior(permanentObstacles),
+                    new PermanentCollisionBehavior(),
+                    bucket
+                );
+                entityManager.addEntity(e);
+                spawned = true;
+            }
+        }
+
+        System.out.println("[DEBUG] Spawned from Tiled: " + spawned);
+        return spawned;
+    }
+    
     @Override
     public void render(SpriteBatch batch) {
         // Render map FIRST (do not wrap inside batch.begin)
@@ -284,8 +328,7 @@ public class MainScene extends Scene {
         if (map != null) map.dispose();
 
         // Clear entities when leaving the scene so they don't persist to the Menu
-        entityManager.getEntityList().clear(); 
+        entityManager.getEntityList().clear();
         entityManager.getPlayableEntityList().clear();
-
     }
 }

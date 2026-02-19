@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="128" height="128" tilewidth="32" tileheight="32" infinite="0" nextlayerid="7" nextobjectid="40">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="128" height="128" tilewidth="32" tileheight="32" infinite="0" nextlayerid="7" nextobjectid="46">
  <tileset firstgid="1" name="Tileset1" tilewidth="32" tileheight="32" tilecount="64" columns="8">
   <image source="Tileset1.png" width="256" height="256"/>
  </tileset>
@@ -287,5 +287,26 @@
   <object id="38" x="1120.33" y="3328" width="329.333" height="31.6667"/>
   <object id="39" x="1" y="3391.67" width="254.667" height="32.3333"/>
  </objectgroup>
- <objectgroup id="5" name="Spawns"/>
+ <objectgroup id="5" name="Spawns">
+  <object id="42" x="1291" y="3489" width="66.6667" height="96.6667">
+   <properties>
+    <property name="type" value="enemy_stationary"/>
+   </properties>
+  </object>
+  <object id="43" x="630.667" y="3482.33" width="85.3333" height="107.333">
+   <properties>
+    <property name="type" value="enemy_chasing"/>
+   </properties>
+  </object>
+  <object id="44" x="886.667" y="3662.33" width="85.3333" height="107.333">
+   <properties>
+    <property name="type" value="enemy_chasing"/>
+   </properties>
+  </object>
+  <object id="45" x="384" y="3391.67" width="66.6667" height="96.6667">
+   <properties>
+    <property name="type" value="enemy_stationary"/>
+   </properties>
+  </object>
+ </objectgroup>
 </map>
