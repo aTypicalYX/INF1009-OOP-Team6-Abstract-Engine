@@ -28,6 +28,10 @@ public class MainMenuScene extends Scene {
     private Stage stage; // Scene2D container for UI elements
     private Skin skin;   // JSON style definitions for buttons/fonts
 
+    // Track window size so we can update the Stage viewport on resize (e.g. maximize)
+    private int lastWidth = -1;
+    private int lastHeight = -1;
+
     public MainMenuScene(SceneManager scenes) {
         this.scenes = scenes;
     }
@@ -36,16 +40,21 @@ public class MainMenuScene extends Scene {
     public void onEnter() {
         // Stop any background music from previous scene
         outputManager.stopBgm();
-        
+
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);   // Divert input from game logic to UI logic
+
+        // Ensure viewport matches the current window size at entry
+        lastWidth = Gdx.graphics.getWidth();
+        lastHeight = Gdx.graphics.getHeight();
+        stage.getViewport().update(lastWidth, lastHeight, true);
 
         skin = new Skin(Gdx.files.internal("uiskin.json"));
 
         // UI Element Creation
         Label title = new Label("Team 06 OOP Part 1", skin);
         title.setAlignment(Align.center);
-        title.setFontScale(1.4f);
+        title.setFontScale(2f);
 
         TextButton startBtn = new TextButton("Start Game", skin);
         TextButton settingsBtn = new TextButton("Settings", skin);
@@ -61,7 +70,6 @@ public class MainMenuScene extends Scene {
             }
         });
 
-
         settingsBtn.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -70,7 +78,6 @@ public class MainMenuScene extends Scene {
                 scenes.setScene(new SettingsScene(scenes));
             }
         });
-
 
         exitBtn.addListener(new ChangeListener() {
             @Override
@@ -103,6 +110,15 @@ public class MainMenuScene extends Scene {
 
     @Override
     public void render(SpriteBatch batch) {
+        // If window size changed (maximize / resize), update Stage viewport
+        int width = Gdx.graphics.getWidth();
+        int height = Gdx.graphics.getHeight();
+        if (width != lastWidth || height != lastHeight) {
+            lastWidth = width;
+            lastHeight = height;
+            stage.getViewport().update(width, height, true);
+        }
+
         // background colour
         Gdx.gl.glClearColor(0.08f, 0.08f, 0.12f, 1f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);

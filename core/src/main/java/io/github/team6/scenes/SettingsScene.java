@@ -29,9 +29,6 @@ public class SettingsScene extends Scene {
     private Stage stage; // To handle the UI input + rendering
     private Skin skin;  // Styles UI elements
 
-    // simple setting (for demo)
-    private boolean testToggle = false;
-
     // Constructor receives SceneManager so this scene can change scenes
     public SettingsScene(SceneManager scenes) {
         this.scenes = scenes;
@@ -51,18 +48,18 @@ public class SettingsScene extends Scene {
         title.setFontScale(1.2f);
         
         // Various buttons and sliders for settings
-        TextButton toggleDebugBtn = new TextButton(testButtontxt(), skin);
         TextButton backBtn = new TextButton("Back", skin);
         Label masterLabel = new Label("Master Volume: " + (int)(outputManager.getMasterVolume() * 100) + "%", skin);
         Slider masterSlider = new Slider(0f, 1f, 0.01f, false, skin);
         masterSlider.setValue(outputManager.getMasterVolume());
 
         // BUTTON LISTENERS
-        toggleDebugBtn.addListener(new ChangeListener() {
+        masterSlider.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                toggleDebugBtn.setText(testButtontxt());
-                System.out.println("TestButtonToggle = " + testToggle);
+                outputManager.setMasterVolume(masterSlider.getValue());  // Update global volume value
+                System.out.println("Master = " + outputManager.getMasterVolume()); // Print for debugging
+                masterLabel.setText("Master Volume: " + (int)(outputManager.getMasterVolume() * 100) + "%"); // Update UI label to reflect new percentage
             }
         });
         backBtn.addListener(new ChangeListener() {
@@ -72,14 +69,7 @@ public class SettingsScene extends Scene {
             }
         });
         // Volume slider updates master volume in OutputManager
-        masterSlider.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                outputManager.setMasterVolume(masterSlider.getValue());  // Update global volume value
-                System.out.println("Master = " + outputManager.getMasterVolume()); // Print for debugging
-                masterLabel.setText("Master Volume: " + (int)(outputManager.getMasterVolume() * 100) + "%"); // Update UI label to reflect new percentage
-            }
-        });
+
 
         // Table-based UI layout
         Table table = new Table();
@@ -87,18 +77,13 @@ public class SettingsScene extends Scene {
         table.center();
         table.defaults().width(300).height(60).pad(10);
         // Add UI elements vertically
-        table.add(title).padBottom(25).row();
-        table.add(toggleDebugBtn).row();
-        table.add(backBtn).row();
         table.add(masterLabel).row();
         table.add(masterSlider).width(320).row();
+        table.add(title).padBottom(25).row();
+        table.add(backBtn).row();
         stage.addActor(table); // Add table to stage
 
         System.out.println("=== SETTINGS ===");
-    }
-
-    private String testButtontxt() {
-        return "TestButtonToggle: " + (testToggle ? "ON" : "OFF"); // Helper method to format toggle button text
     }
 
     @Override
