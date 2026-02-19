@@ -6,23 +6,18 @@ import com.badlogic.gdx.files.FileHandle;
 
 
 /**
- * Class: AudioSource
- * Wrapper for sound effects (Short audio clips).
- * OOP Concept: Encapsulation.
- * * Responsibilities:
- * - Manages the lifecycle of a LibGDX 'Sound' object.
- * - Handles volume calculations relative to a global "Master Volume".
- * - Encapsulates looping logic (keeping track of loop IDs).
+ * AudioSource:
+ * wraps a LibGDX Sound object for short sound effects
+ * handles playback, looping, and volume control
  */
+
 public class AudioSource {
-    // Composition: AudioSource "HAS-A" Sound object.
     private final Sound sound;
 
-    // State variables
     private boolean looping;
-    private float volume;          // Local volume (0.0 to 1.0)
-    private float lastMaster = 1f; // Cache of the master volume
-    private long loopId = -1;      // ID reference for controlling looping sounds
+    private float volume;          // local volume (0.0 to 1.0)
+    private float lastMaster = 1f; // cache of the master volume
+    private long loopId = -1;      // active loop ID (used to control looping sound)
 
     // Constructors (Overloading for flexibility)
     public AudioSource(String internalAssetPath) {
@@ -34,7 +29,7 @@ public class AudioSource {
         FileHandle file = Gdx.files.internal(internalAssetPath);
         System.out.println("[DEBUG AudioSource] File exists: " + file.exists() + ", Path: " + file.path());
 
-        // Factory Method: Gdx.audio.newSound creates the specific implementation
+        // Load sound from internal assets
         this.sound = Gdx.audio.newSound(file);
         this.looping = looping;
         this.volume = clamp01(volume);
@@ -43,9 +38,9 @@ public class AudioSource {
 
 
     /**
-     * Plays the sound, adjusted by the Master Volume.
-     * Logic: finalVolume = localVolume * masterVolume.
-     */
+     * play sound using (local volume × master volume)
+    */
+
     public void play(float masterVolume) {
         lastMaster = clamp01(masterVolume);
         float finalVol = clamp01(volume * lastMaster);
@@ -53,7 +48,7 @@ public class AudioSource {
         System.out.println("[DEBUG AudioSource] Playing sound - volume: " + volume + ", masterVolume: " + masterVolume + ", finalVol: " + finalVol);
 
         if (looping) {
-            stop(); // Prevent duplicate overlapping loops
+            stop(); // restart loop to avoid overlapping
             loopId = sound.loop(finalVol);
         } else {
             sound.play(finalVol);
@@ -78,7 +73,7 @@ public class AudioSource {
     public void setVolume(float volume) {
         this.volume = clamp01(volume);
 
-        // If currently looping, update the active loop volume
+        // update volume immediately if looping
         if (loopId != -1) {
             sound.setVolume(loopId, clamp01(this.volume * lastMaster));
         }
@@ -89,18 +84,18 @@ public class AudioSource {
     public void setMasterVolume(float masterVolume) {
         lastMaster = clamp01(masterVolume);
 
-        // Real-time update: If sound is currently looping, update its volume immediately
+        // adjust active loop volume if playing
         if (loopId != -1) {
             sound.setVolume(loopId, clamp01(this.volume * lastMaster));
         }
     }
 
-    // Dispose native resources to prevent memory leaks
+    // dispose native resources to prevent memory leaks
     public void dispose() {
         sound.dispose();
     }
 
-    // Helper to keep volume between 0.0 and 1.0
+    // helper to keep volume between 0.0 and 1.0
     private float clamp01(float v) {
         return Math.max(0f, Math.min(1f, v));
     }

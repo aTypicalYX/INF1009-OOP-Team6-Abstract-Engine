@@ -8,18 +8,16 @@ import io.github.team6.entities.Entity;
 
 
 /**
- * Class: Keyboard
- * Handles User Input detection and mapping to Entity movement.
- * OOP Concept: Single Responsibility (Input Handling).
- * * Logic Flow:
- * 1. Checks current state of hardware keys (Polling).
- * 2. Maps keys to a Direction Vector.
- * 3. Applies speed and boundary checks to the Entity.
+ * Keyboard
+ * simple input wrapper for keyboard controls
+ * - hides LibGDX key polling behind semantic methods (isLeft(), isUp(), etc.)
+ * - converts input into movement for an entity
  */
+
 public class Keyboard {
 
-    // --- Raw Input Polling Methods ---
-    // These abstract the specific LibGDX key codes (Input.Keys.LEFT) from the game logic.
+    // --- Key polling (kept here so game code doesn't touch Input.Keys directly) ---
+    // these abstract the specific LibGDX key codes (Input.Keys.LEFT) from the game logic
     public boolean isLeft() {
         return Gdx.input.isKeyPressed(Input.Keys.LEFT);
     }
@@ -36,19 +34,10 @@ public class Keyboard {
         return Gdx.input.isKeyPressed(Input.Keys.DOWN);
     }
 
-    public boolean isSpacebar() {
-        return Gdx.input.isKeyPressed(Input.Keys.SPACE);
-    }
-
 
     /**
-     * getInput(Entity e)
-     * General purpose movement handler.
-     * Logic: 
-     * 1. Constructs a vector based on pressed keys.
-     * 2. Normalizes vector (so diagonal movement isn't faster).
-     * 3. Calculates new position (X = oldX + direction * speed).
-     * 4. Clamps position to Screen Width/Height to prevent going out of bounds.
+     * General-purpose movement handler (currently builds direction only)
+     * note: this method isn't applying movement yet, see getArrowInput()
      */
     public void getInput(Entity e) {
         Vector2 direction = new Vector2(0, 0);
@@ -64,6 +53,7 @@ public class Keyboard {
 
     /**
      * Control Scheme: Arrow Keys
+     * converts key presses into a direction vector, then applies movement to the entity
      */
     public void getArrowInput(Entity e) {
     Vector2 direction = new Vector2(0, 0);
@@ -78,7 +68,12 @@ public class Keyboard {
 
 
 
-    // // Apply logic only if a key was pressed
+    /**
+     * Applies movement if there's input:
+     * - normalizes direction so diagonals aren't faster
+     * - moves based on entity speed
+     */
+
     private void applyMovement(Entity e, Vector2 direction) {
         if (!direction.isZero()) {
             direction.nor();

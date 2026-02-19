@@ -7,17 +7,19 @@ import io.github.team6.inputoutput.AudioSource;
 import io.github.team6.inputoutput.MusicSource;
 
 /**
- * Handles all audio output (Sound Effects + Background Music)
+ * OutputManager:
+ * centralizes all audio control for the game
+ * handles sound effects, background music, and volume management
  */
 public class OutputManager {
 
-    // ---------- Sound Effects ----------
+    // active sound effects
     private final List<AudioSource> activeSfx;
 
-    // ---------- Background Music ----------
+    // current background music track
     private MusicSource bgm;
 
-    // ---------- Volume Controls (0.0f to 1.0f) ----------
+    // volume controls (0.0f to 1.0f)
     private float masterVolume;
     private float sfxVolume;
     private float musicVolume;
@@ -26,15 +28,18 @@ public class OutputManager {
         activeSfx = new ArrayList<>();
         masterVolume = 1f;
         sfxVolume = 1.0f;
-        musicVolume = 0.3f;  // Softer background music
+        musicVolume = 0.3f;  // softer bgm by default
     }
 
-    // =========================
-    // SOUND EFFECTS
-    // =========================
+    // ---- Sound Effects ----
+
+    /**
+     * play a sound effect using (master × SFX volume)
+     */
     public void play(AudioSource sfx) {
         if (sfx == null) return;
 
+        // track sound so we can stop/cleanup later
         if (!activeSfx.contains(sfx)) {
             activeSfx.add(sfx);
         }
@@ -43,6 +48,10 @@ public class OutputManager {
         System.out.println("[DEBUG] Playing SFX - masterVolume: " + masterVolume + ", sfxVolume: " + sfxVolume + ", finalVolume: " + finalVolume);
         sfx.play(finalVolume);
     }
+
+    /**
+     * stop all currently tracked sound effects
+     */
 
     public void stopAllSfx() {
         for (AudioSource s : activeSfx) {
@@ -54,9 +63,12 @@ public class OutputManager {
         sfxVolume = clamp(volume);
     }
 
-    // =========================
-    // BACKGROUND MUSIC
-    // =========================
+    // ---- Background Music ----
+
+    /**
+     * set a new background track
+     * existing track is stopped and disposed before replacement
+     */
     public void setBgm(MusicSource newBgm) {
         if (bgm != null) {
             bgm.stop();
@@ -69,6 +81,10 @@ public class OutputManager {
             bgm.setVolume(clamp(masterVolume * musicVolume));
         }
     }
+
+    /**
+     * start background music playback.
+     */
 
     public void playBgm(boolean looping) {
         if (bgm == null) return;
@@ -91,9 +107,11 @@ public class OutputManager {
         }
     }
 
-    // =========================
-    // MASTER VOLUME
-    // =========================
+    // ---- Master Volume ----
+
+    /**
+     * update global volume and apply to current BGM
+     */
     public void setMasterVolume(float volume) {
         masterVolume = clamp(volume);
 
@@ -106,9 +124,12 @@ public class OutputManager {
         return masterVolume;
     }
 
-    // =========================
-    // CLEANUP
-    // =========================
+   // ---- Cleanup ----
+
+    /**
+     * release all audio resources
+     * called during scene transitions or shutdown
+     */
     public void dispose() {
         stopAllSfx();
 
@@ -124,7 +145,7 @@ public class OutputManager {
             bgm = null;
         }
     }
-
+    // keep volume within valid range
     private float clamp(float v) {
         return Math.max(0f, Math.min(1f, v));
     }
