@@ -22,9 +22,6 @@ public class InputManager {
     // Player 1: Arrow keys
     keyboard.getArrowInput(playableEntityList.get(0));
 
-    // Player 2 (optional): WASD
-    if (playableEntityList.size() >= 2) {
-        keyboard.getWASDInput(playableEntityList.get(1));
-        }
+    
     }
 }
