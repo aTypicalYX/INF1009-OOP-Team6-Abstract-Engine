@@ -44,18 +44,4 @@ public class WorldCollision {
         }
     }
 
-    // Camera follow + clamp: lets you explore maps larger than the window without "invisible boundaries"
-    public static void followCameraToPlayer(com.badlogic.gdx.graphics.OrthographicCamera camera,
-                                            PlayableEntity player,
-                                            float worldWidth, float worldHeight) {
-        float targetX = player.getX() + player.getWidth() / 2f;
-        float targetY = player.getY() + player.getHeight() / 2f;
-
-        float halfW = camera.viewportWidth / 2f;
-        float halfH = camera.viewportHeight / 2f;
-
-        camera.position.x = Math.max(halfW, Math.min(targetX, worldWidth - halfW));
-        camera.position.y = Math.max(halfH, Math.min(targetY, worldHeight - halfH));
-        camera.update();
-    }
 }

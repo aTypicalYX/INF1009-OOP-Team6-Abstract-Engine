@@ -17,7 +17,6 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Rectangle;
 
-import io.github.team6.collision.WorldCollision;
 import io.github.team6.entities.Entity;
 import io.github.team6.entities.NonPlayableEntity;
 import io.github.team6.entities.PlayableEntity;
@@ -69,7 +68,7 @@ public class MainScene extends Scene {
     private static final float CHASING_DROPLET_SPEED = 0.5f;
 
     // Entity References
-    private PlayableEntity bucket;
+    private PlayableEntity playableEntity;
     private List<Entity> permanentObstacles;
 
     /**
@@ -111,21 +110,22 @@ public class MainScene extends Scene {
             }
         }
         System.out.println("[DEBUG] World colliders loaded: " + worldColliders.size());
+        collisionManager.setWorldCollisionData(worldColliders, mapPixelWidth, mapPixelHeight);
 
         // 1. Create Player Entity
         // Inject dependencies (Texture, Sound, Behavior) here.
-        bucket = new PlayableEntity(
+        playableEntity = new PlayableEntity(
             "bucket.png",                // Texture
             "collision.wav",             // Sound
             outputManager,               // Audio Manager
             new ResetOnTouchBehavior(),  // Reset position on hit
             100, 220, 5, 50, 50, "PLAYER"
         );
-        bucket.setOutputManager(outputManager);
+        playableEntity.setOutputManager(outputManager);
 
         // 2. Register with EntityManager so it gets updated/drawn
-        entityManager.addEntity(bucket);
-        entityManager.addPlayableEntity(bucket);
+        entityManager.addEntity(playableEntity);
+        entityManager.addPlayableEntity(playableEntity);
         // entityManager.addEntity(droplet);
         permanentObstacles = new ArrayList<>();
 
@@ -158,11 +158,7 @@ public class MainScene extends Scene {
         }
     }
 
-    /**
-     * update()
-     * The Main Game Loop Logic.
-     * Order of Operations: Input -> Move -> Collide -> Cleanup.
-     */
+    // The Main Game Loop Logic ( Input -> Move -> Collide -> Cleanup.)
     @Override
     public void update(float dt) {
         // Press ESC to go back to main menu
@@ -172,8 +168,8 @@ public class MainScene extends Scene {
         }
 
         // Keep previous position for world-collision resolution
-        float prevX = bucket.getX();
-        float prevY = bucket.getY();
+        float prevX = playableEntity.getX();
+        float prevY = playableEntity.getY();
 
         // Run the Managers
         inputManager.update(entityManager.getPlayableEntityList());
@@ -183,9 +179,9 @@ public class MainScene extends Scene {
         entityManager.removeInactiveEntities();
 
         // World collision + camera follow
-        WorldCollision.resolvePlayerVsWorld(bucket, prevX, prevY, worldColliders, mapPixelWidth, mapPixelHeight);
-        WorldCollision.followCameraToPlayer(camera, bucket, mapPixelWidth, mapPixelHeight);
-
+        collisionManager.updateWorld(playableEntity, prevX, prevY);
+        updateCamera(camera, playableEntity.getX() + playableEntity.getWidth() / 2f, playableEntity.getY() + playableEntity.getHeight() / 2f, mapPixelWidth, mapPixelHeight);
+    
         // Increase score based on survival time
         timeSurvived += dt;
         score = (int) timeSurvived * 10;
@@ -200,7 +196,7 @@ public class MainScene extends Scene {
             PERMANENT_DROPLET_WIDTH, PERMANENT_DROPLET_HEIGHT, "ENEMY",
             new StationaryMovementBehavior(),
             new PermanentCollisionBehavior(),
-            bucket
+            playableEntity
         );
     }
 
@@ -213,7 +209,7 @@ public class MainScene extends Scene {
             CHASING_DROPLET_WIDTH, CHASING_DROPLET_HEIGHT, "ENEMY",
             new ChasingMovementBehavior(permanentObstacles),
             new PermanentCollisionBehavior(),
-            bucket
+            playableEntity
         );
     }
 
@@ -226,12 +222,12 @@ public class MainScene extends Scene {
             float randomX = ThreadLocalRandom.current().nextFloat() * maxX;
             float randomY = ThreadLocalRandom.current().nextFloat() * maxY;
 
-            boolean intersectsBucket = randomX < bucket.getX() + bucket.getWidth()
-                    && randomX + width > bucket.getX()
-                    && randomY < bucket.getY() + bucket.getHeight()
-                    && randomY + height > bucket.getY();
+            boolean intersectsplayableEntity = randomX < playableEntity.getX() + playableEntity.getWidth()
+                    && randomX + width > playableEntity.getX()
+                    && randomY < playableEntity.getY() + playableEntity.getHeight()
+                    && randomY + height > playableEntity.getY();
 
-            if (!intersectsBucket) {
+            if (!intersectsplayableEntity) {
                 return new float[] { randomX, randomY };
             }
         }
@@ -242,8 +238,6 @@ public class MainScene extends Scene {
     /**
      * Spawns droplets based on Tiled Object Layer "Spawns".
      * Each object must have a custom property: type = enemy_chasing OR enemy_stationary
-     *
-     * Returns true if at least one droplet was spawned from Tiled.
      */
     private boolean spawnDropletsFromTiled() {
         MapLayer spawnLayer = map.getLayers().get("Spawns");
@@ -253,7 +247,7 @@ public class MainScene extends Scene {
         }
 
         boolean spawned = false;
-
+        // Spawns objects at the exact coordinates specified in Tiled.
         for (MapObject obj : spawnLayer.getObjects()) {
             String type = obj.getProperties().get("type", String.class);
             if (type == null) continue;
@@ -264,18 +258,18 @@ public class MainScene extends Scene {
 
             float x = xObj;
             float y = yObj;
-
+            //Each object must have a custom property: type = enemy_chasing OR enemy_stationary
             if ("enemy_stationary".equals(type)) {
                 NonPlayableEntity e = new NonPlayableEntity(
                     "droplet.png", x, y, 0,
                     PERMANENT_DROPLET_WIDTH, PERMANENT_DROPLET_HEIGHT, "ENEMY",
                     new StationaryMovementBehavior(),
                     new PermanentCollisionBehavior(),
-                    bucket
+                    playableEntity
                 );
                 entityManager.addEntity(e);
                 permanentObstacles.add(e);
-                spawned = true;
+                spawned = true;      
             }
 
             if ("enemy_chasing".equals(type)) {
@@ -284,40 +278,38 @@ public class MainScene extends Scene {
                     CHASING_DROPLET_WIDTH, CHASING_DROPLET_HEIGHT, "ENEMY",
                     new ChasingMovementBehavior(permanentObstacles),
                     new PermanentCollisionBehavior(),
-                    bucket
+                    playableEntity
                 );
                 entityManager.addEntity(e);
                 spawned = true;
             }
         }
-
-        System.out.println("[DEBUG] Spawned from Tiled: " + spawned);
+        // FOR TESTING: Returns true if at least one droplet was spawned from Tiled.
+        System.out.println("[DEBUG] Spawned from Tiled: " + spawned); 
         return spawned;
     }
     
     @Override
     public void render(SpriteBatch batch) {
-        // Render map FIRST (do not wrap inside batch.begin)
+        // Render map FIRST
         mapRenderer.setView(camera);
         mapRenderer.render();
 
-        // 1) WORLD RENDER (camera space)
+        // WORLD RENDER (camera space)
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
         entityManager.drawEntity(batch);
         batch.end();
 
-        // 2) UI RENDER (screen space)
+        // UI RENDER (screen space)
         batch.setProjectionMatrix(new com.badlogic.gdx.math.Matrix4().setToOrtho2D(
                 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
 
         batch.begin();
 
-        // UI Rendering
+        //DRAW HUD + Text Rendering (instructions + score)
         font.draw(batch, "Arrow Keys to move", 200, Gdx.graphics.getHeight() - 40);
         font.draw(batch, "ESC to return to menu", 200, Gdx.graphics.getHeight() - 80);
-
-        // DRAW HUD
         font.setColor(1, 1, 1, 1); // White
         font.getData().setScale(1.5f);
         font.draw(batch, "SCORE: " + score, 20, Gdx.graphics.getHeight() - 20);
