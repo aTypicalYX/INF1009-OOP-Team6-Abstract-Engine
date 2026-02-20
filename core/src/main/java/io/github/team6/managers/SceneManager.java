@@ -7,9 +7,15 @@ import io.github.team6.scenes.Scene;
 
 /**
  * SceneManager 
- * 1. It holds the "State" of the game (which scene is active?).
- * 2. It holds the "Tools" (Managers) passed down from GameMaster.
+ * 1. It holds the State of the game (which scene is active?).
+ * 2. It holds the Managers passed down from GameMaster.
  * 3. It handles the transition logic (Closing old scene, opening new one).
+ * OOP Concepts & Design Patterns:
+ * - State Pattern: Controls the active state (MainScene, SettingsScene, etc.) and delegates update/render calls to it.
+ * - Dependency Injection: Acts as the central hub for all global managers, receiving them from GameMaster 
+ * and injecting them into newly created scenes via `scene.initialize()`.
+ * - Encapsulation: Hides the complexity of scene transitions and lifecycle management (disposing of the old scene, 
+ * initializing the new scene) from the main game loop.
  */
 public class SceneManager {
     private Scene activeScene;

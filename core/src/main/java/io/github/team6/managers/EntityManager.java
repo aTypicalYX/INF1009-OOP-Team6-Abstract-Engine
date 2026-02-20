@@ -10,6 +10,12 @@ import io.github.team6.entities.Entity;
 /**
  * EntityManager keeps track of all active entities in the scene.
  * It allows other systems (like CollisionManager) to request the list of entities to process.
+ * OOP Concepts & Design Patterns:
+ * - Aggregation: Maintains lists of Entity objects without strictly owning their definitions.
+ * - Data Segregation (Optimization): Keeps a separate `playableEntityList` so the InputManager doesn't 
+ * have to filter through hundreds of non-playable entities (like droplets or walls) every frame.
+ * - Single Responsibility Principle (SRP): Solely responsible for adding, removing, and storing entities. 
+ * It does not move them or check their collisions.
  */
 
 public class EntityManager {

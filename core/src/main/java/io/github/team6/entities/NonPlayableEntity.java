@@ -9,10 +9,10 @@ import io.github.team6.entities.behavior.MovementBehavior;
 
 /**
  * Class: NonPlayableEntity
- * Represents objects controlled by the computer (AI, obstacles, projectiles).
+ * Represents objects controlled by the computer
  * OOP Concept: Composition over Inheritance.
- * Instead of extending "MovingEnemy" or "StationaryEnemy", this class uses Composition.
- * It "HAS-A" MovementBehavior and "HAS-A" CollisionBehavior. This allows us to 
+ * Instead of extending MovingEntity or StationaryEntity, this class uses Composition.
+ * It HAS-A MovementBehavior and HAS-A CollisionBehavior. This allows us to 
  * mix and match behaviors to create unique enemies without creating new classes.
  */
 public class NonPlayableEntity extends Entity{

@@ -14,8 +14,18 @@ import io.github.team6.managers.OutputManager;
 import io.github.team6.managers.SceneManager;
 import io.github.team6.scenes.MainMenuScene;
 
-public class GameMaster extends ApplicationAdapter {
 
+/**
+ * Class: GameMaster
+ * The main entry point and root container for the LibGDX application.
+ * * OOP Concepts & Design Patterns:
+ * - Inheritance: Extends LibGDX's ApplicationAdapter to hook into the framework's lifecycle (create, render, dispose).
+ * - Dependency Injection: Instantiates all global managers (Input, Output, Collision, etc.) exactly once 
+ * and injects them into the SceneManager. This ensures a single source of truth and prevents tight coupling.
+ * - Delegation: GameMaster contains no specific game logic. It strictly delegates the frame-by-frame 
+ * execution (update and render) to the SceneManager, adhering to Single Responsibility Principle.
+ */
+public class GameMaster extends ApplicationAdapter {
     // --- Global Managers ---
     private InputManager inputManager;
     private OutputManager outputManager;
@@ -24,7 +34,6 @@ public class GameMaster extends ApplicationAdapter {
     private MovementManager movementManager;
     private SceneManager sceneManager;
     private SpriteBatch batch;
-
     // create() is called once when the application starts. This is used to set up the other Managers
     @Override
     public void create() {
@@ -56,13 +65,13 @@ public class GameMaster extends ApplicationAdapter {
 
         // Delegate updates and rendering to the active scene
         // GameMaster doesn't run game logic itself. It asks SceneManager to handle it.
-        sceneManager.update(dt);   // Update math/positions
-        sceneManager.render(batch);      // Draw images to screen
+        sceneManager.update(dt);            // Update math/positions
+        sceneManager.render(batch);         // Draw images to screen
     }
 
     @Override
     public void dispose() {
-        // Dispose global resources if any
+        // Dispose global resources if any to prevent memory leaks
         if (outputManager != null) outputManager.dispose();
         if (batch != null) batch.dispose();
     }

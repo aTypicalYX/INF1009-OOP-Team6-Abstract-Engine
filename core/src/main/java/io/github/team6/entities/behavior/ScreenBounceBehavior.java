@@ -15,7 +15,7 @@ public class ScreenBounceBehavior implements MovementBehavior {
     private float velocityX;
     private float velocityY;
     
-    // Using the interface 'Entity' allows this behavior to process collision against any game object (Polymorphism).
+    // Using the interface Entity allows this behavior to process collision against any game object (Polymorphism).
     private List<Entity> obstacles; 
 
     public ScreenBounceBehavior(float speed, List<Entity> obstacles) {
@@ -26,11 +26,11 @@ public class ScreenBounceBehavior implements MovementBehavior {
 
     @Override
     public void move(Entity self, Entity target) {
-        // 1. Calculate next projected position
+        // Calculate next projected position
         float nextX = self.getX() + velocityX;
         float nextY = self.getY() + velocityY;
 
-        // 2. Bounce off Screen Edges (Invert Velocity)
+        // Bounce off Screen Edges (Invert Velocity)
         if (nextX < 0 || nextX > Gdx.graphics.getWidth() - self.getWidth()) { 
             velocityX *= -1;
             nextX = self.getX() + velocityX;
@@ -45,7 +45,7 @@ public class ScreenBounceBehavior implements MovementBehavior {
         self.setX(nextX);
         self.setY(nextY);
 
-        // 3. Bounce off Obstacles
+        // Bounce off Obstacles
         for (Entity obstacle : obstacles) { 
             if (obstacle == self || !obstacle.isActive()) {
                 continue;

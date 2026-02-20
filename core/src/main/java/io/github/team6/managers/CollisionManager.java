@@ -7,10 +7,14 @@ import io.github.team6.entities.Entity;
 
 /**
  * CollisionManager handles the detection of overlaps between entities.
- * * ROLE:
  * It receives a list of entities and checks if any of them are touching.
- * 
  * Drives overlap checks across all entities
+ * * OOP Concepts & Design Patterns:
+ * - Single Responsibility Principle (SRP): This manager is ONLY responsible for iterating through entities to detect overlaps. 
+ * It delegates the actual mathematical boundary checks to the `Collision` helper class, and leaves the resolution 
+ * logic to the entities themselves.
+ * - Decoupling: It operates on the abstract `Entity` list. It does not know what a "Bucket" or "Droplet" is,
+ * ensuring the engine remains generic and context-agnostic.
  */
 
 

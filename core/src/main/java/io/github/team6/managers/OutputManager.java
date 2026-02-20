@@ -10,6 +10,11 @@ import io.github.team6.inputoutput.MusicSource;
  * OutputManager:
  * centralizes all audio control for the game
  * handles sound effects, background music, and volume management
+ * * OOP Concepts & Design Patterns:
+ * - Facade Pattern: Wraps the low-level LibGDX input polling and the custom `Keyboard` helper class 
+ * into a simplified interface for the game loop.
+ * - Separation of Concerns: Isolates the control scheme from the player entity. The `PlayableEntity` 
+ * does not contain any code checking for Arrow Keys.
  */
 public class OutputManager {
 

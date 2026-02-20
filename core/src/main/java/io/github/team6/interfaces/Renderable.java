@@ -4,8 +4,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 /**
  * Interface: Renderable
- * Defines a contract that "Anything implementing this MUST be able to draw itself".
  * Allows the engine to treat Buckets, Enemies, and UI elements the same way.
+ * They will all have a draw() method that takes in a SpriteBatch and draws itself onto the screen.
  */
 public interface Renderable {
     public void draw(SpriteBatch batch);
