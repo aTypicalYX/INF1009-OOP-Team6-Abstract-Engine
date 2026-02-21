@@ -4,9 +4,9 @@ import io.github.team6.entities.Entity;
 
 /**
  * Class: StationaryMovementBehavior
- * Defines a "Null" behavior for objects that do not move.
- * OOP Concept: Null Object Pattern / Polymorphism.
- * * Even though this code does nothing, it is necessary so that Stationary entities 
+ * Defines a MovementBehavior for entities that do not move.
+ * Used for stationary hazards or obstacles that should not move.
+ * Even though this code does nothing, it is necessary so that Stationary entities 
  * can still be treated as Movable objects by the MovementManager, preventing null pointer errors.
  */
 public class StationaryMovementBehavior implements MovementBehavior {

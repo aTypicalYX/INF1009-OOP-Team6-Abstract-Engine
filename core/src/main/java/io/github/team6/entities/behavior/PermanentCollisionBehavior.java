@@ -6,7 +6,6 @@ import io.github.team6.entities.Entity;
 /**
  * Class: PermanentCollisionBehavior
  * Represents an object that is solid but has no specific reaction to collision.
- * OOP Concept: Null Object Pattern / Default Implementation.
  * Used for obstacles or walls that block movement or exist as hazards, 
  * but do not destroy themselves or change state when hit.
  */

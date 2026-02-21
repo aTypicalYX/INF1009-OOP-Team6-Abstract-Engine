@@ -9,11 +9,9 @@ import io.github.team6.entities.Entity;
 
 
 /**
- * Implements logic for an entity to chase a target while avoiding obstacles.
- * OOP Concept: Polymorphism & Interface.
- * * This class encapsulates the Chasing algorithm. By isolating this logic here,
- * we adhere to Single Responsibility Principle. The Entity doesn't know
- * the math behind chasing, it just delegates the task to this class.
+ Implements logic for an entity to chase a target while avoiding obstacles.
+ This class encapsulates the Chasing algorithm. By isolating this logic here.
+ The Entity doesn't know the math behind chasing, it just delegates the task to this class.
  */
 public class ChasingMovementBehavior implements MovementBehavior {
     

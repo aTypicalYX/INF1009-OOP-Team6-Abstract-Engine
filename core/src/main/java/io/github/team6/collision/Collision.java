@@ -2,7 +2,6 @@ package io.github.team6.collision;
 
 import io.github.team6.entities.Entity;
 
-/**
 /*
 Manager: Collision -> checks overlap -> calls .onCollision()
 

@@ -4,13 +4,8 @@ import io.github.team6.entities.Entity;
 
 
 /**
- * Implements: CollisionBehavior
- * Resets the entity to the starting position (100, 150) if it hits a specific hazard.
- * Used By: PlayableEntity
- * OOP Concept: Open/Closed Principle (OCP).
- * By using Tags ("ENEMY", "HAZARD") instead of instanceof checks, this class 
- * is Open for extension, we can add new hazard types, but Closed for modification
- * (we don't need to change this code to handle new types).
+ Resets the entity to the starting position (100, 150) if it hits a specific hazard.
+ Used By: PlayableEntity
  */
 public class ResetOnTouchBehavior implements CollisionBehavior {
 
