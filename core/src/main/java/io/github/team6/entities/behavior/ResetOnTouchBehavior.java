@@ -5,7 +5,7 @@ import io.github.team6.entities.Entity;
 
 /**
  * Implements: CollisionBehavior
- * Resets the entity to the starting position (0,0) if it hits a specific hazard.
+ * Resets the entity to the starting position (100, 150) if it hits a specific hazard.
  * Used By: PlayableEntity
  * OOP Concept: Open/Closed Principle (OCP).
  * By using Tags ("ENEMY", "HAZARD") instead of instanceof checks, this class 
