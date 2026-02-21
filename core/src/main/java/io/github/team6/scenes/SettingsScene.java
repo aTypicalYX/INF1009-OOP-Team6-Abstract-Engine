@@ -16,15 +16,6 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import io.github.team6.managers.SceneManager;
 
-
-/**
-* Class: SettingsScene
- * Allows modification of global game settings (e.g., Master Volume).
- * * OOP Concepts & Design Patterns:
- * - State Persistence: Modifies the internal state of the OutputManager. Because the managers are passed down by reference via Dependency Injection in SceneManager, changes made here persist across all other scenes.
- * - Observer Pattern: Uses UI Listeners to immediately react to slider changes and apply volume adjustments in real-time.
- * - Resource Management: Properly overrides the dispose() method from the parent Scene class to clear the Stage and Skin from memory when exiting, preventing memory leaks.
- */
 public class SettingsScene extends Scene {
     // Reference to SceneManager (used for scene switching)
     private final SceneManager scenes;
@@ -71,22 +62,21 @@ public class SettingsScene extends Scene {
                 scenes.setScene(new MainMenuScene(scenes));
             }
         });
+
         // Volume slider updates master volume in OutputManager
-
-
         // Table-based UI layout
         Table table = new Table();
         table.setFillParent(true);
         table.center();
         table.defaults().width(300).height(60).pad(10);
         // Add UI elements vertically
+        table.add(title).padBottom(25).row();
         table.add(masterLabel).row();
         table.add(masterSlider).width(320).row();
-        table.add(title).padBottom(25).row();
         table.add(backBtn).row();
         stage.addActor(table); // Add table to stage
 
-        System.out.println("=== SETTINGS ===");
+        System.out.println("TESTING: Settings Scene");
     }
 
     @Override

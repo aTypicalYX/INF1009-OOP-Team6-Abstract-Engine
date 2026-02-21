@@ -14,17 +14,6 @@ import io.github.team6.managers.OutputManager;
 import io.github.team6.managers.SceneManager;
 import io.github.team6.scenes.MainMenuScene;
 
-
-/**
- * Class: GameMaster
- * The main entry point and root container for the LibGDX application.
- * * OOP Concepts & Design Patterns:
- * - Inheritance: Extends LibGDX's ApplicationAdapter to hook into the framework's lifecycle (create, render, dispose).
- * - Dependency Injection: Instantiates all global managers (Input, Output, Collision, etc.) exactly once 
- * and injects them into the SceneManager. This ensures a single source of truth and prevents tight coupling.
- * - Delegation: GameMaster contains no specific game logic. It strictly delegates the frame-by-frame 
- * execution (update and render) to the SceneManager, adhering to Single Responsibility Principle.
- */
 public class GameMaster extends ApplicationAdapter {
     // --- Global Managers ---
     private InputManager inputManager;

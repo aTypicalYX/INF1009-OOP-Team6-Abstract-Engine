@@ -9,15 +9,6 @@ import io.github.team6.managers.InputManager;
 import io.github.team6.managers.MovementManager;
 import io.github.team6.managers.OutputManager;
 
-
-/**
- * Class: Scene (Abstract Base Class)
- * Defines the blueprint/template for all game levels or menu screens.
- * OOP Concept: Abstraction.
- * * Design Pattern: Template Method / Dependency Injection.
- * - initialize() acts as a setup method to inject global dependencies (Managers).
- * - abstract methods (update, render, onEnter) force subclasses to define specific logic.
- */
 public abstract class Scene {
 
     // Protected Access: Allows subclasses (MainScene, MainMenuScene) to access these managers directly.
@@ -27,11 +18,8 @@ public abstract class Scene {
     protected CollisionManager collisionManager;
     protected MovementManager movementManager;
 
-    /**
-     * initialize()
-     * Called by SceneManager immediately after creating a new scene.
-     * Injects the single instances of the managers so state is preserved across scenes.
-     */
+    //Injects the single instances of the managers so state is preserved across scenes.
+
     public void initialize(InputManager input, OutputManager output, EntityManager entity, CollisionManager collision, MovementManager movement) {
         this.inputManager = input;
         this.outputManager = output;

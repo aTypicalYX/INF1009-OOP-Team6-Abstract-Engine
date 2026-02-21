@@ -15,18 +15,6 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import io.github.team6.managers.SceneManager;
 
-
-/**
-/**
- * Class: MainMenuScene
- * Handles the user interface for the Start Screen.
- * Uses LibGDX Scene2D library (Stage, Actors, Tables) for UI layout.
- * * OOP Concepts & Design Patterns:
- * - Inheritance: Extends the abstract Scene.java class, automatically inheriting references to all global managers without needing to re-declare them.
- * - Observer Pattern: Utilizes ChangeListener on UI buttons to trigger asynchronous events (like scene transitions) 
- * without the need for continuous polling in the update() loop.
- * - Encapsulation: Manages its own UI Stage and viewport scaling, keeping presentation logic completely isolated from the core game logic.
- */
 public class MainMenuScene extends Scene {
 
     private final SceneManager scenes;
@@ -106,7 +94,7 @@ public class MainMenuScene extends Scene {
 
         stage.addActor(table);
 
-        System.out.println("=== MAIN MENU ===");
+        System.out.println("Testing: Main Menu Scene");
     }
 
     @Override

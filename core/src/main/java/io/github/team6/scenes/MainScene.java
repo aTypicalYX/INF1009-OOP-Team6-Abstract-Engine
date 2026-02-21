@@ -26,18 +26,6 @@ import io.github.team6.entities.behavior.ResetOnTouchBehavior;
 import io.github.team6.entities.behavior.StationaryMovementBehavior;
 import io.github.team6.inputoutput.MusicSource;
 import io.github.team6.managers.SceneManager;
-
-/**
- * Class: MainScene
- * The core Gameplay State, Orchestrates the Game Loop (Input -> Update -> Collision -> Render).
- * * OOP Concepts & Design Patterns:
- * - Dependency Injection & Composition: Instantiates Entities and injects specific Behaviors 
- * (e.g., ResetOnTouchBehavior, ChasingMovementBehavior) and Managers (OutputManager) into them at runtime.
- * - Factory Logic: Uses helper methods (createChasingDroplet, spawnDropletsFromTiled) to instantiate 
- * complex entities, abstracting the object creation logic away from the main game loop.
- * - Delegation: Instead of handling physics or input directly, it delegates these tasks to the respective 
- * Managers (movementManager.update(), inputManager.update()), collisionManager.update())
- */
 public class MainScene extends Scene {
 
     private final SceneManager scenes;
@@ -77,11 +65,6 @@ public class MainScene extends Scene {
     private PlayableEntity playableEntity;
     private List<Entity> permanentObstacles;
 
-    /**
-     * onEnter()
-     * Setup: Creates the Player (Bucket) and Enemies (Droplets).
-     * Demonstrates: Constructor Injection for Entities.
-     */
     @Override
     public void onEnter() {
         System.out.println("Entering Main Scene...");
@@ -248,7 +231,7 @@ public class MainScene extends Scene {
     private boolean spawnDropletsFromTiled() {
         MapLayer spawnLayer = map.getLayers().get("Spawns");
         if (spawnLayer == null) {
-            System.out.println("[DEBUG] No Spawns layer found. Using random spawns.");
+            System.out.println("Testing: No Spawns layer found. Using random spawns (default).");
             return false;
         }
 
@@ -291,7 +274,7 @@ public class MainScene extends Scene {
             }
         }
         // FOR TESTING: Returns true if at least one droplet was spawned from Tiled.
-        System.out.println("[DEBUG] Spawned from Tiled: " + spawned); 
+        System.out.println("Testing: Spawned from Tiled: " + spawned); 
         return spawned;
     }
     
