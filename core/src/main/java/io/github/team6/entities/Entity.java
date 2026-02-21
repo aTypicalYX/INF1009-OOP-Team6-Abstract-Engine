@@ -8,20 +8,14 @@ import io.github.team6.interfaces.Movable;
 import io.github.team6.interfaces.Renderable;
 
 
-/**
- * Class: Entity (Abstract Base Class)
- * Defines the common attributes and behaviors shared by ALL game objects.
- * OOP Concept: Abstraction & Inheritance.
- * * This class implements multiple interfaces (Movable, Renderable, Collidable), forcing all subclasses (Playable/NonPlayable) to adhere to these contracts.
- */
 public abstract class Entity implements Movable, Renderable, Collidable{
 
-    // Encapsulation: Fields are private to prevent direct external modification. Access is controlled via Getters and Setters.
+    // Encapsulated fields are private to prevent direct external modification and only accessed by getters and setters
     private float x, y, speed, width, height;
     private Rectangle hitbox;
     private boolean active;
 
-    // Tag System allows identification of objects (e.g., "PLAYER", "ENEMY") without relying on class-checking logic.
+    // Tag System allows identification of objects(e.g "PLAYER", "ENEMY") without relying on class-checking logic
     private String tag;
 
     // Default Constructor chaining

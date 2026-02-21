@@ -9,19 +9,11 @@ import io.github.team6.inputoutput.AudioSource;
 import io.github.team6.managers.OutputManager;
 
 
-/**
- * Class: PlayableEntity
- * Represents the player-controlled character.
- * OOP Concept: Dependency Injection & Composition.
- * * External dependencies (OutputManager, AudioSource, Behaviors) are passed in through the constructor or setter methods
- */
 public class PlayableEntity extends Entity {
     private Texture tex;
     private OutputManager outputManager;
     private AudioSource collisionSound;
 
-    // COMPOSITION: PlayableEntity has a CollisionBehavior.
-    // This allows us to change how the player reacts to collisions dynamically.
     private CollisionBehavior collisionBehavior;
 
     // Constructors
@@ -30,11 +22,8 @@ public class PlayableEntity extends Entity {
     }
     
     /**
-     * Parameterized Constructor.
-     * Fully injects all dependencies.
-     * Class does not rely on global state or hardcoded file paths.
-     * @param outputManager Used to play sounds via the audio system.
-     * @param behavior      Defines what happens when the player is hit.
+     * @param outputManager //Used to play sounds via the audio system.
+     * @param behavior      //Defines what happens when the player is hit.
      */
     public PlayableEntity(String texturePath, String soundPath, OutputManager outputManager, CollisionBehavior behavior, float x, float y, float speed, float width, float height, String tag) {
         super(x, y, speed, width, height, tag);
@@ -53,31 +42,17 @@ public class PlayableEntity extends Entity {
         }
     }
 
-    // --- Implementing Abstract Methods from Entity/Interfaces ---
-
+    // Implementing Abstract Methods from Entity/Interfaces
     @Override
     public void draw(SpriteBatch batch) {
         // Draw the texture at the entity's current X and Y coordinates
         batch.draw(tex, getX(), getY());
     }
 
-
-    /**
-     * movement()
-     * Intentionally empty for PlayableEntity.
-     * Reason: The player is controlled by the InputManager (Keyboard), not by an automated algorithm.
-     * This method exists to satisfy the Movable interface, but the actual movement logic is handled elsewhere.
-     */
     @Override
     public void movement() {
     }
 
-    /**
-     * onCollision()
-     * Triggered by CollisionManager.
-     * 1. Plays a sound effect (Audio Feedback).
-     * 2. Delegates the logic response to collisionBehavior (Strategy Pattern).
-     */
     @Override
     public void onCollision(Entity other) {
         // Play collision sound

@@ -7,20 +7,13 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import io.github.team6.entities.behavior.CollisionBehavior;
 import io.github.team6.entities.behavior.MovementBehavior;
 
-/**
- * Class: NonPlayableEntity
- * Represents objects controlled by the computer
- * OOP Concept: Composition over Inheritance.
- * Instead of extending MovingEntity or StationaryEntity, this class uses Composition.
- * It HAS-A MovementBehavior and HAS-A CollisionBehavior. This allows us to 
- * mix and match behaviors to create unique enemies without creating new classes.
- */
+
 public class NonPlayableEntity extends Entity{
     
 
     private Texture tex;
 
-    // Strategy Interfaces: These hold the specific logic for this instance.
+    // Strategy Interfaces: these hold the specific logic for this instance.
     private MovementBehavior movementBehavior;
     private CollisionBehavior collisionBehavior;
     private Entity target;
@@ -51,12 +44,9 @@ public class NonPlayableEntity extends Entity{
         if (tex != null) batch.draw(tex, getX(), getY());
     }
 
-    /**
-     * movement()
-     * Delegates the movement logic to the assigned MovementBehavior strategy.
-     */
     @Override
     public void movement() {
+        //Delegates the movement logic to the assigned MovementBehavior strategy
         if (movementBehavior != null) {
             movementBehavior.move(this, target);
         }
@@ -64,7 +54,7 @@ public class NonPlayableEntity extends Entity{
 
     @Override
     public void onCollision(Entity other) {
-        // Delegates collision logic to the assigned CollisionBehavior strategy.
+        // Delegates collision logic to the assigned CollisionBehavior strategy
         if (collisionBehavior != null) {
             collisionBehavior.onCollision(this, other);
         }
