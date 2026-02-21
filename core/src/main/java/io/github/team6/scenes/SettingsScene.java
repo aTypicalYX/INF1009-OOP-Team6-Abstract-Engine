@@ -18,9 +18,12 @@ import io.github.team6.managers.SceneManager;
 
 
 /**
- * Class: SettingsScene
- * Allows modification of global game settings (e.g., Volume).
- * Logic: Interacts with the global OutputManager to persist changes.
+* Class: SettingsScene
+ * Allows modification of global game settings (e.g., Master Volume).
+ * * OOP Concepts & Design Patterns:
+ * - State Persistence: Modifies the internal state of the OutputManager. Because the managers are passed down by reference via Dependency Injection in SceneManager, changes made here persist across all other scenes.
+ * - Observer Pattern: Uses UI Listeners to immediately react to slider changes and apply volume adjustments in real-time.
+ * - Resource Management: Properly overrides the dispose() method from the parent Scene class to clear the Stage and Skin from memory when exiting, preventing memory leaks.
  */
 public class SettingsScene extends Scene {
     // Reference to SceneManager (used for scene switching)

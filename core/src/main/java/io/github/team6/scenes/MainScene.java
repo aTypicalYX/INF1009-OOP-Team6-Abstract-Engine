@@ -29,8 +29,14 @@ import io.github.team6.managers.SceneManager;
 
 /**
  * Class: MainScene
- * The core Gameplay State.
- * Logic: Orchestrates the Game Loop (Input -> Update -> Collision -> Render).
+ * The core Gameplay State, Orchestrates the Game Loop (Input -> Update -> Collision -> Render).
+ * * OOP Concepts & Design Patterns:
+ * - Dependency Injection & Composition: Instantiates Entities and injects specific Behaviors 
+ * (e.g., ResetOnTouchBehavior, ChasingMovementBehavior) and Managers (OutputManager) into them at runtime.
+ * - Factory Logic: Uses helper methods (createChasingDroplet, spawnDropletsFromTiled) to instantiate 
+ * complex entities, abstracting the object creation logic away from the main game loop.
+ * - Delegation: Instead of handling physics or input directly, it delegates these tasks to the respective 
+ * Managers (movementManager.update(), inputManager.update()), collisionManager.update())
  */
 public class MainScene extends Scene {
 

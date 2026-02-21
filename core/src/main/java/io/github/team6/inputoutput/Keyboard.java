@@ -8,10 +8,13 @@ import io.github.team6.entities.Entity;
 
 
 /**
- * Keyboard
- * simple input wrapper for keyboard controls
- * - hides LibGDX key polling behind semantic methods (isLeft(), isUp(), etc.)
- * - converts input into movement for an entity
+* Class: Keyboard
+ * A simple input wrapper that translates hardware keyboard controls into game logic.
+ * * OOP Concepts & Design Patterns:
+ * - Facade Pattern / Abstraction: Hides the low-level LibGDX key polling (Input.Keys.LEFT) behind 
+ * semantic methods (isLeft()). This abstracts the hardware away from the rest of the engine.
+ * - Decoupling: The PlayableEntity does not know how to read the keyboard. Instead, this class reads the keyboard and applies a Vector2 mathematical translation to the Entity. If the game later supports 
+ * gamepads, the Entity code remains unchanged.
  */
 
 public class Keyboard {

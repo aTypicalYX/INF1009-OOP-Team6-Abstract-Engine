@@ -5,9 +5,12 @@ import com.badlogic.gdx.audio.Music;
 
 
 /**
- * MusicSource:
- * wrapper around LibGDX Music for background tracks.
- * keeps music handling separate from the rest of the game logic.
+* Class: MusicSource
+ * A wrapper around the LibGDX Music API, for streaming large background tracks.
+ * * OOP Concepts & Design Patterns:
+ * - Single Responsibility Principle: By splitting AudioSource (short loaded sounds) and 
+ * MusicSource (long streamed music) into two different classes, the engine respects how the underlying hardware handles audio memory differently.
+ * - Encapsulation: Hides the LibGDX framework implementation details. It enforces safe volume boundaries using clamp01() and exposes only necessary playback controls (play, stop, setVolume) to the OutputManager.
  */
 public class MusicSource {
     private final Music music;

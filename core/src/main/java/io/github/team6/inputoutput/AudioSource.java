@@ -6,9 +6,13 @@ import com.badlogic.gdx.files.FileHandle;
 
 
 /**
- * AudioSource:
- * wraps a LibGDX Sound object for short sound effects
- * handles playback, looping, and volume control
+/**
+ * Class: AudioSource
+ * Wraps a LibGDX Sound object for short sound effects.
+ * * OOP Concepts & Design Patterns:
+ * - Encapsulation: Protects the native LibGDX Sound object and internal loop IDs. It exposes 
+ * safe methods for volume control and prevents invalid volume states using the clamp01 helper.
+ * - Resource Management: Centralizes the dispose() call, ensuring that native C++ audio resources are safely released from memory when no longer needed.
  */
 
 public class AudioSource {

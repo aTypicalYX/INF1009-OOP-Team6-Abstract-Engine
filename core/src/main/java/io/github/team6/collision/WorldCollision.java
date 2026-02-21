@@ -6,6 +6,15 @@ import com.badlogic.gdx.math.Rectangle;
 
 import io.github.team6.entities.PlayableEntity;
 
+/**
+ * Class: WorldCollision
+ * A utility class responsible for resolving physics between dynamic entities and static map geometry.
+ * * OOP Concepts & Design Patterns:
+ * - Single Responsibility Principle: Isolates the complex axis-by-axis collision resolution 
+ * (needed to prevent players from getting stuck in walls) away from the basic entity to entity Collision class.
+ * - Stateless Utility: Designed with static methods that do not hold or modify internal state. It operates 
+ * purely on the objects passed into it (PlayableEntity and Rectangle), minimizing memory overhead and preventing unintended side-effects across frames.
+ */
 public class WorldCollision {
 
     // PlayableEntity collides with rectangles drawn in Tiled "Collisions" object layer
