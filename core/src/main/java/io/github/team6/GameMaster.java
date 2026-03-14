@@ -15,6 +15,8 @@ import io.github.team6.managers.SceneManager;
 import io.github.team6.mathgame.MathGameScene;
 // import io.github.team6.scenes.MainMenuScene;
 
+
+
 public class GameMaster extends ApplicationAdapter {
     // --- Global Managers ---
     private InputManager inputManager;

@@ -3,18 +3,18 @@ package io.github.team6.managers;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+
 import io.github.team6.inputoutput.AudioSource;
 import io.github.team6.inputoutput.MusicSource;
 
 /**
  * OutputManager:
- * centralizes all audio control for the game
- * handles sound effects, background music, and volume management
- * * OOP Concepts & Design Patterns:
- * - Facade Pattern: Wraps the low-level LibGDX input polling and the custom `Keyboard` helper class 
- * into a simplified interface for the game loop.
- * - Separation of Concerns: Isolates the control scheme from the player entity. The `PlayableEntity` 
- * does not contain any code checking for Arrow Keys.
+ * Centralizes all audio and basic text output control for the game.
+ * * * OOP Concepts & Design Patterns:
+ * - Facade Pattern: Wraps the low-level LibGDX audio and font systems into a simplified interface.
+ * - Separation of Concerns: Isolates output (sound/text) from game logic.
  */
 public class OutputManager {
 
@@ -29,34 +29,45 @@ public class OutputManager {
     private float sfxVolume;
     private float musicVolume;
 
+    // --- NEW: Text Rendering Engine Component ---
+    private BitmapFont font;
+
     public OutputManager() {
         activeSfx = new ArrayList<>();
         masterVolume = 1f;
         sfxVolume = 1.0f;
         musicVolume = 0.3f;  // softer bgm by default
+        
+        // Initialize the default font engine
+        font = new BitmapFont(); 
+    }
+
+    // --- NEW: Text Rendering Method ---
+
+    /**
+     * Draws text to the screen using the provided SpriteBatch.
+     * This abstracts the font scaling and color settings away from the Scene.
+     */
+    public void drawText(SpriteBatch batch, String text, float x, float y, float scale) {
+        if (font != null && batch != null) {
+            font.setColor(1, 1, 1, 1); // Default to white text
+            font.getData().setScale(scale);
+            font.draw(batch, text, x, y);
+        }
     }
 
     // ---- Sound Effects ----
 
-    /**
-     * play a sound effect using (master × SFX volume)
-     */
     public void play(AudioSource sfx) {
         if (sfx == null) return;
 
-        // track sound so we can stop/cleanup later
         if (!activeSfx.contains(sfx)) {
             activeSfx.add(sfx);
         }
 
         float finalVolume = clamp(masterVolume * sfxVolume);
-        System.out.println("[DEBUG] Playing SFX - masterVolume: " + masterVolume + ", sfxVolume: " + sfxVolume + ", finalVolume: " + finalVolume);
         sfx.play(finalVolume);
     }
-
-    /**
-     * stop all currently tracked sound effects
-     */
 
     public void stopAllSfx() {
         for (AudioSource s : activeSfx) {
@@ -70,10 +81,6 @@ public class OutputManager {
 
     // ---- Background Music ----
 
-    /**
-     * set a new background track
-     * existing track is stopped and disposed before replacement
-     */
     public void setBgm(MusicSource newBgm) {
         if (bgm != null) {
             bgm.stop();
@@ -86,10 +93,6 @@ public class OutputManager {
             bgm.setVolume(clamp(masterVolume * musicVolume));
         }
     }
-
-    /**
-     * start background music playback.
-     */
 
     public void playBgm(boolean looping) {
         if (bgm == null) return;
@@ -114,9 +117,6 @@ public class OutputManager {
 
     // ---- Master Volume ----
 
-    /**
-     * update global volume and apply to current BGM
-     */
     public void setMasterVolume(float volume) {
         masterVolume = clamp(volume);
 
@@ -131,10 +131,6 @@ public class OutputManager {
 
    // ---- Cleanup ----
 
-    /**
-     * release all audio resources
-     * called during scene transitions or shutdown
-     */
     public void dispose() {
         stopAllSfx();
 
@@ -149,8 +145,14 @@ public class OutputManager {
             bgm.dispose();
             bgm = null;
         }
+
+        // --- NEW: Dispose of the font resource ---
+        if (font != null) {
+            font.dispose();
+            font = null;
+        }
     }
-    // keep volume within valid range
+
     private float clamp(float v) {
         return Math.max(0f, Math.min(1f, v));
     }
