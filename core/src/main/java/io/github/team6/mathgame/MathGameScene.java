@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.MapLayer;
@@ -23,7 +21,6 @@ import io.github.team6.entities.PlayableEntity;
 import io.github.team6.entities.behavior.ResetOnTouchBehavior;
 import io.github.team6.inputoutput.MusicSource;
 import io.github.team6.managers.SceneManager;
-import io.github.team6.scenes.MainMenuScene;
 import io.github.team6.scenes.Scene;
 
 public class MathGameScene extends Scene {
@@ -33,7 +30,8 @@ public class MathGameScene extends Scene {
     // Game Specific Logic
     private EquationGenerator equationGenerator;
     private AsteroidFactory asteroidFactory; // NEW: The Factory to handle spawning
-    private int score = 0; 
+    private int score = 0;  // Track player score based on correct answers
+    private int lives = 3; // Track player lives
 
     // Tiled visuals + world collision
     private TiledMap map;
@@ -121,6 +119,14 @@ public class MathGameScene extends Scene {
         }
     }
 
+    public void deductLife() {
+        lives--;
+        if (lives <= 0) {
+            // Trigger the state change to Game Over, passing the final score
+            scenes.setScene(new GameOverScene(scenes, score));
+        }
+    }
+
     public void addScore(int points) {
         score += points;
         if (score < 0) score = 0; 
@@ -160,10 +166,8 @@ public class MathGameScene extends Scene {
 
     @Override
     public void update(float dt) {
-        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-            scenes.setScene(new MainMenuScene(scenes));
-            return;
-        }
+        // Prevent updating if we've already died and are waiting for the scene to switch
+        if (lives <= 0) return; 
 
         float prevX = rocket.getX();
         float prevY = rocket.getY();
@@ -173,9 +177,15 @@ public class MathGameScene extends Scene {
         collisionManager.update(entityManager.getEntityList());
 
         entityManager.removeInactiveEntities();
-
         collisionManager.updateWorld(rocket, prevX, prevY);
-        updateCamera(camera, rocket.getX() + rocket.getWidth() / 2f, rocket.getY() + rocket.getHeight() / 2f, mapPixelWidth, mapPixelHeight);
+        
+        // Follow player
+        float halfW = camera.viewportWidth / 2f;
+        float halfH = camera.viewportHeight / 2f;
+        float clampedX = Math.max(halfW, Math.min(rocket.getX() + rocket.getWidth() / 2f, mapPixelWidth - halfW));
+        float clampedY = Math.max(halfH, Math.min(rocket.getY() + rocket.getHeight() / 2f, mapPixelHeight - halfH));
+        camera.position.set(clampedX, clampedY, 0);
+        camera.update();
     }
     
     @Override
@@ -201,8 +211,12 @@ public class MathGameScene extends Scene {
         batch.begin();
         
         // Use OutputManager for HUD
+        // Show the current equation at the top center of the screen
         outputManager.drawText(batch, "Solve: " + equationGenerator.getCurrentEquation(), 500, Gdx.graphics.getHeight() - 40, 2.0f);
+        // Show score and lives at the top left
         outputManager.drawText(batch, "SCORE: " + score, 20, Gdx.graphics.getHeight() - 20, 1.5f);
+        outputManager.drawText(batch, "LIVES: " + lives, 20, Gdx.graphics.getHeight() - 60, 1.5f);
+
         batch.end();
     }
 
