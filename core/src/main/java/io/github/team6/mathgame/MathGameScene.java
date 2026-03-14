@@ -6,6 +6,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -56,7 +57,7 @@ public class MathGameScene extends Scene {
     // --- ENTITY CONFIGURATION CONSTANTS ---
     private static final int ASTEROID_COUNT = 5;
     private static final float ASTEROID_SIZE = 50f;
-    private static final float ASTEROID_SPEED = 0.5f;
+    private static final float ASTEROID_SPEED = 0.8f;
 
     // References to active entities
     private PlayableEntity rocket;
@@ -289,14 +290,15 @@ public class MathGameScene extends Scene {
         entityManager.drawEntity(batch); // Ask engine to draw all sprites
         
         // Draw the numbers directly on top of the asteroids
-        font.setColor(1, 1, 1, 1); 
-        font.getData().setScale(1.2f);
+        // font.setColor(30f, 200f, 179f, 1f); 
+        font.setColor(Color.MAGENTA);
+        font.getData().setScale(1.6f);
         for (Entity entity : entityManager.getEntityList()) {
             if (entity.isActive() && entity.getTag() != null && entity.getTag().startsWith("ASTEROID_")) {
                 // Extract the number from the tag string (e.g., "ASTEROID_5" -> "5")
                 String numStr = entity.getTag().substring(9);
                 // Draw text offset from the entity's X/Y so it appears in the middle of the graphic
-                font.draw(batch, numStr, entity.getX() + 15, entity.getY() + 35);
+                font.draw(batch, numStr, entity.getX() + 20, entity.getY() +40);
             }
         }
         batch.end();

@@ -13,6 +13,7 @@ import io.github.team6.managers.MovementManager;
 import io.github.team6.managers.OutputManager;
 import io.github.team6.managers.SceneManager;
 import io.github.team6.mathgame.MathGameScene;
+// import io.github.team6.scenes.MainMenuScene;
 
 public class GameMaster extends ApplicationAdapter {
     // --- Global Managers ---
@@ -39,7 +40,7 @@ public class GameMaster extends ApplicationAdapter {
         sceneManager = new SceneManager(inputManager, outputManager, entityManager, collisionManager, movementManager);
 
         // Start the Game (Pass control to MainScene). I.e in this case call MainScene()
-        //sceneManager.setScene(new MainMenuScene(sceneManager));
+        // sceneManager.setScene(new MainMenuScene(sceneManager));
         sceneManager.setScene(new MathGameScene(sceneManager));
     }
 
