@@ -13,6 +13,7 @@ public class PlayableEntity extends Entity {
     private Texture tex;
     private OutputManager outputManager;
     private AudioSource collisionSound;
+    private int lives;
 
     private CollisionBehavior collisionBehavior;
 
@@ -25,11 +26,12 @@ public class PlayableEntity extends Entity {
      * @param outputManager //Used to play sounds via the audio system.
      * @param behavior      //Defines what happens when the player is hit.
      */
-    public PlayableEntity(String texturePath, String soundPath, OutputManager outputManager, CollisionBehavior behavior, float x, float y, float speed, float width, float height, String tag) {
+    public PlayableEntity(String texturePath, String soundPath, OutputManager outputManager, CollisionBehavior behavior, float x, float y, float speed, float width, float height, String tag, int lives) {
         super(x, y, speed, width, height, tag);
         this.tex = new Texture(Gdx.files.internal(texturePath));
         this.outputManager = outputManager;
         this.collisionBehavior = behavior; // Assign the injected behavior
+        this.lives = lives;
 
         // Load sound dynamically if path is provided
         if (soundPath != null && outputManager != null) {
@@ -80,5 +82,12 @@ public class PlayableEntity extends Entity {
         }
     }
     
+    public void setLives(int lives) {
+        this.lives = lives;
+    }
+
+    public int getLives() {
+        return this.lives;
+    }
 }
 

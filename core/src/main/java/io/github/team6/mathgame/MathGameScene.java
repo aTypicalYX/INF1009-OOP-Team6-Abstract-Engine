@@ -6,6 +6,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
@@ -31,7 +32,7 @@ public class MathGameScene extends Scene {
     private EquationGenerator equationGenerator;
     private AsteroidFactory asteroidFactory; // NEW: The Factory to handle spawning
     private int score = 0;  // Track player score based on correct answers
-    private int lives = 3; // Track player lives
+    // private int lives = 3; // Track player lives
 
     // Tiled visuals + world collision
     private TiledMap map;
@@ -51,6 +52,9 @@ public class MathGameScene extends Scene {
 
     private PlayableEntity rocket;
     private List<Entity> permanentObstacles;
+
+    private Texture filledHeart;
+    private Texture emptyHeart;
 
     public MathGameScene(SceneManager scenes) {
         this.scenes = scenes;
@@ -97,7 +101,7 @@ public class MathGameScene extends Scene {
             "collision.wav",             
             outputManager,               
             new ResetOnTouchBehavior(),  
-            100, 220, 5, 50, 50, "PLAYER"
+            100, 220, 5, 50, 50, "PLAYER", 5
         );
         rocket.setOutputManager(outputManager);
 
@@ -117,11 +121,15 @@ public class MathGameScene extends Scene {
         } catch (Exception e) {
             System.out.println("[DEBUG] Warning: background.wav not found.");
         }
+
+        // load heart icons
+        filledHeart = new Texture(Gdx.files.internal("heart-filled.png"));
+        emptyHeart = new Texture(Gdx.files.internal("heart-empty.png"));
     }
 
     public void deductLife() {
-        lives--;
-        if (lives <= 0) {
+        rocket.setLives(rocket.getLives()-1);
+        if (rocket.getLives() <= 0) {
             // Trigger the state change to Game Over, passing the final score
             scenes.setScene(new GameOverScene(scenes, score));
         }
@@ -129,7 +137,7 @@ public class MathGameScene extends Scene {
 
     public void addScore(int points) {
         score += points;
-        if (score < 0) score = 0; 
+        if (score < 0) score = 0;
     }
 
     public void generateNewRound() {
@@ -167,7 +175,7 @@ public class MathGameScene extends Scene {
     @Override
     public void update(float dt) {
         // Prevent updating if we've already died and are waiting for the scene to switch
-        if (lives <= 0) return; 
+        if (rocket.getLives() <= 0) return; 
 
         float prevX = rocket.getX();
         float prevY = rocket.getY();
@@ -215,7 +223,23 @@ public class MathGameScene extends Scene {
         outputManager.drawText(batch, "Solve: " + equationGenerator.getCurrentEquation(), 500, Gdx.graphics.getHeight() - 40, 2.0f);
         // Show score and lives at the top left
         outputManager.drawText(batch, "SCORE: " + score, 20, Gdx.graphics.getHeight() - 20, 1.5f);
-        outputManager.drawText(batch, "LIVES: " + lives, 20, Gdx.graphics.getHeight() - 60, 1.5f);
+        outputManager.drawText(batch, "LIVES: ", 20, Gdx.graphics.getHeight() - 60, 1.5f);
+
+        // draw hearts to show remaining lives
+        float heartX = 90;
+        float heartY = Gdx.graphics.getHeight() - 85;
+        float spacing = 40;
+        int maxLives = 5; // max 5 lives
+        int currentLives = rocket.getLives();
+
+        // Draw Background (Empty Hearts)
+        for (int i = 0; i < maxLives; i++) {
+            batch.draw(emptyHeart, heartX + (i * spacing), heartY, 32, 32);
+        }
+        // Draw Foreground (Filled Hearts)
+        for (int i = 0; i < currentLives; i++) {
+            batch.draw(filledHeart, heartX + (i * spacing), heartY, 32, 32);
+        }
 
         batch.end();
     }

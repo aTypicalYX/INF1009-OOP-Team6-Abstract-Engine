@@ -108,7 +108,7 @@ public class MainScene extends Scene {
             "collision.wav",             // Sound
             outputManager,               // Audio Manager
             new ResetOnTouchBehavior(),  // Reset position on hit
-            100, 220, 5, 50, 50, "PLAYER"
+            100, 220, 5, 50, 50, "PLAYER", 5
         );
         playableEntity.setOutputManager(outputManager);
 

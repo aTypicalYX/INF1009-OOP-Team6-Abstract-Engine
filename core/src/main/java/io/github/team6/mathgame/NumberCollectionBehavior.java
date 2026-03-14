@@ -1,6 +1,7 @@
 package io.github.team6.mathgame;
 
 import io.github.team6.entities.Entity;
+import io.github.team6.entities.PlayableEntity;
 import io.github.team6.entities.behavior.CollisionBehavior;
 
 public class NumberCollectionBehavior implements CollisionBehavior {
