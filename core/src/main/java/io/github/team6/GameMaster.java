@@ -16,7 +16,10 @@ import io.github.team6.mathgame.MathGameScene;
 // import io.github.team6.scenes.MainMenuScene;
 
 
-
+/**
+ * GameMaster is the entry point of the application. It initializes all the global managers and starts the first scene.
+ * It delegates all game logic and rendering to the active scene via the SceneManager.
+ */
 public class GameMaster extends ApplicationAdapter {
     // --- Global Managers ---
     private InputManager inputManager;
@@ -41,7 +44,9 @@ public class GameMaster extends ApplicationAdapter {
         // This ensures SceneManager has access to all the systems it needs to pass down
         sceneManager = new SceneManager(inputManager, outputManager, entityManager, collisionManager, movementManager);
 
+        // NOTE: To change back to the original MainMenuScene from Abstract Engine Part 1, just replace MathGameScene with MainMenuScene here.
         // Start the Game (Pass control to MainScene). I.e in this case call MainScene()
+        
         // sceneManager.setScene(new MainMenuScene(sceneManager));
         sceneManager.setScene(new MathGameScene(sceneManager));
     }

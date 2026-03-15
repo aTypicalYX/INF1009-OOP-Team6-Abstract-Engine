@@ -24,6 +24,18 @@ import io.github.team6.inputoutput.MusicSource;
 import io.github.team6.managers.SceneManager;
 import io.github.team6.scenes.Scene;
 
+
+/*
+MathGameScene is the core gameplay scene where the player controls a rocket to solve math equations by colliding with asteroids representing possible answers.
+Key Responsibilities:
+- Initialize the game world, including loading the tile map and setting up the camera.
+- Create the player entity (rocket) and manage its interactions.
+- Generate new rounds of asteroids with math problems and handle the game logic for scoring and lives
+- Render the game world, entities, and HUD (score, lives, current equation).
+Design Patterns Used:
+1. Factory Pattern (AsteroidFactory): The MathGameScene delegates the creation of asteroids to the AsteroidFactory
+2. Strategy Pattern (MovementBehavior): Each asteroid can have a different movement behavior (e.g., chasing the player or stationary).
+*/
 public class MathGameScene extends Scene {
 
     private final SceneManager scenes;

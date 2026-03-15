@@ -9,7 +9,7 @@ import io.github.team6.scenes.MainMenuScene;
 import io.github.team6.scenes.Scene;
 
 /**
- * Represents the end-state of the game.
+ * GameOverScene represents the end-state of the game.
  * Displays the final score and waits for user input to restart or exit.
  */
 public class GameOverScene extends Scene {

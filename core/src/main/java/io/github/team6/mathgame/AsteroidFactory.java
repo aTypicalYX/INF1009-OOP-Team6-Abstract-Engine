@@ -7,6 +7,8 @@ import io.github.team6.entities.Entity;
 import io.github.team6.entities.NonPlayableEntity;
 import io.github.team6.entities.PlayableEntity;
 import io.github.team6.entities.behavior.ChasingMovementBehavior;
+import io.github.team6.entities.behavior.MovementBehavior;
+import io.github.team6.entities.behavior.StationaryMovementBehavior;
 
 /**
  * Factory Design Pattern:
@@ -54,11 +56,21 @@ public class AsteroidFactory {
         // 1. Calculate a spawn coordinate that doesn't overlap the player instantly
         float[] pos = getSafeSpawnPosition(size, size);
         
-        // 2. Construct and return the entity
+        // 2. The Asteroid has a 50% chance to be stationary (for variety), otherwise it will chase the player
+        MovementBehavior movementStrategy;
+        // Note: The movement strategy is determined at the moment of creation, allowing for dynamic behavior without changing the entity's class.
+        if (ThreadLocalRandom.current().nextBoolean()) {
+            movementStrategy = new ChasingMovementBehavior(obstaclesList);
+        } else {
+            movementStrategy = new StationaryMovementBehavior();
+            speed = 0f; // Force speed to 0 so the physics engine doesn't try to move it
+        }
+
+        // 3. Construct and return the entity
         return new NonPlayableEntity(
             "asteroid.png", pos[0], pos[1], speed,
             size, size, "ASTEROID_" + numberValue, // We embed the number in the tag for rendering
-            new ChasingMovementBehavior(obstaclesList), // Inject Strategy: How it moves
+            movementStrategy, // Inject Strategy: either chase or stationary
             new NumberCollectionBehavior(equationGenerator, numberValue, scene), // Inject Strategy: What happens on impact
             targetRocket
         );
