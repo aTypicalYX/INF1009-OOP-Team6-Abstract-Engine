@@ -14,6 +14,7 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import io.github.team6.managers.SceneManager;
+import io.github.team6.mathgame.MathGameScene;
 
 public class MainMenuScene extends Scene {
 
@@ -46,7 +47,7 @@ public class MainMenuScene extends Scene {
         skin = new Skin(Gdx.files.internal("uiskin.json"));
 
         // UI Element Creation
-        Label title = new Label("Team 06 OOP Part 1", skin);
+        Label title = new Label("Team 06 OOP Part 2", skin);
         title.setAlignment(Align.center);
         title.setFontScale(2f);
 
@@ -60,7 +61,9 @@ public class MainMenuScene extends Scene {
             public void changed(ChangeEvent event, Actor actor) {
 
                 // Switch State: Load the Main Game
-                scenes.setScene(new MainScene(scenes));
+                //scenes.setScene(new MainScene(scenes));
+                // NOTE: To change back to the original MainScene from Abstract Engine Part 1, just replace MathGameScene with MainScene here.
+                scenes.setScene(new MathGameScene(scenes));
             }
         });
 
