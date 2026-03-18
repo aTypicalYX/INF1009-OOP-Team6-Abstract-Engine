@@ -13,9 +13,18 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class EquationGenerator {
     
-    // Private fields: The outside world doesn't need to modify these directly.
+    // Stores the current equation as a string (e.g. "3 + 4 = ?") and its answer as an integer (e.g. 7).
     private String currentEquation;
     private int currentAnswer;
+
+    // Track the current difficulty level. Defaults to 1.
+    private int currentLevel = 1;
+
+    // Method for the Scene to set the current level, which can be used to adjust the difficulty of generated equations in the future.
+    public void setLevel(int level) {
+        this.currentLevel = level;
+    }
+
 
     /**
      * Generates a new simple addition problem for kids (e.g. "3 + 4 = ?").
@@ -33,7 +42,15 @@ public class EquationGenerator {
 
         // Pick an operator: 0 = +, 1 = -, 2 = *, 3 = /
         ThreadLocalRandom rand = ThreadLocalRandom.current();
-        int operatorType = rand.nextInt(0, 4);
+
+
+        // Restrict the math operator based on the player's level.
+        // Level 1 = 0 (Addition only)
+        // Level 2 = 0 to 1 (Addition & Subtraction)
+        // Level 3 = 0 to 2 (Up to Multiplication)
+        // Level 4+ = 0 to 3 (All operators unlocked)
+        int maxOperator = Math.min(3, currentLevel - 1); 
+        int operatorType = rand.nextInt(0, maxOperator + 1);
         int num1, num2;
 
         switch(operatorType) {

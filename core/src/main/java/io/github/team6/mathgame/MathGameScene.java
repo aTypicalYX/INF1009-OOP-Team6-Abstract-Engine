@@ -44,6 +44,7 @@ public class MathGameScene extends Scene {
     private EquationGenerator equationGenerator;
     private AsteroidFactory asteroidFactory; // NEW: The Factory to handle spawning
     private int score = 0;  // Track player score based on correct answers
+    private int level = 1; // Track current level
     // private int lives = 3; // Track player lives
 
     // Tiled visuals + world collision
@@ -150,6 +151,13 @@ public class MathGameScene extends Scene {
     public void addScore(int points) {
         score += points;
         if (score < 0) score = 0;
+
+        // Level up every 30 points
+        if (score > 0 && score % 30 == 0) {
+            level++;
+            equationGenerator.setLevel(level); // Unlocks harder math problems in the EquationGenerator
+            System.out.println("Leveled up to: " + level);
+        }
     }
 
     public void generateNewRound() {
@@ -165,6 +173,9 @@ public class MathGameScene extends Scene {
 
         int correctIndex = ThreadLocalRandom.current().nextInt(0, ASTEROID_COUNT);
 
+        // Increase asteroid speed based on level to ramp up difficulty. Each level adds 0.15f to the base speed.
+        float dynamicSpeed = ASTEROID_SPEED + ((level - 1) * 0.15f);
+
         for (int i = 0; i < ASTEROID_COUNT; i++) {
             int valueForAsteroid;
             
@@ -177,7 +188,7 @@ public class MathGameScene extends Scene {
             }
 
             // USE FACTORY TO CREATE ASTEROIDS
-            NonPlayableEntity asteroid = asteroidFactory.createAsteroid(valueForAsteroid, ASTEROID_SIZE, ASTEROID_SPEED);
+            NonPlayableEntity asteroid = asteroidFactory.createAsteroid(valueForAsteroid, ASTEROID_SIZE, dynamicSpeed);
             
             entityManager.addEntity(asteroid);
             permanentObstacles.add(asteroid);
