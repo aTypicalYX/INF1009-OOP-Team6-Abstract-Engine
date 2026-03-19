@@ -45,7 +45,7 @@ public class MathGameScene extends Scene {
     private AsteroidFactory asteroidFactory; // NEW: The Factory to handle spawning
     private int score = 0;  // Track player score based on correct answers
     private int level = 1; // Track current level
-    // private int lives = 3; // Track player lives
+    private int maxLives = 0; // no. of lives player starts with
 
     // Tiled visuals + world collision
     private TiledMap map;
@@ -114,10 +114,11 @@ public class MathGameScene extends Scene {
             "collision.wav",             
             outputManager,               
             new ResetOnTouchBehavior(),  
-            100, 220, 5, 50, 50, "PLAYER", 5
+            100, 220, 5, 50, 50, "PLAYER", 2
         );
         rocket.setOutputManager(outputManager);
 
+        maxLives = rocket.getLives();
         entityManager.addEntity(rocket);
         entityManager.addPlayableEntity(rocket);
 
@@ -252,7 +253,7 @@ public class MathGameScene extends Scene {
         float heartX = 90;
         float heartY = Gdx.graphics.getHeight() - 85;
         float spacing = 40;
-        int maxLives = 5; // max 5 lives
+        // int maxLives = rocket.getLives();; // max 5 lives
         int currentLives = rocket.getLives();
 
         // Draw Background (Empty Hearts)
