@@ -33,7 +33,9 @@ public class GameStateManager {
 
     /** Points awarded for each correct answer. */
     public static final int POINTS_PER_CORRECT = 10;
-
+    /** Starting time in seconds for each game session. */
+    public static final float STARTING_TIME       = 120f; // 2 minutes per level
+    
     // ---------------------------------------------------------------
     // Singleton infrastructure
     // ---------------------------------------------------------------
@@ -61,9 +63,13 @@ public class GameStateManager {
     // ---------------------------------------------------------------
     // State fields
     // ---------------------------------------------------------------
-    private int lives;
-    private int score;
-    private int equationsAnswered;   // counts CORRECT answers only
+    private int   lives;
+    private int   score;
+    private int   equationsAnswered;
+    private int   level;
+    private float timeSeconds;
+    private boolean gameOver;
+    private boolean scoreMultiplierActive; // true = next correct answer scores double
 
     // ---------------------------------------------------------------
     // Lifecycle
@@ -75,64 +81,88 @@ public class GameStateManager {
      * Singleton does not carry stale data from a previous play-through.
      */
     public void reset() {
-        lives            = STARTING_LIVES;
-        score            = 0;
+        lives             = STARTING_LIVES;
+        score             = 0;
         equationsAnswered = 0;
+        level             = 1;
+        timeSeconds       = STARTING_TIME;
+        gameOver          = false;
+        scoreMultiplierActive = false;
     }
 
-    // ---------------------------------------------------------------
+    // -----------------------------------------------------------------------
+    // Score multiplier power-up
+    // -----------------------------------------------------------------------
+
+    /** Activates the 2× score multiplier for the next correct answer only. */
+    public void activateScoreMultiplier() { scoreMultiplierActive = true; }
+
+    public boolean isScoreMultiplierActive() { return scoreMultiplierActive; }
+
+    /** Called by NumberCollectionBehavior after awarding bonus points. */
+    public void consumeScoreMultiplier() { scoreMultiplierActive = false; }
+
+    // -----------------------------------------------------------------------
     // Lives
-    // ---------------------------------------------------------------
+    // -----------------------------------------------------------------------
 
-    public int getLives() {
-        return lives;
-    }
+    public int getLives() { return lives; }
 
-    /**
-     * Removes one life.
-     * @return {@code true} when the player still has lives left,
-     *         {@code false} when all lives are exhausted (game over).
-     */
     public boolean deductLife() {
         if (lives > 0) lives--;
+        if (lives <= 0) gameOver = true;
         return lives > 0;
     }
 
-    public boolean isGameOver() {
-        return lives <= 0;
+    /** Power-up: restore one life, capped at STARTING_LIVES. */
+    public void addLife() {
+        if (lives < STARTING_LIVES) lives++;
     }
 
-    // ---------------------------------------------------------------
+    public boolean isGameOver() { return gameOver; }
+
+    // -----------------------------------------------------------------------
     // Score
-    // ---------------------------------------------------------------
+    // -----------------------------------------------------------------------
 
-    public int getScore() {
-        return score;
-    }
+    public int  getScore()           { return score; }
+    public void addScore(int points) { score = Math.max(0, score + points); }
 
-    public void addScore(int points) {
-        score = Math.max(0, score + points);
-    }
+    // -----------------------------------------------------------------------
+    // Equations / win condition
+    // -----------------------------------------------------------------------
 
-    // ---------------------------------------------------------------
-    // Win condition
-    // ---------------------------------------------------------------
+    public int getEquationsAnswered() { return equationsAnswered; }
 
-    public int getEquationsAnswered() {
-        return equationsAnswered;
-    }
-
-    /**
-     * Increments the correct-answer counter.
-     * @return {@code true} when the player has answered enough equations
-     *         to satisfy the win condition.
-     */
     public boolean recordCorrectAnswer() {
         equationsAnswered++;
         return equationsAnswered >= EQUATIONS_TO_WIN;
     }
 
-    public boolean hasWon() {
-        return equationsAnswered >= EQUATIONS_TO_WIN;
+    public boolean hasWon() { return equationsAnswered >= EQUATIONS_TO_WIN; }
+
+    // -----------------------------------------------------------------------
+    // Level
+    // -----------------------------------------------------------------------
+
+    public int  getLevel()      { return level; }
+    public void setLevel(int l) { level = l; }
+
+    // -----------------------------------------------------------------------
+    // Timer
+    // -----------------------------------------------------------------------
+
+    public float getTimeSeconds()  { return timeSeconds; }
+
+    /** Called each frame by MathGameScene (only when not paused). */
+    public void tickTime(float dt) {
+        timeSeconds = Math.max(0, timeSeconds - dt);
     }
+
+    /** Power-up: extend the timer. */
+    public void addTime(float seconds) {
+        timeSeconds += seconds;
+    }
+
+    public boolean isTimeUp() { return timeSeconds <= 0; }
 }

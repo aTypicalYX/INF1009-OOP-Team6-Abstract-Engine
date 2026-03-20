@@ -33,15 +33,13 @@ import io.github.team6.entities.PlayableEntity;
  */
 public class AsteroidFactory {
 
-    // -------------------------------------------------------------------
+   // -------------------------------------------------------------------
     // Constants – Vertical Spawn Window
     // -------------------------------------------------------------------
 
     /** Minimum pixel distance above the player's current Y for asteroid spawns. */
-    private static final float VERTICAL_SPAWN_OFFSET_MIN = 400f;
-
-    /** Maximum pixel distance above the player's current Y for asteroid spawns. */
-    private static final float VERTICAL_SPAWN_OFFSET_MAX = 700f;
+    private static final float VERTICAL_SPAWN_OFFSET_MIN = 300f;   // min px above rocket
+    private static final float VERTICAL_SPAWN_OFFSET_MAX = 700f;   // max px above rocket (within ~720px viewport)
 
     // -------------------------------------------------------------------
     // Dependencies injected at construction time
@@ -53,7 +51,7 @@ public class AsteroidFactory {
     private final EquationGenerator equationGenerator;
     private final MathGameScene scene;
     private final List<Rectangle> worldColliders;
-    
+
 
     // Abstract Factory – concrete implementations chosen at construction
     private final IAsteroidFactory chasingFactory;
@@ -75,7 +73,7 @@ public class AsteroidFactory {
                            List<Entity> obstaclesList,
                            EquationGenerator generator,
                            MathGameScene scene,
-                           List<Rectangle> worldColliders) {   
+                           List<Rectangle> worldColliders) {
         this.mapWidth          = mapWidth;
         this.mapHeight         = mapHeight;
         this.targetRocket      = target;
@@ -102,9 +100,8 @@ public class AsteroidFactory {
      * @return Fully constructed, ready-to-add NonPlayableEntity.
      */
     public NonPlayableEntity createAsteroid(int numberValue, float size, float speed) {
-
         // Step 1 – safe spawn position in a vertical window above the player
-        float[] pos = getSafeSpawnPosition(size, size);
+        float[] pos = getScreenSpaceSpawnPosition(size, size);
 
         // Step 2 – pick concrete factory (Abstract Factory pattern decision)
         IAsteroidFactory chosenFactory =
@@ -123,64 +120,75 @@ public class AsteroidFactory {
     // -------------------------------------------------------------------
 
     /**
-     * Generates a candidate position within the vertical window [Y + 400, Y + 700]
-     * above the player's centre, verifying it does not overlap the rocket or any
-     * existing asteroid. Falls back gracefully after 50 failed attempts.
+     * Spawns within the visible viewport above the rocket.
+     * X: anywhere across the full map width.
+     * Y: between VERTICAL_SPAWN_OFFSET_MIN and VERTICAL_SPAWN_OFFSET_MAX pixels above the rocket.
+     *
+     * Falls back gracefully after 50 attempts if all candidate positions
+     * overlap existing asteroids.
      */
-    private float[] getSafeSpawnPosition(float width, float height) {
-        float maxX = Math.max(0, mapWidth - width);
-        
-        // 1. Define the vertical "Spawn Window" relative to the rocket
-        // The viewport is 720p tall, so MIN offset puts it just above the top edge of the screen.
-        float spawnMinY = targetRocket.getY() + VERTICAL_SPAWN_OFFSET_MIN; 
-        float spawnMaxY = targetRocket.getY() + VERTICAL_SPAWN_OFFSET_MAX; 
+    private float[] getScreenSpaceSpawnPosition(float width, float height) {
+        ThreadLocalRandom rand = ThreadLocalRandom.current();
 
-        // 2. Clamp the maximum Y to the map boundaries so we don't spawn outside the world
-        float mapMaxY = Math.max(0, mapHeight - height);
-        spawnMaxY = Math.min(spawnMaxY, mapMaxY);
+        float rocketY = targetRocket.getY();
 
-        // 3. Edge Case: If the player is at the very top of the map, collapse the window
-        if (spawnMinY > spawnMaxY) {
-            spawnMinY = spawnMaxY; 
-        }
+        // Y band: directly above the rocket within the visible screen
+        float minY = rocketY + VERTICAL_SPAWN_OFFSET_MIN;
+        float maxY = rocketY + VERTICAL_SPAWN_OFFSET_MAX;
+        // Clamp to map bounds
+        maxY = Math.min(maxY, mapHeight - height - 60f);
+        minY = Math.min(minY, maxY);
 
-        // Try up to 50 times to find a random spot that doesn't overlap anything
         for (int attempt = 0; attempt < 50; attempt++) {
-            float randomX = ThreadLocalRandom.current().nextFloat() * maxX;
-            
-            // Generate Y within our new vertical window
-            float randomY;
-            if (spawnMinY == spawnMaxY) {
-                randomY = spawnMinY; // Force it to the top if we are out of map space
-            } else {
-                randomY = ThreadLocalRandom.current().nextFloat() * (spawnMaxY - spawnMinY) + spawnMinY;
-            }
+            float cx = rand.nextFloat() * (mapWidth - width);
+            float cy = minY + rand.nextFloat() * Math.max(1f, maxY - minY);
 
-            // Check intersection with the player
-            boolean hitsPlayer = randomX < targetRocket.getX() + targetRocket.getWidth()
-                    && randomX + width > targetRocket.getX()
-                    && randomY < targetRocket.getY() + targetRocket.getHeight()
-                    && randomY + height > targetRocket.getY();
+            // Reject if too close to the rocket
+            if (overlapsRocket(cx, cy, width, height)) continue;
 
-            // Check intersection with other asteroids to prevent overlaps
-            boolean hitsOtherAsteroids = false;
-            for (Entity obstacle : obstaclesList) {
-                if (randomX < obstacle.getX() + obstacle.getWidth()
-                        && randomX + width > obstacle.getX()
-                        && randomY < obstacle.getY() + obstacle.getHeight()
-                        && randomY + height > obstacle.getY()) {
-                    hitsOtherAsteroids = true;
-                    break; 
-                }
-            }
+            // Reject if overlaps an existing asteroid
+            if (overlapsObstacle(cx, cy, width, height)) continue;
 
-            // If the spot is entirely clear, return the coordinates!
-            if (!hitsPlayer && !hitsOtherAsteroids) {
-                return new float[] { randomX, randomY };
+            // Reject if overlaps a wall tile
+            if (overlapsWall(cx, cy, width, height)) continue;
+
+            return new float[]{ cx, cy };
+        }
+
+        // Fallback: place just above the rocket centre
+        float fallbackX = Math.max(0,
+            Math.min(targetRocket.getX(), mapWidth - width));
+        float fallbackY = Math.min(rocketY + VERTICAL_SPAWN_OFFSET_MIN + 50f, mapHeight - height);
+        return new float[]{ fallbackX, fallbackY };
+    }
+
+    private boolean overlapsRocket(float cx, float cy, float w, float h) {
+        return cx < targetRocket.getX() + targetRocket.getWidth()
+            && cx + w > targetRocket.getX()
+            && cy < targetRocket.getY() + targetRocket.getHeight()
+            && cy + h > targetRocket.getY();
+    }
+
+    private boolean overlapsObstacle(float cx, float cy, float w, float h) {
+        for (Entity obs : obstaclesList) {
+            if (!obs.isActive()) continue;
+            if (cx < obs.getX() + obs.getWidth()
+                    && cx + w > obs.getX()
+                    && cy < obs.getY() + obs.getHeight()
+                    && cy + h > obs.getY()) {
+                return true;
             }
         }
-        
-        // Fallback coordinate if the map is too crowded
-        return new float[] { 0, spawnMinY }; 
+        return false;
+    }
+
+    private boolean overlapsWall(float cx, float cy, float w, float h) {
+        for (Rectangle wall : worldColliders) {
+            if (cx < wall.x + wall.width  && cx + w > wall.x
+                    && cy < wall.y + wall.height && cy + h > wall.y) {
+                return true;
+            }
+        }
+        return false;
     }
 }

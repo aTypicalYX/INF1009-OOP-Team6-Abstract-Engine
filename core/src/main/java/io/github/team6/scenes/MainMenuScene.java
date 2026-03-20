@@ -14,6 +14,7 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import io.github.team6.managers.SceneManager;
+import io.github.team6.mathgame.LeaderboardScene;
 import io.github.team6.mathgame.MathGameScene;
 
 public class MainMenuScene extends Scene {
@@ -47,11 +48,16 @@ public class MainMenuScene extends Scene {
         skin = new Skin(Gdx.files.internal("uiskin.json"));
 
         // UI Element Creation
-        Label title = new Label("Team 06 OOP Part 2", skin);
+        Label title = new Label("[CHANGE TO SOMETHING ELSE like something cool idk up to you]", skin);
         title.setAlignment(Align.center);
-        title.setFontScale(2f);
+        title.setFontScale(2.2f);
+
+        Label subtitle = new Label("Team 06: OOP Part 2", skin);
+        subtitle.setAlignment(Align.center);
+        subtitle.setFontScale(1.1f);
 
         TextButton startBtn = new TextButton("Start Game", skin);
+        TextButton leaderboardBtn = new TextButton("Leaderboard", skin);
         TextButton settingsBtn = new TextButton("Settings", skin);
         TextButton exitBtn = new TextButton("Exit", skin);
 
@@ -64,6 +70,13 @@ public class MainMenuScene extends Scene {
                 //scenes.setScene(new MainScene(scenes));
                 // NOTE: To change back to the original MainScene from Abstract Engine Part 1, just replace MathGameScene with MainScene here.
                 scenes.setScene(new MathGameScene(scenes));
+            }
+        });
+
+        leaderboardBtn.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                scenes.setScene(new LeaderboardScene(scenes)); // view-only mode
             }
         });
 
@@ -87,17 +100,15 @@ public class MainMenuScene extends Scene {
         Table table = new Table();
         table.setFillParent(true);
         table.center();
-
-        table.add(title).padBottom(30).row();
-
-        table.defaults().width(260).height(60).pad(10);
+        table.add(title).padBottom(4).row();
+        table.add(subtitle).padBottom(30).row();
+        table.defaults().width(280).height(60).pad(8);
         table.add(startBtn).row();
+        table.add(leaderboardBtn).row();
         table.add(settingsBtn).row();
         table.add(exitBtn).row();
 
         stage.addActor(table);
-
-        System.out.println("Testing: Main Menu Scene");
     }
 
     @Override

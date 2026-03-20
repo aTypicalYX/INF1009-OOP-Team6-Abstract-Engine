@@ -70,18 +70,25 @@ public class NumberCollectionBehavior implements CollisionBehavior {
         if (equationGenerator.checkAnswer(numberValue)) {
             // ---- CORRECT ANSWER ----------------------------------------
             scene.playCorrectAnswerSfx();
-            gsm.addScore(GameStateManager.POINTS_PER_CORRECT);
-            scene.spawnFloatingText("+10", self.getX(), self.getY() + 30, Color.GREEN);
 
-            // Check win condition via Singleton
-            boolean won = gsm.recordCorrectAnswer();
-            if (won) {
-                // Player has answered EQUATIONS_TO_WIN equations – they win!
-                scene.triggerWin();
+            // Apply 2× multiplier if active, then consume it
+            int points = GameStateManager.POINTS_PER_CORRECT;
+            if (gsm.isScoreMultiplierActive()) {
+                points *= 2;
+                gsm.consumeScoreMultiplier();
+                scene.spawnFloatingText("+" + points + " (2×!)",
+                    self.getX(), self.getY() + 30, Color.YELLOW);
             } else {
-                // Continue the game with a new equation
-                scene.generateNewRound();
+                scene.spawnFloatingText("+" + points,
+                    self.getX(), self.getY() + 30, Color.GREEN);
             }
+
+            gsm.addScore(points);
+
+            // Record correct answer for stats but do NOT trigger win here.
+            // Win condition is reaching the planet zone at the top of the map.
+            gsm.recordCorrectAnswer();
+            scene.generateNewRound();
 
         } else {
             // ---- WRONG ANSWER ------------------------------------------

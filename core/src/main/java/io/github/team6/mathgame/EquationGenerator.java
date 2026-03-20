@@ -12,7 +12,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * How it chooses which type of equation to generate is based on a random operator selection.
  */
 public class EquationGenerator {
-    
+
     // Stores the current equation as a string (e.g. "3 + 4 = ?") and its answer as an integer (e.g. 7).
     private String currentEquation;
     private int currentAnswer;

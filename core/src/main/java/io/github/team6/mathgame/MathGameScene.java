@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -21,6 +22,7 @@ import io.github.team6.entities.Entity;
 import io.github.team6.entities.NonPlayableEntity;
 import io.github.team6.entities.PlayableEntity;
 import io.github.team6.entities.behavior.ResetOnTouchBehavior;
+import io.github.team6.entities.behavior.StationaryMovementBehavior;
 import io.github.team6.inputoutput.AudioSource;
 import io.github.team6.inputoutput.MusicSource;
 import io.github.team6.managers.SceneManager;
@@ -65,16 +67,31 @@ public class MathGameScene extends Scene {
     private final SceneManager scenes;
 
     // -----------------------------------------------------------------
-    // Game-logic collaborators
+    // Config
+    // -----------------------------------------------------------------
+    private static final int   ASTEROID_COUNT         = 7;    // more asteroids per round
+    private static final float ASTEROID_SIZE          = 60f;
+    private static final float ASTEROID_SPEED         = 0.8f;
+    private static final float POWERUP_SIZE           = 48f;
+    private static final float POWERUP_SPAWN_INTERVAL = 20f;
+
+
+    // Screen-width viewport — no tile borders visible
+    private static final float VIEW_W = 1280f;
+    private static final float VIEW_H = 720f;
+
+    // -----------------------------------------------------------------
+    // Collaborators
     // -----------------------------------------------------------------
     private EquationGenerator equationGenerator;
-
+    
     /**
      * AsteroidFactory (Factory Pattern) – creates asteroids.
      * Internally it uses the Abstract Factory pattern to choose between
      * ChasingAsteroidFactory and StationaryAsteroidFactory.
      */
     private AsteroidFactory asteroidFactory;
+    private PauseOverlay      pauseOverlay;
 
     // -----------------------------------------------------------------
     // Tiled map / camera
@@ -86,21 +103,13 @@ public class MathGameScene extends Scene {
     private float mapPixelWidth;
     private float mapPixelHeight;
 
-    private static final float VIEW_W = 1280f;
-    private static final float VIEW_H = 720f;
-
-    // -----------------------------------------------------------------
-    // Spawn / entity settings
-    // -----------------------------------------------------------------
-    private static final int   ASTEROID_COUNT = 5;
-    private static final float ASTEROID_SIZE  = 50f;
-    private static final float ASTEROID_SPEED = 0.8f;
-
     // -----------------------------------------------------------------
     // Entities
     // -----------------------------------------------------------------
     private PlayableEntity rocket;
-    private List<Entity>   permanentObstacles;
+    private NonPlayableEntity chaser;
+    private PlanetEntity planet;
+    private final List<Entity> permanentObstacles = new ArrayList<>();
 
     // -----------------------------------------------------------------
     // HUD textures
@@ -121,11 +130,21 @@ public class MathGameScene extends Scene {
         String text;
         float  x, y;
         Color  color;
-        float  timer = 1.0f;
+        float  timer = 1.2f;
     }
     private final List<FloatingText> floatingTexts = new ArrayList<>();
 
-    // =================================================================
+    // -----------------------------------------------------------------
+    // Timers
+    // -----------------------------------------------------------------
+    private float powerUpTimer = 0f;
+
+    // -----------------------------------------------------------------
+    // Win trigger rectangle (from Tiled "PLANET" object)
+    // -----------------------------------------------------------------
+    private Rectangle planetZone;
+
+    // =======================================================================
 
     public MathGameScene(SceneManager scenes) {
         this.scenes = scenes;
@@ -137,30 +156,33 @@ public class MathGameScene extends Scene {
 
     @Override
     public void onEnter() {
-        System.out.println("Entering Math Game Scene...");
- 
-        // ── Singleton: reset game state for this session ──────────────
-        GameStateManager.getInstance().reset();
- 
-        equationGenerator  = new EquationGenerator();
-        permanentObstacles = new ArrayList<>();
- 
-        // Tiled map
-        map         = new TmxMapLoader().load("maps/level1.tmx");
+        System.out.println("[MathGame] Entering — Level " + GameStateManager.getInstance().getLevel());
+
+        // Only reset if starting fresh (level 1). Level 2 carries score/lives over.
+        if (GameStateManager.getInstance().getLevel() == 1) {
+            GameStateManager.getInstance().reset();
+        }
+
+        equationGenerator = new EquationGenerator();
+        equationGenerator.setLevel(GameStateManager.getInstance().getLevel());
+
+        //  Load Tiled map (level-specific)
+        String mapFile = (GameStateManager.getInstance().getLevel() == 2)
+            ? "maps/level2.tmx" : "maps/level1.tmx";
+        map         = new TmxMapLoader().load(mapFile);
         mapRenderer = new OrthogonalTiledMapRenderer(map);
- 
+
         camera = new OrthographicCamera();
         camera.setToOrtho(false, VIEW_W, VIEW_H);
-        camera.position.set(VIEW_W / 2f, VIEW_H / 2f, 0);
-        camera.update();
- 
-        int wTiles = map.getProperties().get("width",     Integer.class);
-        int hTiles = map.getProperties().get("height",    Integer.class);
-        int tW     = map.getProperties().get("tilewidth", Integer.class);
-        int tH     = map.getProperties().get("tileheight",Integer.class);
+
+        int wTiles = map.getProperties().get("width",      Integer.class);
+        int hTiles = map.getProperties().get("height",     Integer.class);
+        int tW     = map.getProperties().get("tilewidth",  Integer.class);
+        int tH     = map.getProperties().get("tileheight", Integer.class);
         mapPixelWidth  = wTiles * tW;
         mapPixelHeight = hTiles * tH;
- 
+
+        // World colliders
         worldColliders.clear();
         MapLayer colLayer = map.getLayers().get("Collisions");
         if (colLayer != null) {
@@ -172,61 +194,81 @@ public class MathGameScene extends Scene {
             }
         }
         collisionManager.setWorldCollisionData(worldColliders, mapPixelWidth, mapPixelHeight);
- 
-        // ── Create Player ─────────────────────────────────────────────
+
+        // Read planet/win zone from Spawns layer
+        planetZone = null;
+        MapLayer spawnLayer = map.getLayers().get("Spawns");
+        if (spawnLayer != null) {
+            for (MapObject obj : spawnLayer.getObjects()) {
+                String type = obj.getProperties().get("type", String.class);
+                if ("planet".equals(type) && obj instanceof RectangleMapObject) {
+                    planetZone = new Rectangle(((RectangleMapObject) obj).getRectangle());
+                }
+            }
+        }
+        // Fallback: treat the top 80px of the map as the win zone
+        if (planetZone == null) {
+            planetZone = new Rectangle(0, mapPixelHeight - 80, mapPixelWidth, 80);
+        }
+
+        //  Animated planet — centred on the win zone 
+        float planetSize = 600f;
+        planet = new PlanetEntity(
+            mapPixelWidth / 2f,              // centre X
+            planetZone.y + planetZone.height / 2f - planetSize / 2f, // centred on zone
+            planetSize
+        );
+
+        //  Spawn rocket centred at bottom 
+        float rocketW = 50f, rocketH = 50f;
+        float startX  = mapPixelWidth / 2f - rocketW / 2f;
+        float startY  = 120f; // above the floor collision tiles
         rocket = new PlayableEntity(
-            "spaceship.png",
-            null,
-            outputManager,
+            "spaceship.png", null, outputManager,
             new ResetOnTouchBehavior(),
-            100, 220,
-            5,                                           // speed
-            50, 50,
-            "PLAYER",
-            GameStateManager.STARTING_LIVES              // lives from Singleton constant
+            startX, startY, 5,
+            rocketW, rocketH, "PLAYER",
+            GameStateManager.STARTING_LIVES
         );
         entityManager.addEntity(rocket);
         entityManager.addPlayableEntity(rocket);
- 
+
+        //  Camera: start centred on rocket
+        camera.position.set(mapPixelWidth / 2f, startY + VIEW_H / 2f, 0);
+        camera.update();
+
         // ── Factory Pattern: build the AsteroidFactory ────────────────
         // AsteroidFactory internally holds both concrete Abstract Factories
-        // (ChasingAsteroidFactory & StationaryAsteroidFactory).
+        // (ChasingAsteroidFactory & StationaryAsteroidFactory). 
         asteroidFactory = new AsteroidFactory(
             mapPixelWidth, mapPixelHeight,
             rocket, permanentObstacles,
             equationGenerator, this,
-            worldColliders   // passed so AsteroidFactory can reject tile-overlapping spawn positions
+            worldColliders
         );
  
         // First round
         generateNewRound();
- 
+
+        //  Chaser entity
+        spawnChaser();
+
+        //  Audio
         try {
             MusicSource gameBgm = new MusicSource("background.wav");
             outputManager.setBgm(gameBgm);
             outputManager.playBgm(true);
         } catch (Exception e) {
-            System.out.println("[DEBUG] background.wav not found.");
+            System.out.println("[MathGame] background.wav not found.");
         }
- 
+        loadSfx();
+
+        //  HUD textures 
         filledHeart = new Texture(Gdx.files.internal("heart-filled.png"));
         emptyHeart  = new Texture(Gdx.files.internal("heart-empty.png"));
 
-        try {
-            correctAnswerSfx = new AudioSource("correctAns.wav");
-            correctAnswerSfx.setVolume(0.25f);
-        } catch (Exception e) {
-            System.out.println("[DEBUG] correctAns.wav not found.");
-            correctAnswerSfx = null;
-        }
-
-        try {
-            wrongAnswerSfx = new AudioSource("collision.wav");
-            wrongAnswerSfx.setVolume(0.2f);
-        } catch (Exception e) {
-            System.out.println("[DEBUG] collision.wav not found for wrong-answer SFX.");
-            wrongAnswerSfx = null;
-        }
+        //  Pause overlay
+        pauseOverlay = new PauseOverlay(scenes, outputManager);
     }
 
     // -----------------------------------------------------------------
@@ -248,7 +290,8 @@ public class MathGameScene extends Scene {
      * Called by NumberCollectionBehavior when the player wins (5 correct).
      */
     public void triggerWin() {
-        scenes.setScene(new WinScene(scenes));
+        int level = GameStateManager.getInstance().getLevel();
+        scenes.setScene(new VictoryScene(scenes, level));
     }
 
     public void playCorrectAnswerSfx() {
@@ -299,7 +342,6 @@ public class MathGameScene extends Scene {
      */
     public void generateNewRound() {
         equationGenerator.generateNewEquation();
-        int correctAnswer = equationGenerator.getCurrentAnswer();
 
         // Remove existing asteroids
         for (Entity e : entityManager.getEntityList()) {
@@ -309,51 +351,23 @@ public class MathGameScene extends Scene {
         }
         permanentObstacles.clear();
 
-        // Decide which asteroid index holds the correct answer
-        int correctIndex = ThreadLocalRandom.current().nextInt(0, ASTEROID_COUNT);
-
-        // Scale speed with level (capped at 2.5)
-        int   level        = computeLevel();
-        float dynamicSpeed = Math.min(2.5f, ASTEROID_SPEED + (level - 1) * 0.15f);
+        int   correctIndex  = ThreadLocalRandom.current().nextInt(0, ASTEROID_COUNT);
+        int   level         = computeLevel();
+        float dynamicSpeed  = Math.min(2.5f, ASTEROID_SPEED + (level - 1) * 0.15f);
 
         for (int i = 0; i < ASTEROID_COUNT; i++) {
-            int value;
-            if (i == correctIndex) {
-                value = correctAnswer;
-            } else {
-                do {
-                    value = ThreadLocalRandom.current().nextInt(1, 21);
-                } while (value == correctAnswer);
-            }
-
+            int value = (i == correctIndex)
+                ? equationGenerator.getCurrentAnswer()
+                : randomDecoy(equationGenerator.getCurrentAnswer());
+            
             // ── Factory Pattern call ────────────────────────────────────
             // AsteroidFactory decides which Abstract Factory implementation
             // to use and returns a fully configured NonPlayableEntity.
-            NonPlayableEntity asteroid =
+                NonPlayableEntity asteroid =
                 asteroidFactory.createAsteroid(value, ASTEROID_SIZE, dynamicSpeed);
-
             entityManager.addEntity(asteroid);
             permanentObstacles.add(asteroid);
         }
-    }
-
-    /** Derives the current difficulty level from equations answered. */
-    private int computeLevel() {
-        // Every equation answered increases the level (min 1)
-        return Math.max(1, GameStateManager.getInstance().getEquationsAnswered() + 1);
-    }
-
-    // -----------------------------------------------------------------
-    // Floating text feedback
-    // -----------------------------------------------------------------
-
-    public void spawnFloatingText(String text, float x, float y, Color color) {
-        FloatingText ft = new FloatingText();
-        ft.text  = text;
-        ft.x     = x;
-        ft.y     = y;
-        ft.color = new Color(color);
-        floatingTexts.add(ft);
     }
 
     // -----------------------------------------------------------------
@@ -362,8 +376,22 @@ public class MathGameScene extends Scene {
 
     @Override
     public void update(float dt) {
-        // Guard – prevent update after scene transition is already queued
-        if (GameStateManager.getInstance().isGameOver()) return;
+        // Pause toggle
+        if (Gdx.input.isKeyJustPressed(Input.Keys.P)
+                || Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+            pauseOverlay.toggle();
+        }
+        if (pauseOverlay.isPaused()) return;
+
+        GameStateManager gsm = GameStateManager.getInstance();
+        if (gsm.isGameOver()) return;
+
+        // Timer
+        gsm.tickTime(dt);
+        if (gsm.isTimeUp()) {
+            triggerGameOver();
+            return;
+        }
 
         float prevX = rocket.getX();
         float prevY = rocket.getY();
@@ -371,19 +399,60 @@ public class MathGameScene extends Scene {
         inputManager.update(entityManager.getPlayableEntityList());
         movementManager.update(entityManager.getEntityList());
         collisionManager.update(entityManager.getEntityList());
-
         entityManager.removeInactiveEntities();
         collisionManager.updateWorld(rocket, prevX, prevY);
 
-        // Keep camera following the rocket
-        float halfW    = camera.viewportWidth  / 2f;
-        float halfH    = camera.viewportHeight / 2f;
-        float clampedX = Math.max(halfW, Math.min(rocket.getX() + rocket.getWidth()  / 2f, mapPixelWidth  - halfW));
-        float clampedY = Math.max(halfH, Math.min(rocket.getY() + rocket.getHeight() / 2f, mapPixelHeight - halfH));
+        // Sync lives display
+        rocket.setLives(gsm.getLives());
+
+        // Direct chaser collision check
+        // Belt-and-braces: check overlap manually in addition to the
+        // behavior system, since the chaser spans the full map width and
+        // the CollisionManager may skip it due to entity ordering.
+        if (chaser != null && chaser.isActive()) {
+            Rectangle rocketBox = new Rectangle(
+                rocket.getX(), rocket.getY(),
+                rocket.getWidth(), rocket.getHeight());
+            float inset = 60f;
+            Rectangle chaserBox = new Rectangle(
+                chaser.getX(), chaser.getY() + inset,
+                chaser.getWidth(), chaser.getHeight() + inset * 2);
+            if (rocketBox.overlaps(chaserBox)) {
+                triggerGameOver();
+                return;
+            }
+        }
+
+        //  Win check: rocket enters planet zone
+        Rectangle rocketRect = new Rectangle(
+            rocket.getX(), rocket.getY(),
+            rocket.getWidth(), rocket.getHeight());
+        if (planetZone != null && rocketRect.overlaps(planetZone)) {
+            triggerWin();
+            return;
+        }
+
+        // Camera: scroll upward tracking rocket 
+        // Lock X to map centre; track Y with bottom clamp
+        float targetCamY = rocket.getY() + rocket.getHeight() / 2f;
+        float halfH      = VIEW_H / 2f;
+        float clampedY   = Math.max(halfH, Math.min(targetCamY, mapPixelHeight - halfH));
+        // Fixed X (screen-width map — no horizontal scroll needed)
+        float clampedX   = mapPixelWidth / 2f;
         camera.position.set(clampedX, clampedY, 0);
         camera.update();
 
-        // Update floating texts (float up, fade out)
+        //  Power-up spawner
+        powerUpTimer += dt;
+        if (powerUpTimer >= POWERUP_SPAWN_INTERVAL) {
+            powerUpTimer = 0f;
+            spawnPowerUp();
+        }
+
+        //  Planet animation 
+        if (planet != null) planet.update(dt);
+
+        //  Floating text
         for (int i = floatingTexts.size() - 1; i >= 0; i--) {
             FloatingText ft = floatingTexts.get(i);
             ft.y     += 50 * dt;
@@ -391,9 +460,6 @@ public class MathGameScene extends Scene {
             ft.color.a = Math.max(0, ft.timer);
             if (ft.timer <= 0) floatingTexts.remove(i);
         }
-
-        // Sync rocket's displayed lives with Singleton (keeps heart HUD accurate)
-        rocket.setLives(GameStateManager.getInstance().getLives());
     }
 
     // -----------------------------------------------------------------
@@ -402,20 +468,38 @@ public class MathGameScene extends Scene {
 
     @Override
     public void render(SpriteBatch batch) {
+        //  World space
         mapRenderer.setView(camera);
         mapRenderer.render();
 
-        // ── WORLD SPACE ───────────────────────────────────────────────
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
 
+        // Animated planet drawn first
+        if (planet != null) planet.draw(batch);
+
         entityManager.drawEntity(batch);
 
-        // Draw the number label on each asteroid
-        for (Entity e : entityManager.getEntityList()) {
+        // Take a snapshot to avoid ConcurrentModificationException if the
+        // entity list is modified mid-frame (e.g. collision deactivates an entity)
+        List<Entity> snapshot = new ArrayList<>(entityManager.getEntityList());
+
+        // Asteroid number labels
+        for (Entity e : snapshot) {
             if (e.isActive() && e.getTag() != null && e.getTag().startsWith("ASTEROID_")) {
-                String num = e.getTag().substring(9); // strip "ASTEROID_"
-                outputManager.drawText(batch, num, e.getX() + 15, e.getY() + 35, 1.2f);
+                String num = e.getTag().substring(9);
+                outputManager.drawText(batch, num,
+                    e.getX() + e.getWidth() / 4f,
+                    e.getY() + e.getHeight() * 0.65f, 1.4f);
+            }
+        }
+
+        // Power-up labels
+        for (Entity e : snapshot) {
+            if (e.isActive() && e.getTag() != null && e.getTag().startsWith("POWERUP_")) {
+                String label = friendlyPowerUpLabel(e.getTag());
+                outputManager.drawText(batch, label,
+                    e.getX(), e.getY() + POWERUP_SIZE + 4f, 0.9f, Color.CYAN);
             }
         }
 
@@ -426,44 +510,52 @@ public class MathGameScene extends Scene {
 
         batch.end();
 
-        // ── SCREEN SPACE / HUD ────────────────────────────────────────
-        batch.setProjectionMatrix(new com.badlogic.gdx.math.Matrix4().setToOrtho2D(
-                0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
+        //  HUD (screen space) 
+        batch.setProjectionMatrix(new com.badlogic.gdx.math.Matrix4()
+            .setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
         batch.begin();
 
         // ── Singleton: read live values for the HUD ───────────────────
         GameStateManager gsm = GameStateManager.getInstance();
+        int sw = Gdx.graphics.getWidth();
+        int sh = Gdx.graphics.getHeight();
 
         // Equation prompt
         outputManager.drawText(batch,
             "Solve: " + equationGenerator.getCurrentEquation(),
-            500, Gdx.graphics.getHeight() - 40, 2.0f);
+            sw / 2f - 140, sh - 30, 2.0f);
 
         // Score
         outputManager.drawText(batch,
             "SCORE: " + gsm.getScore(),
             20, Gdx.graphics.getHeight() - 20, 1.5f);
 
-        // Win progress counter  (e.g. "Answered: 2 / 5")
+        // Timer
+        int secs = (int) Math.ceil(gsm.getTimeSeconds());
+        Color timerColor = secs <= 20 ? Color.RED : Color.WHITE;
         outputManager.drawText(batch,
-            "Answered: " + gsm.getEquationsAnswered() + " / " + GameStateManager.EQUATIONS_TO_WIN,
-            20, Gdx.graphics.getHeight() - 120, 1.3f);
+            "TIME: " + secs + "s", 20, sh - 55, 1.3f, timerColor);
 
-        // Lives label
-        outputManager.drawText(batch, "LIVES: ",
-            20, Gdx.graphics.getHeight() - 60, 1.5f);
+        // Level
+        outputManager.drawText(batch,
+            "Level: " + gsm.getLevel(), 20, sh - 85, 1.2f);
 
-        // Heart icons
-        float heartX  = 90f;
-        float heartY  = Gdx.graphics.getHeight() - 85f;
-        float spacing = 40f;
-        int   maxLives     = GameStateManager.STARTING_LIVES;
-        int   currentLives = gsm.getLives();
+        // Lives Label
+        outputManager.drawText(batch, "LIVES: ", 20, sh - 112, 1.5f);
+        float heartX = 90f, heartY = sh - 137f;
+        for (int i = 0; i < GameStateManager.STARTING_LIVES; i++)
+            batch.draw(emptyHeart,  heartX + i * 40, heartY, 32, 32);
+        for (int i = 0; i < gsm.getLives(); i++)
+            batch.draw(filledHeart, heartX + i * 40, heartY, 32, 32);
 
-        for (int i = 0; i < maxLives;     i++) batch.draw(emptyHeart,  heartX + i * spacing, heartY, 32, 32);
-        for (int i = 0; i < currentLives; i++) batch.draw(filledHeart, heartX + i * spacing, heartY, 32, 32);
+        // Pause hint
+        outputManager.drawText(batch,
+            "[P] Pause", sw - 100, sh - 20, 1.0f);
 
         batch.end();
+
+        //  Pause overlay (always last, no-op when not paused) 
+        pauseOverlay.render(batch);
     }
 
     // -----------------------------------------------------------------
@@ -484,5 +576,105 @@ public class MathGameScene extends Scene {
         if (map         != null) map.dispose();
         entityManager.getEntityList().clear();
         entityManager.getPlayableEntityList().clear();
+    }
+
+    // -----------------------------------------------------------------
+    // Floating text helper
+    // -----------------------------------------------------------------
+
+    public void spawnFloatingText(String text, float x, float y, Color color) {
+        FloatingText ft = new FloatingText();
+        ft.text  = text;
+        ft.x     = x;
+        ft.y     = y;
+        ft.color = new Color(color);
+        floatingTexts.add(ft);
+    }
+
+    // -----------------------------------------------------------------
+    // Private helpers
+    // -----------------------------------------------------------------
+
+    /** Spawns the chaser entity well below the rocket's starting position. */
+    private void spawnChaser() {
+        int level = GameStateManager.getInstance().getLevel();
+
+        String chaserTexture = (level == 2) ? "lava.png" : "blackhole.png";
+        float  chaserW       = mapPixelWidth;  // full width — unavoidable
+        float  chaserH       = 200f;           // tall enough to match the black hole image
+
+        // Start 600px below the rocket so the player has breathing room at spawn
+        float startY = rocket.getY() - 600f;
+
+        chaser = new NonPlayableEntity(
+            chaserTexture,
+            0, startY,
+            0,                 // speed managed by ChaserBehavior
+            chaserW, chaserH,
+            "CHASER",
+            new ChaserBehavior(),
+            new ChaserCollisionBehavior(this),
+            rocket
+        );
+        entityManager.addEntity(chaser);
+    }
+
+    /** Spawns a random power-up at a safe position near but above the rocket. */
+    private void spawnPowerUp() {
+        PowerUpType[] types     = PowerUpType.values();
+        PowerUpType   type      = types[ThreadLocalRandom.current().nextInt(types.length)];
+        String[]      textures  = { "powerup_time.png", "powerup_life.png", "powerup_multiplier.png" };
+        String[]      sounds    = { "sfx_time.wav",     "sfx_life.wav",     "sfx_multiplier.wav"    };
+        int           idx       = type.ordinal();
+
+        // Spawn 200–600px above rocket, random X within map
+        float spawnY = rocket.getY()
+            + 200 + ThreadLocalRandom.current().nextFloat() * 400;
+        float spawnX = ThreadLocalRandom.current().nextFloat()
+            * (mapPixelWidth - POWERUP_SIZE);
+        spawnY = Math.min(spawnY, mapPixelHeight - POWERUP_SIZE - 100);
+
+        NonPlayableEntity pu = new NonPlayableEntity(
+            textures[idx],
+            spawnX, spawnY, 0,
+            POWERUP_SIZE, POWERUP_SIZE,
+            "POWERUP_" + type.name(),
+            new StationaryMovementBehavior(),
+            new PowerUpCollisionBehavior(type, this, outputManager, sounds[idx]),
+            rocket
+        );
+        entityManager.addEntity(pu);
+    }
+
+    /** Returns a random answer value that is not the correct answer. */
+    private int randomDecoy(int correctAnswer) {
+        int val;
+        do {
+            val = ThreadLocalRandom.current().nextInt(1, 41);
+        } while (val == correctAnswer);
+        return val;
+    }
+
+    private int computeLevel() {
+        return Math.max(1, GameStateManager.getInstance().getEquationsAnswered() + 1);
+    }
+
+    private String friendlyPowerUpLabel(String tag) {
+        if (tag.contains("TIME"))       return "+Time";
+        if (tag.contains("EXTRA"))      return "+Life";
+        if (tag.contains("MULTIPLIER")) return "2x Score";
+        return "?";
+    }
+
+    private void loadSfx() {
+        try {
+            correctAnswerSfx = new AudioSource("correctAns.wav");
+            correctAnswerSfx.setVolume(0.25f);
+        } catch (Exception e) { correctAnswerSfx = null; }
+
+        try {
+            wrongAnswerSfx = new AudioSource("collision.wav");
+            wrongAnswerSfx.setVolume(0.2f);
+        } catch (Exception e) { wrongAnswerSfx = null; }
     }
 }
