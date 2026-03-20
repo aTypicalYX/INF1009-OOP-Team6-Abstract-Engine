@@ -74,28 +74,41 @@ public class AsteroidFactory {
     /**
      * Helper algorithm to find a safe X/Y spawn coordinate.
      * It uses an Axis-Aligned Bounding Box (AABB) collision check against the player's current position.
+     * This ensures that the asteroid doesn't spawn directly on top of the player, which would be unfair.
+     * Additionally, it checks against existing asteroids to prevent overcrowding and ensure a fair spawn.
      */
     private float[] getSafeSpawnPosition(float width, float height) {
-        // Define the maximum bounds to keep the asteroid within the map
         float maxX = Math.max(0, mapWidth - width);
         float maxY = Math.max(0, mapHeight - height);
 
-        // Try up to 20 times to find a random spot that doesn't hit the player
-        for (int attempt = 0; attempt < 20; attempt++) {
+        // Increased to 50 attempts to ensure it finds a spot as the screen gets crowded
+        for (int attempt = 0; attempt < 50; attempt++) {
             float randomX = ThreadLocalRandom.current().nextFloat() * maxX;
             float randomY = ThreadLocalRandom.current().nextFloat() * maxY;
 
-            // Simple rectangle intersection logic
-            boolean intersects = randomX < targetRocket.getX() + targetRocket.getWidth()
+            // 1. Check intersection with the player
+            boolean hitsPlayer = randomX < targetRocket.getX() + targetRocket.getWidth()
                     && randomX + width > targetRocket.getX()
                     && randomY < targetRocket.getY() + targetRocket.getHeight()
                     && randomY + height > targetRocket.getY();
 
-            // If it doesn't intersect, it's safe! Return the coordinates.
-            if (!intersects) return new float[] { randomX, randomY };
+            // 2. Check intersection with other asteroids
+            boolean hitsOtherAsteroids = false;
+            for (Entity obstacle : obstaclesList) {
+                if (randomX < obstacle.getX() + obstacle.getWidth()
+                        && randomX + width > obstacle.getX()
+                        && randomY < obstacle.getY() + obstacle.getHeight()
+                        && randomY + height > obstacle.getY()) {
+                    hitsOtherAsteroids = true;
+                    break; // Stop checking this coordinate, it's blocked
+                }
+            }
+
+            // If it hits nothing, it's a safe spawn
+            if (!hitsPlayer && !hitsOtherAsteroids) {
+                return new float[] { randomX, randomY };
+            }
         }
-        
-        // Fallback coordinate if the algorithm fails (e.g., if the map is too small)
         return new float[] { 0, 0 };
     }
 }

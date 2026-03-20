@@ -53,6 +53,7 @@ public class EquationGenerator {
         int operatorType = rand.nextInt(0, maxOperator + 1);
         int num1, num2;
 
+        // Generate the equation based on the randomly selected operator.
         switch(operatorType) {
             case 0:
                 num1 = rand.nextInt(1, 21);

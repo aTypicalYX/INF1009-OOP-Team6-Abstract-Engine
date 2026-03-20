@@ -198,7 +198,8 @@ public class MathGameScene extends Scene {
         int correctIndex = ThreadLocalRandom.current().nextInt(0, ASTEROID_COUNT);
 
         // Increase asteroid speed based on level to ramp up difficulty. Each level adds 0.15f to the base speed.
-        float dynamicSpeed = ASTEROID_SPEED + ((level - 1) * 0.15f);
+        // Cap the speed at a maximum of 2.5f to prevent it from becoming impossible.
+        float dynamicSpeed = Math.min(2.5f, ASTEROID_SPEED + ((level - 1) * 0.15f));
 
         for (int i = 0; i < ASTEROID_COUNT; i++) {
             int valueForAsteroid;
