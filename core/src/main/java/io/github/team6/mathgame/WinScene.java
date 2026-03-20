@@ -9,24 +9,23 @@ import io.github.team6.scenes.MainMenuScene;
 import io.github.team6.scenes.Scene;
 
 /**
- * GameOverScene – displayed when the player runs out of lives.
+ * WinScene – displayed when the player correctly answers all 5 equations.
  *
  * Design Patterns Used:
- * - State Pattern: a discrete game state with its own render / update logic.
- * - Singleton Pattern (GameStateManager): reads the final score directly
- *   from the Singleton, removing the need to pass it as a constructor arg.
- *   Also calls reset() so the next session starts with full lives and 0 score.
+ * - State Pattern: WinScene is a distinct game state with its own
+ *   render/update behaviour, cleanly separated from MathGameScene.
+ * - Singleton Pattern (GameStateManager): reads the final score from the
+ *   single shared GameStateManager instance without needing it injected
+ *   via the constructor, demonstrating the Singleton's global accessibility.
  */
-public class GameOverScene extends Scene {
+public class WinScene extends Scene {
 
     private final SceneManager scenes;
 
     /**
-     * Score is no longer passed via constructor – it is read from the
-     * GameStateManager Singleton, keeping this class simpler and ensuring
-     * it always shows the authoritative value.
+     * @param scenes SceneManager used to transition back to the main menu.
      */
-    public GameOverScene(SceneManager scenes) {
+    public WinScene(SceneManager scenes) {
         this.scenes = scenes;
     }
 
@@ -38,7 +37,7 @@ public class GameOverScene extends Scene {
     @Override
     public void update(float dt) {
         if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
-            // Reset Singleton so the next session starts fresh
+            // Reset Singleton state before starting a new session
             GameStateManager.getInstance().reset();
             scenes.setScene(new MainMenuScene(scenes));
         }
@@ -46,19 +45,20 @@ public class GameOverScene extends Scene {
 
     @Override
     public void render(SpriteBatch batch) {
-        // Read authoritative score from the Singleton
+        // Access Singleton directly – no need to pass score through constructor
         int finalScore = GameStateManager.getInstance().getScore();
 
         batch.setProjectionMatrix(new com.badlogic.gdx.math.Matrix4().setToOrtho2D(
                 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
         batch.begin();
 
-        float cx = Gdx.graphics.getWidth()  / 2f;
+        float cx = Gdx.graphics.getWidth() / 2f;
         float cy = Gdx.graphics.getHeight() / 2f;
 
-        outputManager.drawText(batch, "GAME OVER",                    cx - 150, cy + 50,  3.0f);
-        outputManager.drawText(batch, "FINAL SCORE: " + finalScore,   cx - 120, cy - 20,  2.0f);
-        outputManager.drawText(batch, "Press ENTER to Return to Menu", cx - 220, cy - 100, 1.5f);
+        outputManager.drawText(batch, "YOU WIN!",           cx - 130, cy + 80,  3.0f);
+        outputManager.drawText(batch, "All 5 equations solved!", cx - 200, cy + 20, 1.8f);
+        outputManager.drawText(batch, "FINAL SCORE: " + finalScore, cx - 140, cy - 40, 2.0f);
+        outputManager.drawText(batch, "Press ENTER to Return to Menu", cx - 230, cy - 110, 1.5f);
 
         batch.end();
     }
