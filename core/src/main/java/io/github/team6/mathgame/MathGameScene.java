@@ -21,6 +21,7 @@ import io.github.team6.entities.Entity;
 import io.github.team6.entities.NonPlayableEntity;
 import io.github.team6.entities.PlayableEntity;
 import io.github.team6.entities.behavior.ResetOnTouchBehavior;
+import io.github.team6.inputoutput.AudioSource;
 import io.github.team6.inputoutput.MusicSource;
 import io.github.team6.managers.SceneManager;
 import io.github.team6.scenes.Scene;
@@ -108,6 +109,12 @@ public class MathGameScene extends Scene {
     private Texture emptyHeart;
 
     // -----------------------------------------------------------------
+    // Gameplay SFX
+    // -----------------------------------------------------------------
+    private AudioSource correctAnswerSfx;
+    private AudioSource wrongAnswerSfx;
+
+    // -----------------------------------------------------------------
     // Floating text pop-ups
     // -----------------------------------------------------------------
     private static class FloatingText {
@@ -169,7 +176,7 @@ public class MathGameScene extends Scene {
         // ── Create Player ─────────────────────────────────────────────
         rocket = new PlayableEntity(
             "spaceship.png",
-            "collision.wav",
+            null,
             outputManager,
             new ResetOnTouchBehavior(),
             100, 220,
@@ -178,7 +185,6 @@ public class MathGameScene extends Scene {
             "PLAYER",
             GameStateManager.STARTING_LIVES              // lives from Singleton constant
         );
-        rocket.setOutputManager(outputManager);
         entityManager.addEntity(rocket);
         entityManager.addPlayableEntity(rocket);
  
@@ -205,6 +211,22 @@ public class MathGameScene extends Scene {
  
         filledHeart = new Texture(Gdx.files.internal("heart-filled.png"));
         emptyHeart  = new Texture(Gdx.files.internal("heart-empty.png"));
+
+        try {
+            correctAnswerSfx = new AudioSource("correctAns.wav");
+            correctAnswerSfx.setVolume(0.25f);
+        } catch (Exception e) {
+            System.out.println("[DEBUG] correctAns.wav not found.");
+            correctAnswerSfx = null;
+        }
+
+        try {
+            wrongAnswerSfx = new AudioSource("collision.wav");
+            wrongAnswerSfx.setVolume(0.2f);
+        } catch (Exception e) {
+            System.out.println("[DEBUG] collision.wav not found for wrong-answer SFX.");
+            wrongAnswerSfx = null;
+        }
     }
 
     // -----------------------------------------------------------------
@@ -227,6 +249,18 @@ public class MathGameScene extends Scene {
      */
     public void triggerWin() {
         scenes.setScene(new WinScene(scenes));
+    }
+
+    public void playCorrectAnswerSfx() {
+        if (correctAnswerSfx != null) {
+            outputManager.play(correctAnswerSfx);
+        }
+    }
+
+    public void playWrongAnswerSfx() {
+        if (wrongAnswerSfx != null) {
+            outputManager.play(wrongAnswerSfx);
+        }
     }
 
     /**
@@ -438,6 +472,14 @@ public class MathGameScene extends Scene {
 
     @Override
     public void dispose() {
+        if (correctAnswerSfx != null) {
+            correctAnswerSfx.dispose();
+            correctAnswerSfx = null;
+        }
+        if (wrongAnswerSfx != null) {
+            wrongAnswerSfx.dispose();
+            wrongAnswerSfx = null;
+        }
         if (mapRenderer != null) mapRenderer.dispose();
         if (map         != null) map.dispose();
         entityManager.getEntityList().clear();

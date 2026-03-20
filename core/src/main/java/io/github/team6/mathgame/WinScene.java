@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+import io.github.team6.inputoutput.AudioSource;
 import io.github.team6.managers.SceneManager;
 import io.github.team6.scenes.MainMenuScene;
 import io.github.team6.scenes.Scene;
@@ -32,6 +33,9 @@ public class WinScene extends Scene {
     @Override
     public void onEnter() {
         outputManager.stopBgm();
+
+        // play win SFX once when this scene appears
+        outputManager.play(new AudioSource("gameWin.wav"));
     }
 
     @Override

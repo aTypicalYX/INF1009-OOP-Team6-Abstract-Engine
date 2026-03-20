@@ -69,6 +69,7 @@ public class NumberCollectionBehavior implements CollisionBehavior {
 
         if (equationGenerator.checkAnswer(numberValue)) {
             // ---- CORRECT ANSWER ----------------------------------------
+            scene.playCorrectAnswerSfx();
             gsm.addScore(GameStateManager.POINTS_PER_CORRECT);
             scene.spawnFloatingText("+10", self.getX(), self.getY() + 30, Color.GREEN);
 
@@ -84,6 +85,7 @@ public class NumberCollectionBehavior implements CollisionBehavior {
 
         } else {
             // ---- WRONG ANSWER ------------------------------------------
+            scene.playWrongAnswerSfx();
             boolean stillAlive = gsm.deductLife();
             scene.spawnFloatingText("-1 Life", self.getX(), self.getY() + 30, Color.RED);
 
