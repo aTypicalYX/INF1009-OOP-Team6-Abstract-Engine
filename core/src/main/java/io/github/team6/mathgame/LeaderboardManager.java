@@ -11,9 +11,9 @@ import com.badlogic.gdx.Preferences;
  * LeaderboardManager
  * Persists and retrieves the top 5 high scores using LibGDX Preferences.
  *
- * Storage format (key → value):
- *   "name_1" → "Alice"     "score_1" → 980
- *   "name_2" → "Bob"       "score_2" → 750
+ * Storage format (key : value):
+ *   "name_1" : "Alice"     "score_1" : 980
+ *   "name_2" : "Bob"       "score_2" : 750
  *   ... up to rank 5
  *
  * LibGDX Preferences automatically maps to:
@@ -34,7 +34,7 @@ public class LeaderboardManager {
     private static final int    MAX_ENTRIES = 5;
 
     // -----------------------------------------------------------------------
-    // ScoreEntry — immutable data record
+    // ScoreEntry (immutable data record)
     // -----------------------------------------------------------------------
 
     /** Immutable record representing one leaderboard entry. */
