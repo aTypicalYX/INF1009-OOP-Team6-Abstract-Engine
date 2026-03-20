@@ -29,9 +29,12 @@ public class OutputManager {
     private float sfxVolume;
     private float musicVolume;
 
-    // --- NEW: Text Rendering Engine Component ---
+    // NEW: Text Rendering Engine Component
     private BitmapFont font;
 
+    /*
+    OutputManager constructor initializes the audio system and the font engine.
+    */
     public OutputManager() {
         activeSfx = new ArrayList<>();
         masterVolume = 1f;
@@ -42,10 +45,8 @@ public class OutputManager {
         font = new BitmapFont(); 
     }
 
-    // --- NEW: Text Rendering Method ---
-
     /**
-     * Draws text to the screen using the provided SpriteBatch.
+     * Draws white text to the screen using the provided SpriteBatch.
      * This abstracts the font scaling and color settings away from the Scene.
      */
     public void drawText(SpriteBatch batch, String text, float x, float y, float scale) {
@@ -56,8 +57,21 @@ public class OutputManager {
         }
     }
 
+    /*
+    Overloaded method to allow specifying text color, providing more flexibility for different UI elements or game states.
+    Can be used for things like red damage numbers, green healing text, or any other color-coded information.
+    */
+    public void drawText(SpriteBatch batch, String text, float x, float y, float scale, com.badlogic.gdx.graphics.Color color) {
+        if (font != null && batch != null) {
+            font.setColor(color); 
+            font.getData().setScale(scale);
+            font.draw(batch, text, x, y);
+        }
+    }
+
     // ---- Sound Effects ----
 
+    // Play a sound effect, ensuring it is tracked for volume control and cleanup
     public void play(AudioSource sfx) {
         if (sfx == null) return;
 
@@ -69,12 +83,14 @@ public class OutputManager {
         sfx.play(finalVolume);
     }
 
+    // Stop all currently playing sound effects
     public void stopAllSfx() {
         for (AudioSource s : activeSfx) {
             s.stop();
         }
     }
 
+    // Set the volume for sound effects
     public void setSfxVolume(float volume) {
         sfxVolume = clamp(volume);
     }
@@ -131,6 +147,7 @@ public class OutputManager {
 
    // ---- Cleanup ----
 
+   // Dispose of all audio resources and the font engine when no longer needed
     public void dispose() {
         stopAllSfx();
 
@@ -146,13 +163,14 @@ public class OutputManager {
             bgm = null;
         }
 
-        // --- NEW: Dispose of the font resource ---
+        // Dispose of the font resource
         if (font != null) {
             font.dispose();
             font = null;
         }
     }
 
+    // Utility method to ensure volume values are within the valid range of 0.0f to 1.0f
     private float clamp(float v) {
         return Math.max(0f, Math.min(1f, v));
     }

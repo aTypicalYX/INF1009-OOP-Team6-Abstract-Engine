@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -32,17 +33,20 @@ Key Responsibilities:
 - Create the player entity (rocket) and manage its interactions.
 - Generate new rounds of asteroids with math problems and handle the game logic for scoring and lives
 - Render the game world, entities, and HUD (score, lives, current equation).
+- Handle the transition to the Game Over scene when the player runs out of lives.
 Design Patterns Used:
 1. Factory Pattern (AsteroidFactory): The MathGameScene delegates the creation of asteroids to the AsteroidFactory
 2. Strategy Pattern (MovementBehavior): Each asteroid can have a different movement behavior (e.g., chasing the player or stationary).
+3. Observer Pattern (CollisionBehavior): The NumberCollectionBehavior reacts to collisions between the player and asteroids to determine if the answer is correct and update the score/lives accordingly.
+4. Facade Pattern (OutputManager): The scene uses the OutputManager to handle all text rendering and audio, abstracting away the complexities of those systems.
 */
 public class MathGameScene extends Scene {
 
     private final SceneManager scenes;
     
     // Game Specific Logic
-    private EquationGenerator equationGenerator;
-    private AsteroidFactory asteroidFactory; // NEW: The Factory to handle spawning
+    private EquationGenerator equationGenerator; // Generates math problems and checks answers
+    private AsteroidFactory asteroidFactory; // The Factory to handle spawning
     private int score = 0;  // Track player score based on correct answers
     private int level = 1; // Track current level
     private int maxLives = 0; // no. of lives player starts with
@@ -69,10 +73,25 @@ public class MathGameScene extends Scene {
     private Texture filledHeart;
     private Texture emptyHeart;
 
+    // data structure to hold floating text info
+    private static class FloatingText {
+        String text;
+        float x, y;
+        Color color;
+        float timer = 1.0f; // Lives for 1 second
+    }
+
+    // List to track active popups
+    private final List<FloatingText> floatingTexts = new ArrayList<>();
+
     public MathGameScene(SceneManager scenes) {
         this.scenes = scenes;
     }
 
+
+    /*
+    onEnter() is called when this scene becomes active. It initializes the game world, loads resources, and sets up the first round of gameplay.
+    */
     @Override
     public void onEnter() {
         System.out.println("Entering Math Game Scene...");
@@ -114,7 +133,7 @@ public class MathGameScene extends Scene {
             "collision.wav",             
             outputManager,               
             new ResetOnTouchBehavior(),  
-            100, 220, 5, 50, 50, "PLAYER", 2
+            100, 220, 5, 50, 50, "PLAYER", 4
         );
         rocket.setOutputManager(outputManager);
 
@@ -141,6 +160,7 @@ public class MathGameScene extends Scene {
         emptyHeart = new Texture(Gdx.files.internal("heart-empty.png"));
     }
 
+    // Method to handle losing a life and checking for game over
     public void deductLife() {
         rocket.setLives(rocket.getLives()-1);
         if (rocket.getLives() <= 0) {
@@ -149,6 +169,7 @@ public class MathGameScene extends Scene {
         }
     }
 
+    // Method to add score and handle level progression
     public void addScore(int points) {
         score += points;
         if (score < 0) score = 0;
@@ -161,6 +182,8 @@ public class MathGameScene extends Scene {
         }
     }
 
+
+    // Method to generate a new round of asteroids with one correct answer and the rest as decoys
     public void generateNewRound() {
         equationGenerator.generateNewEquation();
         int correctAnswer = equationGenerator.getCurrentAnswer();
@@ -196,6 +219,20 @@ public class MathGameScene extends Scene {
         }
     }
 
+    // Method to spawn a popup at a specific world coordinate
+    public void spawnFloatingText(String text, float x, float y, Color color) {
+        FloatingText ft = new FloatingText();
+        ft.text = text;
+        ft.x = x;
+        ft.y = y;
+        ft.color = new Color(color); // Copy color so we can fade it independently
+        floatingTexts.add(ft);
+    }
+
+
+    /*
+    update(float dt) is called every frame to update the game logic. It handles player input, moves entities, checks collisions, and updates the camera to follow the player. It also updates any active floating text popups to make them float upwards and fade out over time.
+    */
     @Override
     public void update(float dt) {
         // Prevent updating if we've already died and are waiting for the scene to switch
@@ -218,26 +255,53 @@ public class MathGameScene extends Scene {
         float clampedY = Math.max(halfH, Math.min(rocket.getY() + rocket.getHeight() / 2f, mapPixelHeight - halfH));
         camera.position.set(clampedX, clampedY, 0);
         camera.update();
+
+        // --- NEW LOGIC: Update floating texts (float up and fade out) ---
+        // We loop backwards to safely remove items from the list while iterating
+        for (int i = floatingTexts.size() - 1; i >= 0; i--) {
+            FloatingText ft = floatingTexts.get(i);
+            ft.y += 50 * dt; // Float upwards at a speed of 50 pixels per second
+            ft.timer -= dt;  // Count down the 1-second timer
+            ft.color.a = Math.max(0, ft.timer); // Fade out the transparency (alpha)
+            
+            if (ft.timer <= 0) {
+                floatingTexts.remove(i); // Clean up dead text from memory
+            }
+        }
+        // ----------------------------------------------------------------
     }
     
+    /*
+    render(SpriteBatch batch) is called every frame to draw the game world. It first renders the tile map, then draws all entities (player and asteroids) in world space. It also renders any active floating text popups at their respective world coordinates. Finally, it switches to screen space to render the HUD elements like the current equation, score, and lives.
+    */
     @Override
     public void render(SpriteBatch batch) {
         mapRenderer.setView(camera);
         mapRenderer.render();
 
+        // --- LAYER 1: WORLD SPACE (Camera follows player) ---
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
         entityManager.drawEntity(batch);
         
-        // Use OutputManager for text rendering
+        // Use OutputManager for rendering numbers on Asteroids
         for (Entity entity : entityManager.getEntityList()) {
             if (entity.isActive() && entity.getTag() != null && entity.getTag().startsWith("ASTEROID_")) {
                 String numStr = entity.getTag().substring(9);
                 outputManager.drawText(batch, numStr, entity.getX() + 15, entity.getY() + 35, 1.2f);
             }
         }
+
+        // --- Render Floating Text ---
+        // We render it here so it stays attached to the exact world coordinate where the impact happened
+        for (FloatingText ft : floatingTexts) {
+            outputManager.drawText(batch, ft.text, ft.x, ft.y, 1.5f, ft.color);
+        }
+        // ---------------------------------------
+
         batch.end();
 
+        // --- LAYER 2: SCREEN SPACE / HUD (Static UI) ---
         batch.setProjectionMatrix(new com.badlogic.gdx.math.Matrix4().setToOrtho2D(
                 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
         batch.begin();
@@ -253,7 +317,6 @@ public class MathGameScene extends Scene {
         float heartX = 90;
         float heartY = Gdx.graphics.getHeight() - 85;
         float spacing = 40;
-        // int maxLives = rocket.getLives();; // max 5 lives
         int currentLives = rocket.getLives();
 
         // Draw Background (Empty Hearts)
@@ -268,6 +331,7 @@ public class MathGameScene extends Scene {
         batch.end();
     }
 
+    // Clean up resources when exiting the scene
     @Override
     public void dispose() {
         if (mapRenderer != null) mapRenderer.dispose();

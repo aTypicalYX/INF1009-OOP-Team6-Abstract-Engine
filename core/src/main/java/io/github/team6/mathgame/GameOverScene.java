@@ -11,6 +11,10 @@ import io.github.team6.scenes.Scene;
 /**
  * GameOverScene represents the end-state of the game.
  * Displays the final score and waits for user input to restart or exit.
+ * Design Patterns Used:
+ * - State Pattern: GameOverScene is a specific state of the game. It defines its own behavior for rendering and input handling, separate from the main gameplay scene.
+ * - Observer Pattern: It listens for specific user input (ENTER key) to trigger a transition back to the main menu. This decouples the input handling from the scene management logic.
+ * - Dependency Injection: The SceneManager is injected into the GameOverScene through its constructor, allowing it to manage scene transitions without directly instantiating other scenes.
  */
 public class GameOverScene extends Scene {
 

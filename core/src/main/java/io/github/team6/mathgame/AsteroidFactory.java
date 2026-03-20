@@ -11,13 +11,8 @@ import io.github.team6.entities.behavior.MovementBehavior;
 import io.github.team6.entities.behavior.StationaryMovementBehavior;
 
 /**
- * Factory Design Pattern:
- * The Factory Pattern centralizes the complex creation logic of objects. 
- * Instead of the MathGameScene knowing *how* to build an asteroid, calculate its safe spawn location, 
- * and attach its specific movement and collision behaviors, the scene just asks the Factory: "Give me an asteroid."
- * * Benefits:
- * - Low Coupling: Keeps the MathGameScene cleaner and easier to read.
- * - Reusability: If you want to spawn asteroids in other scenes or modes later, you just use this factory.
+AsteroidFactory is responsible for creating asteroid entities with the correct configuration and behavior.
+It uses the Factory design pattern to encapsulate the construction logic of asteroids, which includes determining spawn positions, assigning movement strategies, and setting up collision behaviors.
  */
 public class AsteroidFactory {
     
