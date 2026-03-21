@@ -14,6 +14,7 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import io.github.team6.managers.SceneManager;
+import io.github.team6.mathgame.IntroScene;
 import io.github.team6.mathgame.LeaderboardScene;
 import io.github.team6.mathgame.MathGameScene;
 
@@ -66,10 +67,10 @@ public class MainMenuScene extends Scene {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
 
-                // Switch State: Load the Main Game
+                // Switch State: Load the Main Game via the intro cutscene
                 //scenes.setScene(new MainScene(scenes));
-                // NOTE: To change back to the original MainScene from Abstract Engine Part 1, just replace MathGameScene with MainScene here.
-                scenes.setScene(new MathGameScene(scenes));
+                // NOTE: To change back to the original MainScene from Abstract Engine Part 1, just replace IntroScene with MainScene here.
+                scenes.setScene(new IntroScene(scenes));
             }
         });
 

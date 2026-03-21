@@ -46,6 +46,7 @@ public class PauseOverlay {
     private final OutputManager  outputManager;
 
     private boolean paused = false;
+    private com.badlogic.gdx.InputProcessor fallbackProcessor = null;
 
     private final ShapeRenderer shapeRenderer;
     private Stage  stage;
@@ -70,8 +71,22 @@ public class PauseOverlay {
         if (paused) {
             Gdx.input.setInputProcessor(stage);
         } else {
-            Gdx.input.setInputProcessor(null);
+            // Restore the caller's input processor if one was registered
+            if (fallbackProcessor != null) {
+                Gdx.input.setInputProcessor(fallbackProcessor);
+            } else {
+                Gdx.input.setInputProcessor(null);
+            }
         }
+    }
+
+    /**
+     * Registers an input processor to restore when the player unpauses.
+     * Call this after building the scene's Stage so button clicks keep working.
+     * @param processor The Stage or InputProcessor to restore on resume.
+     */
+    public void setFallbackProcessor(com.badlogic.gdx.InputProcessor processor) {
+        this.fallbackProcessor = processor;
     }
 
     public boolean isPaused() { return paused; }

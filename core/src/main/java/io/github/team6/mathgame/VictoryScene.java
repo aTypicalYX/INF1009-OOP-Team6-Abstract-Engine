@@ -134,9 +134,8 @@ public class VictoryScene extends Scene {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 if (levelCompleted < 2) {
-                    // Carry score into level 2, bump level
-                    GameStateManager.getInstance().setLevel(2);
-                    scenes.setScene(new MathGameScene(scenes));
+                    // Show Level 2 cutscene before starting Level 2
+                    scenes.setScene(new IntroScene(scenes, 2));
                 } else {
                     GameStateManager.getInstance().reset();
                     scenes.setScene(new MathGameScene(scenes));

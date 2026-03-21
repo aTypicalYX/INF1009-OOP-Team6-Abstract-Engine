@@ -158,9 +158,13 @@ public class MathGameScene extends Scene {
     public void onEnter() {
         System.out.println("[MathGame] Entering — Level " + GameStateManager.getInstance().getLevel());
 
-        // Only reset if starting fresh (level 1). Level 2 carries score/lives over.
+        // Only reset fully if starting fresh (level 1).
+        // Level 2 carries the score over but refreshes lives and timer.
         if (GameStateManager.getInstance().getLevel() == 1) {
             GameStateManager.getInstance().reset();
+        } else {
+            // Level 2 entry: restore lives and restart the timer, keep score
+            GameStateManager.getInstance().refreshLivesAndTimer();
         }
 
         equationGenerator = new EquationGenerator();

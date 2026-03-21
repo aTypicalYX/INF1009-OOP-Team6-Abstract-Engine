@@ -119,6 +119,17 @@ public class GameStateManager {
         if (lives < STARTING_LIVES) lives++;
     }
 
+    /**
+     * Called when entering Level 2.
+     * Restores lives to full and resets the timer, but preserves the score
+     * and equationsAnswered count so progress carries over between levels.
+     */
+    public void refreshLivesAndTimer() {
+        lives       = STARTING_LIVES;
+        timeSeconds = STARTING_TIME;
+        gameOver    = false;
+    }
+
     public boolean isGameOver() { return gameOver; }
 
     // -----------------------------------------------------------------------
