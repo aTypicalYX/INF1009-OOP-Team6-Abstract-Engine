@@ -6,37 +6,50 @@ import io.github.team6.entities.behavior.MovementBehavior;
 /**
  * ChaserBehavior
  * MovementBehavior for the chaser entity (black hole / lava).
- * Moves the entity upward at a base speed that is scaled by the current level.
- *
- * Speed formula: baseSpeed + (level - 1) * SPEED_INCREMENT
- * This means the chaser gets faster as the player answers more equations.
- *
+ * * Uses "Rubber-Banding" logic: The base speed scales with the level, 
+ * but if the player gets too far ahead, the chaser multiplies its speed 
+ * to catch up, guaranteeing constant tension.
+ * 
  * OOP Concepts:
- * - Strategy Pattern: Implements MovementBehavior — swappable at construction
- *   time. The ChaserEntity does not know how it moves, only that it does.
- * - Single Responsibility: Only moves the entity upward. All game-over
- *   logic is handled by ChaserCollisionBehavior.
+ * - Strategy Pattern: ChaserBehavior is one of potentially many MovementBehaviors that can be swapped in and out for different entities or even the same entity at different times.
+ *  The Chaser entity simply calls its assigned MovementBehavior's move() method without needing to know the details of how it calculates movement.
+ * - Single Responsibility: Only moves the entity upward. All game-over logic is handled by ChaserCollisionBehavior.
  * - Open/Closed: Adding a new chase pattern (e.g. sinusoidal) requires
  *   only a new class implementing MovementBehavior — no entity changes.
+ * - Encapsulation: The internal logic of how the speed is calculated and applied is hidden within this class, allowing for easy adjustments without affecting other parts of the codebase.
  */
 public class ChaserBehavior implements MovementBehavior {
 
-    private static final float BASE_SPEED        = 0.4f;
-    private static final float LEVEL_INCREMENT   = 0.10f;
-    private static final float TIME_ACCELERATION = 0.004f; // extra speed per second elapsed
-    private static final float MAX_SPEED         = 3.0f;   // hard cap so it never becomes impossible
+    private static final float BASE_SPEED             = 0.5f;
+    private static final float LEVEL_INCREMENT        = 0.15f;
+    private static final float MAX_SPEED              = 4.0f;   
+
+    // --- NEW: Rubber-Band Tuning Constants ---
+    private static final float RUBBER_BAND_DISTANCE   = 700f; // Roughly one screen height
+    private static final float RUBBER_BAND_MULTIPLIER = 2.5f; // Max speed boost when catching up
 
     @Override
     public void move(Entity self, Entity target) {
-        int   level   = GameStateManager.getInstance().getLevel();
-        float elapsed = GameStateManager.STARTING_TIME
-                        - GameStateManager.getInstance().getTimeSeconds();
+        int level = GameStateManager.getInstance().getLevel();
 
-        float currentSpeed = BASE_SPEED
-                           + (level - 1) * LEVEL_INCREMENT
-                           + elapsed * TIME_ACCELERATION;
+        // 1. Calculate the normal speed for this level
+        float currentSpeed = BASE_SPEED + (level - 1) * LEVEL_INCREMENT;
 
-        // Clamp so the chaser never becomes impossibly fast
+        // 2. Apply Rubber-Banding if the player is getting too far away
+        if (target != null) {
+            float distanceToPlayer = target.getY() - self.getY();
+            
+            if (distanceToPlayer > RUBBER_BAND_DISTANCE) {
+                // The further away the player is, the faster the black hole goes
+                float extraDistance = distanceToPlayer - RUBBER_BAND_DISTANCE;
+                float catchUpFactor = 1.0f + (extraDistance * 0.005f); // Smooth acceleration curve
+                
+                // Multiply speed, but cap the multiplier so it doesn't instantly teleport
+                currentSpeed *= Math.min(catchUpFactor, RUBBER_BAND_MULTIPLIER);
+            }
+        }
+
+        // 3. Hard clamp the absolute maximum speed so it doesn't break physics
         currentSpeed = Math.min(currentSpeed, MAX_SPEED);
 
         self.setY(self.getY() + currentSpeed);
