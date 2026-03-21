@@ -576,6 +576,27 @@ public class MathGameScene extends Scene {
         batch.draw(progressIcon, barX, currentY - 16f, 32, 32);
         // ------------------------------------------------
 
+        // --- Danger Warning (Pulsing Text) ---
+        // Only check if the chaser actually exists and is active
+        if (chaser != null && chaser.isActive()) {
+            
+            // Calculate the exact pixel gap between the rocket and the top edge of the chaser
+            float gap = rocket.getY() - (chaser.getY() + chaser.getHeight());
+            
+            // If the chaser is closer than 450 pixels (about half the screen height)
+            if (gap < 450f) { 
+                
+                // Use a Sine wave based on the game timer to create a smooth pulse (oscillates between 0.3 and 1.0)
+                float pulseAlpha = 0.65f + 0.35f * (float) Math.sin(gsm.getTimeSeconds() * 10f);
+                Color warningColor = new Color(1f, 0.1f, 0.1f, pulseAlpha); // Bright Red with pulsing transparency
+                
+                // Draw it near the bottom center of the screen so the player sees it looking down
+                outputManager.drawText(batch, "WARNING: ESCAPE THE VOID!", 
+                    sw / 2f - 240, 150, 1.8f, warningColor);
+            }
+        }
+        // ------------------------------------------------
+
         batch.end();
 
         //  Pause overlay (always last, no-op when not paused) 
