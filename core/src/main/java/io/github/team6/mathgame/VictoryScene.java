@@ -44,6 +44,9 @@ public class VictoryScene extends Scene {
         this.levelCompleted = levelCompleted;
     }
 
+    // -----------------------------------------------------------------------
+    // Scene Lifecycle
+    // -----------------------------------------------------------------------
     @Override
     public void onEnter() {
         outputManager.stopBgm();
@@ -89,6 +92,7 @@ public class VictoryScene extends Scene {
     // UI
     // -----------------------------------------------------------------------
 
+    // Builds the victory screen UI with labels and buttons.
     private void buildUI() {
         GameStateManager gsm        = GameStateManager.getInstance();
         int              finalScore = gsm.getScore();

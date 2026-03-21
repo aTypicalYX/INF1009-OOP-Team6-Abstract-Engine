@@ -548,6 +548,11 @@ public class MathGameScene extends Scene {
         for (int i = 0; i < gsm.getLives(); i++)
             batch.draw(filledHeart, heartX + i * 40, heartY, 32, 32);
 
+        // Equations answered counter
+        outputManager.drawText(batch,
+            "Equations Solved: " + gsm.getEquationsAnswered(),
+            20, Gdx.graphics.getHeight() - 150, 1.3f);
+
         // Pause hint
         outputManager.drawText(batch,
             "[P] Pause", sw - 100, sh - 20, 1.0f);
