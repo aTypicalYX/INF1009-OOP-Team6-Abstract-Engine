@@ -120,6 +120,8 @@ public class LeaderboardManager {
     // Private helpers
     // -----------------------------------------------------------------------
 
+    
+
     private void save(List<ScoreEntry> entries) {
         Preferences prefs = Gdx.app.getPreferences(PREFS_NAME);
         // Clear old values first so stale entries don't linger
@@ -135,7 +137,8 @@ public class LeaderboardManager {
     }
 
     private String truncate(String name) {
-        if (name == null || name.isBlank()) return "???";
+        // Replaced isBlank() with trim().isEmpty() for Java 8 compatibility
+        if (name == null || name.trim().isEmpty()) return "???";
         name = name.trim();
         return name.length() > 12 ? name.substring(0, 12) : name;
     }
