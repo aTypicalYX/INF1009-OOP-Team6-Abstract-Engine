@@ -39,6 +39,7 @@ public class PowerUpCollisionBehavior implements CollisionBehavior {
         this.soundPath     = soundPath;
     }
 
+    // When the player collides with the power-up, apply the effect and play the sound.
     @Override
     public void onCollision(Entity self, Entity other) {
         if (!"PLAYER".equals(other.getTag())) return;
@@ -54,8 +55,10 @@ public class PowerUpCollisionBehavior implements CollisionBehavior {
             }
         }
 
+        // Apply the power-up effect by mutating shared game state through the singleton manager
         GameStateManager gsm = GameStateManager.getInstance();
 
+        // Each power-up type has a different effect on the game state, and we display a floating text to give feedback to the player.
         switch (type) {
             case TIME_EXTENSION:
                 gsm.addTime(TIME_EXTENSION_SECONDS);

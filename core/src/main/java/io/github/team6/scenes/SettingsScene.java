@@ -16,6 +16,14 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import io.github.team6.managers.SceneManager;
 
+/*
+SettingsScene is a simple UI scene that allows the player to adjust game settings, such as master volume.
+It is launched from the main menu and has a "Back" button to return to the main menu. The master volume slider updates the OutputManager's master volume in real-time, and the current percentage is displayed in a label above the slider.
+OOP Concepts:
+- Inheritance: Extends Scene, so it follows the same lifecycle (onEnter, update, render, dispose).
+- Composition: Owns a Stage and Skin for UI management.
+- Observer Pattern: Uses ChangeListeners to react to UI interactions (slider changes and button clicks).
+*/
 public class SettingsScene extends Scene {
     // Reference to SceneManager (used for scene switching)
     private final SceneManager scenes;

@@ -160,6 +160,7 @@ public class PauseOverlay {
             }
         });
 
+        // Quit button resets game state and returns to main menu scene
         quitBtn.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
