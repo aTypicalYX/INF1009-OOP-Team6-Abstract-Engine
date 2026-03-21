@@ -116,7 +116,7 @@ public class MathGameScene extends Scene {
     // -----------------------------------------------------------------
     private Texture filledHeart;
     private Texture emptyHeart;
-
+    private Texture progressIcon; // The mini-spaceship for the map tracker
     // -----------------------------------------------------------------
     // Gameplay SFX
     // -----------------------------------------------------------------
@@ -266,6 +266,7 @@ public class MathGameScene extends Scene {
         //  HUD textures 
         filledHeart = new Texture(Gdx.files.internal("heart-filled.png"));
         emptyHeart  = new Texture(Gdx.files.internal("heart-empty.png"));
+        progressIcon = new Texture(Gdx.files.internal("spaceship.png")); // mini-spaceship icon for the map tracker
 
         //  Pause overlay
         pauseOverlay = new PauseOverlay(scenes, outputManager);
@@ -557,6 +558,24 @@ public class MathGameScene extends Scene {
         outputManager.drawText(batch,
             "[P] Pause", sw - 100, sh - 20, 1.0f);
 
+        // --- Dynamic Distance Progress Bar ---
+        float finishLineY = (planetZone != null) ? planetZone.y : mapPixelHeight;
+        float progress = rocket.getY() / finishLineY;
+        progress = Math.max(0f, Math.min(1f, progress)); 
+
+        float barX = sw - 60f;
+        float barBottom = 100f;
+        float barTop = sh - 100f;
+
+        for (float y = barBottom; y <= barTop; y += 30f) {
+            outputManager.drawText(batch, ".", barX + 12f, y, 1.0f, Color.DARK_GRAY);
+        }
+        outputManager.drawText(batch, "PLANET", barX - 20f, barTop + 40f, 1.0f, Color.GREEN);
+        
+        float currentY = barBottom + (progress * (barTop - barBottom));
+        batch.draw(progressIcon, barX, currentY - 16f, 32, 32);
+        // ------------------------------------------------
+
         batch.end();
 
         //  Pause overlay (always last, no-op when not paused) 
@@ -569,6 +588,8 @@ public class MathGameScene extends Scene {
 
     @Override
     public void dispose() {
+        if (progressIcon != null) progressIcon.dispose();
+        
         if (correctAnswerSfx != null) {
             correctAnswerSfx.dispose();
             correctAnswerSfx = null;
