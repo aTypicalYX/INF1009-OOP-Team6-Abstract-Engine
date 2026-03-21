@@ -108,11 +108,20 @@ public class AsteroidFactory {
             ThreadLocalRandom.current().nextBoolean() ? chasingFactory : stationaryFactory;
 
         // Step 3 – delegate the actual object construction
-        return chosenFactory.createAsteroid(
+        NonPlayableEntity asteroid = chosenFactory.createAsteroid(
             numberValue, size, speed,
             pos[0], pos[1],
             equationGenerator, scene
         );
+
+        // --- Tumbling Asteroids ---
+        // Generate a random spin between -150 and +150 degrees per second.
+        // Negative = clockwise spin. Positive = counter-clockwise spin.
+        float randomSpin = ThreadLocalRandom.current().nextFloat() * 300f - 150f;
+        asteroid.setRotationSpeed(randomSpin);
+        // -------------------------------------
+
+        return asteroid;
     }
 
     // -------------------------------------------------------------------

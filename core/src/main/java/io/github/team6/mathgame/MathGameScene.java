@@ -678,16 +678,36 @@ public class MathGameScene extends Scene {
         String[]      sounds    = { "sfx_time.wav",     "sfx_life.wav",     "sfx_multiplier.wav"    };
         int           idx       = type.ordinal();
 
-        // Spawn 200–600px above rocket, random X within map
-        float spawnY = rocket.getY()
-            + 200 + ThreadLocalRandom.current().nextFloat() * 400;
-        float spawnX = ThreadLocalRandom.current().nextFloat()
-            * (mapPixelWidth - POWERUP_SIZE);
-        spawnY = Math.min(spawnY, mapPixelHeight - POWERUP_SIZE - 100);
+        float spawnX = 0, spawnY = 0;
+        boolean safePosFound = false;
+
+        // --- Prevent Power-ups from spawning inside walls ---
+        for (int i = 0; i < 20; i++) { // Try up to 20 times to find a safe spot
+            spawnY = rocket.getY() + 200 + ThreadLocalRandom.current().nextFloat() * 400;
+            spawnY = Math.min(spawnY, mapPixelHeight - POWERUP_SIZE - 100);
+            spawnX = ThreadLocalRandom.current().nextFloat() * (mapPixelWidth - POWERUP_SIZE);
+
+            Rectangle puBox = new Rectangle(spawnX, spawnY, POWERUP_SIZE, POWERUP_SIZE);
+            boolean hitsWall = false;
+            
+            for (Rectangle wall : worldColliders) {
+                if (puBox.overlaps(wall)) {
+                    hitsWall = true;
+                    break;
+                }
+            }
+            if (!hitsWall) {
+                safePosFound = true;
+                break; // Found a good spot, exit the loop
+            }
+        }
+        
+        // If the screen is completely full (very rare), just skip spawning this power-up
+        if (!safePosFound) return; 
+        // ----------------------------------------------------------------
 
         NonPlayableEntity pu = new NonPlayableEntity(
-            textures[idx],
-            spawnX, spawnY, 0,
+            textures[idx], spawnX, spawnY, 0,
             POWERUP_SIZE, POWERUP_SIZE,
             "POWERUP_" + type.name(),
             new StationaryMovementBehavior(),
