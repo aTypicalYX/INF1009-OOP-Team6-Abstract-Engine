@@ -48,7 +48,7 @@ public class MainMenuScene extends Scene {
         skin = new Skin(Gdx.files.internal("uiskin.json"));
 
         // UI Element Creation
-        Label title = new Label("[CHANGE TO SOMETHING ELSE like something cool idk up to you]", skin);
+        Label title = new Label("[SPACE COUNT ! ]", skin);
         title.setAlignment(Align.center);
         title.setFontScale(2.2f);
 
