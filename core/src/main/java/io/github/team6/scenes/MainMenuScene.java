@@ -16,7 +16,6 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import io.github.team6.managers.SceneManager;
 import io.github.team6.mathgame.IntroScene;
 import io.github.team6.mathgame.LeaderboardScene;
-import io.github.team6.mathgame.MathGameScene;
 
 public class MainMenuScene extends Scene {
 
@@ -49,7 +48,7 @@ public class MainMenuScene extends Scene {
         skin = new Skin(Gdx.files.internal("uiskin.json"));
 
         // UI Element Creation
-        Label title = new Label("[SPACE COUNT ! ]", skin);
+        Label title = new Label("SPACE COUNT !", skin);
         title.setAlignment(Align.center);
         title.setFontScale(2.2f);
 
