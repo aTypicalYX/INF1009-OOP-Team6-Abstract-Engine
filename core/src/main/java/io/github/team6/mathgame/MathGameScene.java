@@ -118,6 +118,7 @@ public class MathGameScene extends Scene {
     private Texture filledHeart;
     private Texture emptyHeart;
     private Texture progressIcon; // The mini-spaceship for the map tracker
+    private Texture equationBg;   // Background panel for the equation HUD
     // -----------------------------------------------------------------
     // Gameplay SFX
     // -----------------------------------------------------------------
@@ -269,9 +270,10 @@ public class MathGameScene extends Scene {
         loadSfx();
 
         //  HUD textures 
-        filledHeart = new Texture(Gdx.files.internal("heart-filled.png"));
-        emptyHeart  = new Texture(Gdx.files.internal("heart-empty.png"));
-        progressIcon = new Texture(Gdx.files.internal("spaceship.png")); // mini-spaceship icon for the map tracker
+        filledHeart  = new Texture(Gdx.files.internal("heart-filled.png"));
+        emptyHeart   = new Texture(Gdx.files.internal("heart-empty.png"));
+        progressIcon = new Texture(Gdx.files.internal("spaceship.png"));
+        equationBg   = new Texture(Gdx.files.internal("equationBG.png"));
 
         //  Pause overlay
         pauseOverlay = new PauseOverlay(scenes, outputManager);
@@ -554,10 +556,17 @@ public class MathGameScene extends Scene {
         int sw = Gdx.graphics.getWidth();
         int sh = Gdx.graphics.getHeight();
 
-        // Equation prompt
+        // Equation background image + prompt
+        float eqBgW = 420f;
+        float eqBgH = 52f;
+        float eqBgX = sw / 2f - eqBgW / 2f;
+        float eqBgY = sh - eqBgH - 8f;
+        if (equationBg != null) {
+            batch.draw(equationBg, eqBgX, eqBgY, eqBgW, eqBgH);
+        }
         outputManager.drawText(batch,
             "Solve: " + equationGenerator.getCurrentEquation(),
-            sw / 2f - 140, sh - 30, 3.0f);
+            sw / 2f - 110, sh - 25, 2.0f);
 
         // Score
         outputManager.drawText(batch,
@@ -643,6 +652,7 @@ public class MathGameScene extends Scene {
     @Override
     public void dispose() {
         if (progressIcon != null) progressIcon.dispose();
+        if (equationBg   != null) equationBg.dispose();
         
         if (correctAnswerSfx != null) {
             correctAnswerSfx.dispose();
