@@ -119,6 +119,7 @@ public class MathGameScene extends Scene {
     private Texture emptyHeart;
     private Texture progressIcon; // The mini-spaceship for the map tracker
     private Texture equationBg;   // Background panel for the equation HUD
+    private Texture infoBg;       // Background panel for the stats HUD (top-left)
     // -----------------------------------------------------------------
     // Gameplay SFX
     // -----------------------------------------------------------------
@@ -274,6 +275,7 @@ public class MathGameScene extends Scene {
         emptyHeart   = new Texture(Gdx.files.internal("heart-empty.png"));
         progressIcon = new Texture(Gdx.files.internal("spaceship.png"));
         equationBg   = new Texture(Gdx.files.internal("equationBG.png"));
+        infoBg       = new Texture(Gdx.files.internal("InfoBG.png"));
 
         //  Pause overlay
         pauseOverlay = new PauseOverlay(scenes, outputManager);
@@ -566,7 +568,12 @@ public class MathGameScene extends Scene {
         }
         outputManager.drawText(batch,
             "Solve: " + equationGenerator.getCurrentEquation(),
-            sw / 2f - 110, sh - 25, 2.0f);
+            sw / 2f - 120, sh - 25, 2.0f);
+
+        // Stats HUD background image
+        if (infoBg != null) {
+            batch.draw(infoBg, 10, sh - 185, 280, 180);
+        }
 
         // Score
         outputManager.drawText(batch,
@@ -653,6 +660,7 @@ public class MathGameScene extends Scene {
     public void dispose() {
         if (progressIcon != null) progressIcon.dispose();
         if (equationBg   != null) equationBg.dispose();
+        if (infoBg       != null) infoBg.dispose();
         
         if (correctAnswerSfx != null) {
             correctAnswerSfx.dispose();
