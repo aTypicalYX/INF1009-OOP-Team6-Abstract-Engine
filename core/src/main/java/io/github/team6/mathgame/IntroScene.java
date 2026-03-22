@@ -59,36 +59,36 @@ public class IntroScene extends Scene {
         {
             "Danger Approaches",
             "A dark hole is encroaching your spaceship, consuming everything in its path.\n\n" +
-            "Then — a faint signal. It's coming from one of the planets above."
+            "Then - a faint signal. It's coming from one of the planets above."
         },
         {
             "The Equation Engine",
             "Thankfully, your ship runs on an equation engine.\n\n" +
-            "And the world is made of math — including the asteroids floating around you!\n\n" +
+            "And the world is made of math - including the asteroids floating around you!\n\n" +
             "Collect the correct asteroid to fuel your journey home."
         },
         {
             "How to Move",
             "Use the ARROW KEYS to fly your spaceship in any direction.\n\n" +
-            "Navigate carefully — the further up you travel, the closer you are to safety."
+            "Navigate carefully - the further up you travel, the closer you are to safety."
         },
         {
             "Solving Equations",
             "Each round, an equation appears at the top of the screen.\n\n" +
-            "Asteroids float around you — each carrying a number.\n\n" +
+            "Asteroids float around you - each carrying a number.\n\n" +
             "Fly into the asteroid with the CORRECT ANSWER to collect fuel.\n\n" +
             "Hit a WRONG answer and you lose a life!"
         },
         {
             "Power-Ups",
             "Keep an eye out for glowing power-ups drifting through space. Fly into them to collect!\n\n" +
-            "+Time         —  extends your survival timer\n\n" +
-            "+Life          —  restores one lost life\n\n" +
-            "2x Score   —  doubles points for your next correct answer"
+            "+Time         - extends your survival timer\n\n" +
+            "+Life          - restores one lost life\n\n" +
+            "2x Score   - doubles points for your next correct answer"
         },
         {
             "Watch Your Back",
-            "The black hole below is rising — and it gets faster over time.\n\n" +
+            "The black hole below is rising - and it gets faster over time.\n\n" +
             "If it catches you, it's game over instantly.\n\n" +
             "Press P or ESC at any time to PAUSE the game.\n\n" +
             "Good luck, astronaut. The planet is counting on you."
@@ -106,20 +106,20 @@ public class IntroScene extends Scene {
         },
         {
             "A New Threat",
-            "The lava is rising fast — and it won't stop for anyone.\n\n" +
+            "The lava is rising fast - and it won't stop for anyone.\n\n" +
             "You need to launch your ship immediately and make your escape before it's too late."
         },
         {
             "The Equations Have Changed",
             "Level 2 introduces subtraction alongside addition.\n\n" +
             "Keep a sharp eye on the equation at the top of the screen.\n\n" +
-            "The debris floating around you still holds the answers — " +
+            "The debris floating around you still holds the answers - " +
             "collect the correct one to keep your engines burning."
         },
         {
             "Stay Sharp",
             "The lava rises faster than the black hole did.\n\n" +
-            "Power-ups are still scattered across the map — use them wisely.\n\n" +
+            "Power-ups are still scattered across the map - use them wisely.\n\n" +
             "Reach the planet above to escape. Good luck, astronaut.\n\n" +
             "You're going to need it."
         }
@@ -146,7 +146,7 @@ public class IntroScene extends Scene {
     private TextButton nextBtn;
     private PauseOverlay pauseOverlay;
 
-    // Power-up icons — loaded for the power-up tutorial panel
+    // Power-up icons - loaded for the power-up tutorial panel
     private com.badlogic.gdx.graphics.Texture iconTime;
     private com.badlogic.gdx.graphics.Texture iconLife;
     private com.badlogic.gdx.graphics.Texture iconMultiplier;
@@ -160,12 +160,12 @@ public class IntroScene extends Scene {
 
     // =================================================================
 
-    /** Standard intro — played before Level 1. */
+    /** Standard intro - played before Level 1. */
     public IntroScene(SceneManager scenes) {
         this(scenes, 1);
     }
 
-    /** Level-aware constructor — pass 2 for the Level 2 cutscene. */
+    /** Level-aware constructor - pass 2 for the Level 2 cutscene. */
     public IntroScene(SceneManager scenes, int levelContext) {
         this.scenes       = scenes;
         this.levelContext = levelContext;
@@ -186,12 +186,12 @@ public class IntroScene extends Scene {
 
         skin = new Skin(Gdx.files.internal("uiskin.json"));
 
-        // Pause overlay — allows the player to pause during the cutscene
+        // Pause overlay - allows the player to pause during the cutscene
         pauseOverlay = new PauseOverlay(scenes, outputManager);
         // Register the intro's Stage so button clicks are restored after unpausing
         pauseOverlay.setFallbackProcessor(stage);
 
-        // Load power-up icons for the tutorial panel (safe — won't crash if missing)
+        // Load power-up icons for the tutorial panel (safe - won't crash if missing)
         try { iconTime       = new com.badlogic.gdx.graphics.Texture(Gdx.files.internal("powerup_time.png")); }       catch (Exception e) { iconTime = null; }
         try { iconLife       = new com.badlogic.gdx.graphics.Texture(Gdx.files.internal("powerup_life.png")); }       catch (Exception e) { iconLife = null; }
         try { iconMultiplier = new com.badlogic.gdx.graphics.Texture(Gdx.files.internal("powerup_multiplier.png")); } catch (Exception e) { iconMultiplier = null; }
@@ -202,7 +202,7 @@ public class IntroScene extends Scene {
 
     @Override
     public void update(float dt) {
-        // Pause toggle — P or ESC
+        // Pause toggle - P or ESC
         if (Gdx.input.isKeyJustPressed(Input.Keys.P)
                 || Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             pauseOverlay.toggle();
@@ -211,7 +211,7 @@ public class IntroScene extends Scene {
 
         stage.act(dt);
 
-        // Typewriter tick — advance characters shown over time
+        // Typewriter tick - advance characters shown over time
         String fullBody = activePanels()[currentPanel][1];
         if (charsShown < fullBody.length()) {
             typeTimer += dt;
@@ -219,7 +219,7 @@ public class IntroScene extends Scene {
             bodyLabel.setText(fullBody.substring(0, charsShown));
             nextBtn.setText("Skip text");
         } else {
-            // Text fully shown — update button label for context
+            // Text fully shown - update button label for context
             boolean isLastPanel = currentPanel >= activePanels().length - 1;
             nextBtn.setText(isLastPanel ? "Let's Go!" : "Next  ›");
         }
@@ -242,7 +242,7 @@ public class IntroScene extends Scene {
             stage.getViewport().update(w, h, true);
         }
 
-        // Dark space background — consistent with MathGameScene
+        // Dark space background - consistent with MathGameScene
         Gdx.gl.glClearColor(0.03f, 0.03f, 0.08f, 1f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
@@ -266,7 +266,7 @@ public class IntroScene extends Scene {
             batch.end();
         }
 
-        // Pause overlay — drawn last so it appears on top, no-op when not paused
+        // Pause overlay - drawn last so it appears on top, no-op when not paused
         pauseOverlay.render(batch);
     }
 
@@ -292,7 +292,7 @@ public class IntroScene extends Scene {
         titleLabel.setFontScale(2.8f);
         titleLabel.setAlignment(Align.center);
 
-        // Body label — wraps text, centred
+        // Body label - wraps text, centred
         bodyLabel = new Label("", skin);
         bodyLabel.setWrap(true);
         bodyLabel.setAlignment(Align.center);
@@ -320,7 +320,7 @@ public class IntroScene extends Scene {
             }
         });
 
-        // Root layout table — content centred vertically and horizontally
+        // Root layout table - content centred vertically and horizontally
         Table root = new Table();
         root.setFillParent(true);
         root.center();
@@ -331,7 +331,7 @@ public class IntroScene extends Scene {
 
         root.add(titleLabel).center().padBottom(30).row();
 
-        // Body text — generous width, centred, with space above and below
+        // Body text - generous width, centred, with space above and below
         root.add(bodyLabel).width(900).center().padBottom(40).row();
 
         // Page counter centred below body

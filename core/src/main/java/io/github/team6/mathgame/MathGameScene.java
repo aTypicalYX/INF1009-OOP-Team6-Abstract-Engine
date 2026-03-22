@@ -8,6 +8,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.MapLayer;
@@ -421,11 +422,39 @@ public class MathGameScene extends Scene {
             float inset = 60f;
             Rectangle chaserBox = new Rectangle(
                 chaser.getX(), chaser.getY() + inset,
-                chaser.getWidth(), chaser.getHeight() + inset * 2);
+                chaser.getWidth(), chaser.getHeight() - inset);
             if (rocketBox.overlaps(chaserBox)) {
                 triggerGameOver();
                 return;
             }
+
+            // --- Asteroid respawn check ---
+            // If an asteroid has been swallowed by the chaser (its centre is
+            // below the chaser's top edge), or is below the visible screen,
+            // teleport it to a random position ahead of the rocket so the
+            // player never loses a required asteroid off the bottom.
+            float chaserTop    = chaser.getY() + chaser.getHeight();
+            float screenBottom = rocket.getY() - VIEW_H / 2f;
+
+            for (Entity e : entityManager.getEntityList()) {
+                if (!e.isActive()) continue;
+                if (e.getTag() == null || !e.getTag().startsWith("ASTEROID_")) continue;
+
+                float asteroidCentreY = e.getY() + e.getHeight() / 2f;
+
+                // Swallowed by chaser OR scrolled off the bottom of the screen
+                if (asteroidCentreY < chaserTop || asteroidCentreY < screenBottom) {
+                    // Respawn 200–500px above the rocket, random X within map
+                    float newY = rocket.getY()
+                        + 200f + ThreadLocalRandom.current().nextFloat() * 300f;
+                    float newX = ThreadLocalRandom.current().nextFloat()
+                        * (mapPixelWidth - e.getWidth());
+                    newY = Math.min(newY, mapPixelHeight - e.getHeight() - 60f);
+                    e.setX(newX);
+                    e.setY(newY);
+                }
+            }
+            // ------------------------------------------------
         }
 
         //  Win check: rocket enters planet zone
@@ -528,7 +557,7 @@ public class MathGameScene extends Scene {
         // Equation prompt
         outputManager.drawText(batch,
             "Solve: " + equationGenerator.getCurrentEquation(),
-            sw / 2f - 140, sh - 30, 2.0f);
+            sw / 2f - 140, sh - 30, 3.0f);
 
         // Score
         outputManager.drawText(batch,
@@ -596,7 +625,7 @@ public class MathGameScene extends Scene {
                 
                 // Draw it near the bottom center of the screen so the player sees it looking down
                 outputManager.drawText(batch, "WARNING: ESCAPE THE VOID!", 
-                    sw / 2f - 240, 150, 1.8f, warningColor);
+                    sw / 2f - 240, 150, 2.5f, warningColor);
             }
         }
         // ------------------------------------------------
@@ -651,8 +680,20 @@ public class MathGameScene extends Scene {
         int level = GameStateManager.getInstance().getLevel();
 
         String chaserTexture = (level == 2) ? "lava.png" : "blackhole.png";
-        float  chaserW       = mapPixelWidth;  // full width — unavoidable
-        float  chaserH       = 200f;           // tall enough to match the black hole image
+        float  chaserW       = mapPixelWidth; // full width — unavoidable
+
+        // Read the actual image height so the hitbox matches the sprite exactly
+        float chaserH;
+        try {
+            Pixmap px = new Pixmap(Gdx.files.internal(chaserTexture));
+            // Scale image height proportionally to mapPixelWidth so it matches how it renders
+            float aspectRatio = (float) px.getHeight() / px.getWidth();
+            chaserH = mapPixelWidth * aspectRatio;
+            px.dispose();
+        } catch (Exception e) {
+            System.out.println("[MathGame] Could not read chaser image size, using default.");
+            chaserH = 200f; // safe fallback
+        }
 
         // Start 600px below the rocket so the player has breathing room at spawn
         float startY = rocket.getY() - 600f;
