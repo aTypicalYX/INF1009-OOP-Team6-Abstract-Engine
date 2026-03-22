@@ -528,7 +528,7 @@ public class MathGameScene extends Scene {
         // Equation prompt
         outputManager.drawText(batch,
             "Solve: " + equationGenerator.getCurrentEquation(),
-            sw / 2f - 140, sh - 30, 2.0f);
+            sw / 2f - 140, sh - 30, 3.0f);
 
         // Score
         outputManager.drawText(batch,
@@ -596,7 +596,7 @@ public class MathGameScene extends Scene {
                 
                 // Draw it near the bottom center of the screen so the player sees it looking down
                 outputManager.drawText(batch, "WARNING: ESCAPE THE VOID!", 
-                    sw / 2f - 240, 150, 1.8f, warningColor);
+                    sw / 2f - 240, 150, 2.5f, warningColor);
             }
         }
         // ------------------------------------------------
