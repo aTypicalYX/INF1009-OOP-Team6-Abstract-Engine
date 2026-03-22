@@ -89,5 +89,18 @@ public class PlayableEntity extends Entity {
     public int getLives() {
         return this.lives;
     }
+
+    // Clean up resources when the entity is removed from the game
+    @Override
+    public void dispose() {
+        if (collisionSound != null) {
+            collisionSound.dispose();
+            collisionSound = null;
+        }
+        if (tex != null) {
+            tex.dispose();
+            tex = null;
+        }
+    }
 }
 

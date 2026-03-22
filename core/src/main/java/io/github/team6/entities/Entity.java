@@ -68,4 +68,8 @@ public abstract class Entity implements Movable, Renderable, Collidable{
     @Override
     public abstract void onCollision(Entity other);
 
+    public void dispose() {
+        // Optional override for child classes to clean up Textures or Audio
+    }
+
 }

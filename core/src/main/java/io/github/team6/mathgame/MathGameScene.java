@@ -655,7 +655,7 @@ public class MathGameScene extends Scene {
     // -----------------------------------------------------------------
     // Dispose
     // -----------------------------------------------------------------
-
+    // Dispose of all assets and clear entities to prevent memory leaks.  The entity manager is cleared but not disposed since the scene may be re-entered and needs a fresh list
     @Override
     public void dispose() {
         if (progressIcon != null) progressIcon.dispose();
@@ -674,6 +674,10 @@ public class MathGameScene extends Scene {
         if (map         != null) map.dispose();
         entityManager.getEntityList().clear();
         entityManager.getPlayableEntityList().clear();
+
+        if (rocket != null) {
+            rocket.dispose(); // Cleans up the rocket's audio/texture
+        }
     }
 
     // -----------------------------------------------------------------
