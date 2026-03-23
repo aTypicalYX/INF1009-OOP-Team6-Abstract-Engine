@@ -150,7 +150,7 @@ public class MainMenuScene extends Scene {
         Color textButtonColor = Color.valueOf("#57729d");
    
         // Groups all buttons
-        TextButton[] menuButtons = {startBtn, leaderboardBtn, settingsBtn, exitBtn};
+        TextButton[] menuButtons = {startBtn, howToPlayBtn, leaderboardBtn, settingsBtn, exitBtn};
 
         for (TextButton btn: menuButtons) {
             btn.getLabel().setFontScale(1.4f);
