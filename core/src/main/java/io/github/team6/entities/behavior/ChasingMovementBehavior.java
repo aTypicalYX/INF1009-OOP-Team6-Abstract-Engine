@@ -2,7 +2,7 @@ package io.github.team6.entities.behavior;
 
 import java.util.List;
 
-//import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 
 import io.github.team6.entities.Entity;
@@ -83,8 +83,11 @@ public class ChasingMovementBehavior implements MovementBehavior {
         finalDirection.nor();  
 
         // Apply Speed and Update Position
-        float newX = self.getX() + finalDirection.x * self.getSpeed();
-        float newY = self.getY() + finalDirection.y * self.getSpeed();
+        float dt = Gdx.graphics.getDeltaTime();
+        float actualSpeed = self.getSpeed() * 140f * dt;
+
+        float newX = self.getX() + finalDirection.x * actualSpeed;
+        float newY = self.getY() + finalDirection.y * actualSpeed;
 
         // Boundary Checking (Keep within screen)
         //newX = Math.max(0, Math.min(newX, Gdx.graphics.getWidth() - self.getWidth()));

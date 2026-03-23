@@ -1,5 +1,7 @@
 package io.github.team6.mathgame;
 
+import com.badlogic.gdx.Gdx;
+
 import io.github.team6.entities.Entity;
 import io.github.team6.entities.behavior.MovementBehavior;
 
@@ -22,7 +24,7 @@ public class ChaserBehavior implements MovementBehavior {
 
     private static final float BASE_SPEED             = 0.5f;
     private static final float LEVEL_INCREMENT        = 0.15f;
-    private static final float MAX_SPEED              = 4.0f;   
+    private static final float MAX_SPEED              = 5.0f;   
 
     // --- NEW: Rubber-Band Tuning Constants ---
     private static final float RUBBER_BAND_DISTANCE   = 700f; // Roughly one screen height
@@ -52,6 +54,11 @@ public class ChaserBehavior implements MovementBehavior {
         // 3. Hard clamp the absolute maximum speed so it doesn't break physics
         currentSpeed = Math.min(currentSpeed, MAX_SPEED);
 
-        self.setY(self.getY() + currentSpeed);
+        // --- Frame-rate independent movement ---
+        float dt = Gdx.graphics.getDeltaTime();
+        float actualSpeed = currentSpeed * 150f * dt;
+
+
+        self.setY(self.getY() + actualSpeed);
     }
 }

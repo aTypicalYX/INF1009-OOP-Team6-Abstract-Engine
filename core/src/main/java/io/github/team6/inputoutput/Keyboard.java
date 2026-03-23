@@ -81,8 +81,13 @@ public class Keyboard {
         if (!direction.isZero()) {
             direction.nor();
 
-            float newX = e.getX() + direction.x * e.getSpeed();
-            float newY = e.getY() + direction.y * e.getSpeed();
+            // --- Frame-rate independent movement ---
+            float dt = Gdx.graphics.getDeltaTime();
+            // Multiply by 60 so your current speed tuning (e.g., speed=5) feels exactly the same!
+            float actualSpeed = e.getSpeed() * 60f * dt;
+
+            float newX = e.getX() + direction.x * actualSpeed;
+            float newY = e.getY() + direction.y * actualSpeed;
 
             //newX = Math.max(0, Math.min(newX, Gdx.graphics.getWidth() - e.getWidth()));
            // newY = Math.max(0, Math.min(newY, Gdx.graphics.getHeight() - e.getHeight()));
