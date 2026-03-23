@@ -1,10 +1,13 @@
 package io.github.team6.scenes;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -12,6 +15,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.math.Interpolation;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
 import io.github.team6.managers.SceneManager;
 import io.github.team6.mathgame.IntroScene;
@@ -23,6 +32,14 @@ public class MainMenuScene extends Scene {
 
     private Stage stage; // Scene2D container for UI elements
     private Skin skin;   // JSON style definitions for buttons/fonts
+    private Texture bgTexture;
+    private Image bgImage;
+    private Texture logoTexture;
+    private Image logoImage;
+    private Texture planetTexture;
+    private AnimatedImage planetImage;
+    private Group logoGroup;
+    private static final float BG_SCALE_FACTOR = 1.8f;
 
     // Track window size so we can update the Stage viewport on resize (e.g. maximize)
     private int lastWidth = -1;
@@ -46,20 +63,97 @@ public class MainMenuScene extends Scene {
         stage.getViewport().update(lastWidth, lastHeight, true);
 
         skin = new Skin(Gdx.files.internal("uiskin.json"));
+    
+
+        // Loads space background
+        bgTexture = new Texture(Gdx.files.internal("space_background.png"));
+        bgImage = new Image(bgTexture);
+
+        // Increases background size for buffer space
+        float bgWidth = Gdx.graphics.getWidth() * BG_SCALE_FACTOR;
+        float bgHeight = Gdx.graphics.getHeight() * BG_SCALE_FACTOR;
+        bgImage.setSize(bgWidth, bgHeight);
+
+        // Scene starts from the top-right of background image
+        bgImage.setPosition(Gdx.graphics.getWidth() - bgWidth, Gdx.graphics.getHeight() - bgHeight);
+
+        // Adds animation to background
+        bgImage.addAction(Actions.forever(Actions.sequence(
+            Actions.moveBy(30,20,5f,Interpolation.sine)   // Drifts up-right
+        )));
+
+        // Adds background to stage first
+        stage.addActor(bgImage);
+
+        // Loads 'SPACE COUNT' logo
+        logoTexture = new Texture(Gdx.files.internal("space_count_logo.png"));
+        logoTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        logoImage = new Image(logoTexture);
+
+        // Proportionally scales logo to desired width
+        float screenWidth = Gdx.graphics.getWidth();
+        float logoWidth = screenWidth * 0.50f;      // Adjusts group logo size
+        float aspect = (float) logoTexture.getHeight() / logoTexture.getWidth();
+        float logoHeight = logoWidth * aspect;
+        logoImage.setSize(logoWidth, logoHeight);
+
+        // Loads animated planet icon
+        planetTexture = new Texture(Gdx.files.internal("planet_sheet.png"));
+        planetTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        
+        // Animates each frame
+        int frameCount = 60;
+        TextureRegion[][] tmp = TextureRegion.split(planetTexture, planetTexture.getWidth() / frameCount, planetTexture.getHeight());
+        Animation<TextureRegion> planetAnimation = new Animation<>(0.1f, tmp[0]);
+        planetImage = new AnimatedImage(planetAnimation);
+
+        // Exact placement of planet icon, relative to logo
+        float planetSize = logoWidth * 0.16f;
+        planetImage.setSize(planetSize, planetSize);
+
+        // Exact placement of where the planet icon will be in the grouping
+        float targetX = logoWidth * 0.30f;
+        float targetY = logoHeight * 0.20f;
+
+        // Stays centered when scaling
+        planetImage.setPosition(targetX - (planetSize / 2), targetY - (planetSize / 2));
+
+        // Groups 'SPACE COUNT' logo and animated planet icon
+        logoGroup = new Group();
+        logoGroup.setSize(logoWidth,logoHeight);
+
+        // Positions logo at group's origin
+        logoImage.setPosition(0,0);
+
+        logoGroup.addActor(logoImage);
+        logoGroup.addActor(planetImage);
+        
+        // Planet floating animation effect
+        planetImage.addAction(Actions.forever(Actions.sequence(
+            Actions.moveBy(0, 8, 2f, Interpolation.sine),
+            Actions.moveBy(0, -8, 2f, Interpolation.sine)
+        )));
 
         // UI Element Creation
-        Label title = new Label("SPACE COUNT !", skin);
+        Label title = new Label("Welcome aboard, Orbiter P8-6.", skin);
         title.setAlignment(Align.center);
-        title.setFontScale(2.2f);
-
-        Label subtitle = new Label("Team 06: OOP Part 2", skin);
-        subtitle.setAlignment(Align.center);
-        subtitle.setFontScale(1.1f);
+        title.setFontScale(2.0f);
 
         TextButton startBtn = new TextButton("Start Game", skin);
         TextButton leaderboardBtn = new TextButton("Leaderboard", skin);
         TextButton settingsBtn = new TextButton("Settings", skin);
         TextButton exitBtn = new TextButton("Exit", skin);
+
+        // Customises text button designs (colours, font size etc.)
+        Color textButtonColor = Color.valueOf("#57729d");
+   
+        // Groups all buttons
+        TextButton[] menuButtons = {startBtn, leaderboardBtn, settingsBtn, exitBtn};
+
+        for (TextButton btn: menuButtons) {
+            btn.getLabel().setFontScale(1.4f);
+            btn.setColor(textButtonColor);
+        }
 
         // Event Listener (Observer Pattern): React to button clicks
         startBtn.addListener(new ChangeListener() {
@@ -104,13 +198,17 @@ public class MainMenuScene extends Scene {
         Table table = new Table();
         table.setFillParent(true);
         table.center();
-        table.add(title).padBottom(4).row();
-        table.add(subtitle).padBottom(30).row();
+        table.add(logoGroup).padTop(20).padBottom(50).row();
+        table.add(title).padBottom(50).row();
         table.defaults().width(280).height(60).pad(8);
         table.add(startBtn).row();
         table.add(leaderboardBtn).row();
         table.add(settingsBtn).row();
         table.add(exitBtn).row();
+
+        // UI Fade-in effect on game startup
+        table.getColor().a = 0;
+        table.addAction(Actions.fadeIn(2.0f, Interpolation.pow2In));
 
         stage.addActor(table);
     }
@@ -143,5 +241,28 @@ public class MainMenuScene extends Scene {
     public void dispose() {
         if (stage != null) stage.dispose();
         if (skin != null) skin.dispose();
+        if (bgTexture != null) bgTexture.dispose();
+        if (logoTexture != null) logoTexture.dispose();
+        if (planetTexture != null) planetTexture.dispose();
+    }
+}
+
+// Renders frames from animations
+class AnimatedImage extends Image {
+    private final Animation<TextureRegion> animation;
+    private float stateTime;
+
+    private final TextureRegionDrawable drawable = new TextureRegionDrawable();
+    public AnimatedImage(Animation<TextureRegion> animation) {
+        super(animation.getKeyFrame(0));
+        this.animation = animation;
+    }
+
+    @Override
+    public void act(float delta) {
+        super.act(delta);
+        stateTime += delta;
+        drawable.setRegion(animation.getKeyFrame(stateTime, true));
+        setDrawable(drawable);
     }
 }
