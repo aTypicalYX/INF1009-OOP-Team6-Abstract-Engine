@@ -204,9 +204,11 @@ public class LeaderboardScene extends Scene {
         });
 
         if (scoreToSave >= 0) {
-            // Post-game: also offer Play Again
-            TextButton playAgainBtn = new TextButton("Play Again", skin);
-            playAgainBtn.addListener(new ChangeListener() {
+            // --- Offer "Next Level" or "Play Again" dynamically ---
+            boolean hasNextLevel = levelReached < 2;
+            TextButton nextBtn = new TextButton(hasNextLevel ? "Next Level" : "Play Again", skin);
+            
+            nextBtn.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {
                     try {
@@ -217,15 +219,24 @@ public class LeaderboardScene extends Scene {
                         System.out.println("[DEBUG] buttonClick.wav not found.");
                     }
 
-                    GameStateManager.getInstance().reset();
-                    scenes.setScene(new MathGameScene(scenes));
+                    // If the player just completed Level 1, offer the intro cutscene for Level 2.
+                    if (hasNextLevel) {
+                        // Progress to the intro cutscene for the next level (Level 2)
+                        scenes.setScene(new IntroScene(scenes, levelReached + 1));
+                    } else {
+                        // Game fully complete! Reset the singleton and start from Level 1
+                        GameStateManager.getInstance().reset();
+                        scenes.setScene(new MathGameScene(scenes));
+                    }
                 }
             });
+            
             Table btnRow = new Table();
-            btnRow.add(playAgainBtn).width(200).height(55).padRight(16);
+            btnRow.add(nextBtn).width(200).height(55).padRight(16);
             btnRow.add(menuBtn).width(200).height(55);
             root.add(btnRow).colspan(3).padTop(10).row();
         } else {
+            // View Mode (From Main Menu) - Just show the Main Menu button
             root.add(menuBtn).colspan(3).width(200).height(55).padTop(10).row();
         }
 
