@@ -36,12 +36,26 @@ public class GameOverScene extends Scene {
         outputManager.stopBgm();
 
         // play lose SFX once when this scene appears
-        outputManager.play(new AudioSource("gameLose.wav"));
+        try {
+            AudioSource loseSfx = new AudioSource("gameLose.wav");
+            loseSfx.setVolume(0.2f);
+            outputManager.play(loseSfx);
+        } catch (Exception e) {
+            System.out.println("[DEBUG] gameLose.wav not found.");
+        }
     }
 
     @Override
     public void update(float dt) {
         if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+            try {
+                AudioSource clickSfx = new AudioSource("buttonClick.wav");
+                clickSfx.setVolume(0.3f);
+                outputManager.play(clickSfx);
+            } catch (Exception e) {
+                System.out.println("[DEBUG] buttonClick.wav not found.");
+            }
+
             // Reset Singleton so the next session starts fresh
             GameStateManager.getInstance().reset();
             scenes.setScene(new MainMenuScene(scenes));

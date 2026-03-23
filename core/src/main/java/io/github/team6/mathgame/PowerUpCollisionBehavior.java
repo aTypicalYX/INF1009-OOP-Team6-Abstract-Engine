@@ -23,7 +23,6 @@ public class PowerUpCollisionBehavior implements CollisionBehavior {
     private final PowerUpType     type;
     private final MathGameScene   scene;
     private final OutputManager   outputManager;
-    private final String          soundPath;
 
     /**
      * @param type          Which effect to apply.
@@ -36,7 +35,6 @@ public class PowerUpCollisionBehavior implements CollisionBehavior {
         this.type          = type;
         this.scene         = scene;
         this.outputManager = outputManager;
-        this.soundPath     = soundPath;
     }
 
     // When the player collides with the power-up, apply the effect and play the sound.
@@ -44,15 +42,13 @@ public class PowerUpCollisionBehavior implements CollisionBehavior {
     public void onCollision(Entity self, Entity other) {
         if (!"PLAYER".equals(other.getTag())) return;
 
-        // Play unique sound per power-up type
-        if (soundPath != null) {
-            try {
-                AudioSource sfx = new AudioSource(soundPath);
-                sfx.setVolume(0.4f);
-                outputManager.play(sfx);
-            } catch (Exception e) {
-                System.out.println("[PowerUp] Sound not found: " + soundPath);
-            }
+        // Play shared power-up pickup sound
+        try {
+            AudioSource sfx = new AudioSource("powerUp.wav");
+            sfx.setVolume(0.4f);
+            outputManager.play(sfx);
+        } catch (Exception e) {
+            System.out.println("[PowerUp] Sound not found: powerUp.wav");
         }
 
         // Apply the power-up effect by mutating shared game state through the singleton manager

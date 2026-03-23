@@ -16,6 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
+import io.github.team6.inputoutput.AudioSource;
 import io.github.team6.managers.SceneManager;
 import io.github.team6.scenes.MainMenuScene;
 import io.github.team6.scenes.Scene;
@@ -142,6 +143,14 @@ public class LeaderboardScene extends Scene {
             submitBtn.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {
+                    try {
+                        AudioSource clickSfx = new AudioSource("buttonClick.wav");
+                        clickSfx.setVolume(0.3f);
+                        outputManager.play(clickSfx);
+                    } catch (Exception e) {
+                        System.out.println("[DEBUG] buttonClick.wav not found.");
+                    }
+
                     String name = nameField.getText().trim();
                     if (name.isEmpty()) name = "???";
                     leaderboard.addEntry(name, scoreToSave, levelReached);
@@ -181,6 +190,14 @@ public class LeaderboardScene extends Scene {
         menuBtn.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                try {
+                    AudioSource clickSfx = new AudioSource("buttonClick.wav");
+                    clickSfx.setVolume(0.3f);
+                    outputManager.play(clickSfx);
+                } catch (Exception e) {
+                    System.out.println("[DEBUG] buttonClick.wav not found.");
+                }
+
                 GameStateManager.getInstance().reset();
                 scenes.setScene(new MainMenuScene(scenes));
             }
@@ -192,6 +209,14 @@ public class LeaderboardScene extends Scene {
             playAgainBtn.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {
+                    try {
+                        AudioSource clickSfx = new AudioSource("buttonClick.wav");
+                        clickSfx.setVolume(0.3f);
+                        outputManager.play(clickSfx);
+                    } catch (Exception e) {
+                        System.out.println("[DEBUG] buttonClick.wav not found.");
+                    }
+
                     GameStateManager.getInstance().reset();
                     scenes.setScene(new MathGameScene(scenes));
                 }

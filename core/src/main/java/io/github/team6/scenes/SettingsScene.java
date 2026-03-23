@@ -67,6 +67,7 @@ public class SettingsScene extends Scene {
         backBtn.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                outputManager.playUiClick();
                 scenes.setScene(new MainMenuScene(scenes));
             }
         });

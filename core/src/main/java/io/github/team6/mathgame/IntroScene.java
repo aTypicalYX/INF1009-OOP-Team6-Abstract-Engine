@@ -307,6 +307,7 @@ public class IntroScene extends Scene {
         nextBtn.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                outputManager.playUiClick();
                 advance();
             }
         });
@@ -316,6 +317,7 @@ public class IntroScene extends Scene {
         skipBtn.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                outputManager.playUiClick();
                 launchGame();
             }
         });

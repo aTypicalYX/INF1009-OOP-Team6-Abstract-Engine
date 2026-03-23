@@ -65,6 +65,7 @@ public class MainMenuScene extends Scene {
         startBtn.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                outputManager.playUiClick();
 
                 // Switch State: Load the Main Game via the intro cutscene
                 //scenes.setScene(new MainScene(scenes));
@@ -76,6 +77,7 @@ public class MainMenuScene extends Scene {
         leaderboardBtn.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                outputManager.playUiClick();
                 scenes.setScene(new LeaderboardScene(scenes)); // view-only mode
             }
         });
@@ -83,6 +85,7 @@ public class MainMenuScene extends Scene {
         settingsBtn.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                outputManager.playUiClick();
 
                 // Switch State: Load Settings
                 scenes.setScene(new SettingsScene(scenes));
@@ -92,6 +95,7 @@ public class MainMenuScene extends Scene {
         exitBtn.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                outputManager.playUiClick();
                 Gdx.app.exit();
             }
         });

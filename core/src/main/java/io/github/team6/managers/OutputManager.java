@@ -24,6 +24,9 @@ public class OutputManager {
     // current background music track
     private MusicSource bgm;
 
+    // shared UI click sound effect
+    private AudioSource uiClickSfx;
+
     // volume controls (0.0f to 1.0f)
     private float masterVolume;
     private float sfxVolume;
@@ -40,6 +43,7 @@ public class OutputManager {
         masterVolume = 1f;
         sfxVolume = 1.0f;
         musicVolume = 0.3f;  // softer bgm by default
+        uiClickSfx = null;
         
         // Initialize the default font engine
         font = new BitmapFont(); 
@@ -93,6 +97,19 @@ public class OutputManager {
     // Set the volume for sound effects
     public void setSfxVolume(float volume) {
         sfxVolume = clamp(volume);
+    }
+
+    public void playUiClick() {
+        if (uiClickSfx == null) {
+            try {
+                uiClickSfx = new AudioSource("buttonClick.wav");
+                uiClickSfx.setVolume(0.3f);
+            } catch (Exception e) {
+                return;
+            }
+        }
+
+        play(uiClickSfx);
     }
 
     // ---- Background Music ----
@@ -156,6 +173,11 @@ public class OutputManager {
         }
 
         activeSfx.clear();
+
+        if (uiClickSfx != null) {
+            uiClickSfx.dispose();
+            uiClickSfx = null;
+        }
 
         if (bgm != null) {
             bgm.stop();
