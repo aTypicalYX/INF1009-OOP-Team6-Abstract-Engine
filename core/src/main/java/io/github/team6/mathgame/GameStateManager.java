@@ -70,6 +70,7 @@ public class GameStateManager {
     private float timeSeconds;
     private boolean gameOver;
     private boolean scoreMultiplierActive; // true = next correct answer scores double
+    private int currentStreak; // number of correct answers in a row, reset to 0 when player answers incorrectly
 
     // ---------------------------------------------------------------
     // Lifecycle
@@ -109,6 +110,7 @@ public class GameStateManager {
     public int getLives() { return lives; }
 
     public boolean deductLife() {
+        currentStreak = 0; // reset streak on incorrect answer
         if (lives > 0) lives--;
         if (lives <= 0) gameOver = true;
         return lives > 0;
@@ -137,7 +139,12 @@ public class GameStateManager {
     // -----------------------------------------------------------------------
 
     public int  getScore()           { return score; }
-    public void addScore(int points) { score = Math.max(0, score + points); }
+    
+    public void addScore(int points) { 
+        // --- Double points if streak is 3 or more ---
+        int multiplier = (currentStreak >= 3) ? 2 : 1;
+        score = Math.max(0, score + (points * multiplier)); 
+    }
 
     // -----------------------------------------------------------------------
     // Equations / win condition
@@ -145,8 +152,11 @@ public class GameStateManager {
 
     public int getEquationsAnswered() { return equationsAnswered; }
 
+    public int getCurrentStreak() { return currentStreak; }
+
     public boolean recordCorrectAnswer() {
         equationsAnswered++;
+        currentStreak++;
         return equationsAnswered >= EQUATIONS_TO_WIN;
     }
 

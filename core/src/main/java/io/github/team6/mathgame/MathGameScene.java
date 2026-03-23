@@ -141,6 +141,7 @@ public class MathGameScene extends Scene {
     // Timers
     // -----------------------------------------------------------------
     private float powerUpTimer = 0f;
+    
 
     // -----------------------------------------------------------------
     // Win trigger rectangle (from Tiled "PLANET" object)
@@ -322,6 +323,11 @@ public class MathGameScene extends Scene {
      * abstract engine).  Uses the Singleton for the actual deduction.
      */
     public void deductLife() {
+        // --- Check I-Frames for generic hazards ---
+        if (rocket.isInvulnerable()) return;
+        
+        rocket.setInvulnerable(1.5f); // Give 1.5 seconds of safety
+
         boolean stillAlive = GameStateManager.getInstance().deductLife();
         // Sync rocket's displayed lives with Singleton
         rocket.setLives(GameStateManager.getInstance().getLives());
@@ -589,6 +595,12 @@ public class MathGameScene extends Scene {
         // Level
         outputManager.drawText(batch,
             "Level: " + gsm.getLevel(), 20, sh - 85, 1.2f);
+
+        // --- Draw Streak Indicator if player are doing well ---
+        if (gsm.getCurrentStreak() >= 3) {
+            outputManager.drawText(batch, 
+                "STREAK! 2X POINTS!", sw / 2f - 130, sh - 75, 1.5f, Color.ORANGE);
+        }
 
         // Lives Label
         outputManager.drawText(batch, "LIVES: ", 20, sh - 112, 1.5f);

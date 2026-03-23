@@ -3,6 +3,7 @@ package io.github.team6.mathgame;
 import com.badlogic.gdx.graphics.Color;
 
 import io.github.team6.entities.Entity;
+import io.github.team6.entities.PlayableEntity;
 import io.github.team6.entities.behavior.CollisionBehavior;
 
 /**
@@ -15,15 +16,15 @@ import io.github.team6.entities.behavior.CollisionBehavior;
  * OOP Concepts & Design Patterns used:
  *
  * 1. Strategy Pattern – implements CollisionBehavior, so asteroid collision
- *    logic is interchangeable without modifying Entity classes.
+ * logic is interchangeable without modifying Entity classes.
  *
  * 2. Singleton Pattern (GameStateManager) – all score, lives, and
- *    equations-answered counters live in the single GameStateManager
- *    instance.  This class reads/writes ONLY through that Singleton, so
- *    state is always consistent regardless of how many asteroids are active.
+ * equations-answered counters live in the single GameStateManager
+ * instance.  This class reads/writes ONLY through that Singleton, so
+ * state is always consistent regardless of how many asteroids are active.
  *
  * 3. Single Responsibility – this class only handles "what happens when
- *    the player touches a numbered asteroid".
+ * the player touches a numbered asteroid".
  */
 public class NumberCollectionBehavior implements CollisionBehavior {
 
@@ -35,7 +36,7 @@ public class NumberCollectionBehavior implements CollisionBehavior {
      * @param generator   Shared EquationGenerator (to verify the answer).
      * @param numberValue The number displayed on this asteroid.
      * @param scene       Back-reference to MathGameScene for floating text
-     *                    and round/scene transitions.
+     * and round/scene transitions.
      */
     public NumberCollectionBehavior(EquationGenerator generator,
                                     int numberValue,
@@ -50,19 +51,27 @@ public class NumberCollectionBehavior implements CollisionBehavior {
      * another entity.  Only reacts when 'other' is the player (tag "PLAYER").
      *
      * Correct answer:
-     *   - Awards points via GameStateManager (Singleton).
-     *   - Increments the "equations answered" counter in the Singleton.
-     *   - If the player has answered EQUATIONS_TO_WIN equations → triggers win.
-     *   - Otherwise spawns a new round.
+     * - Awards points via GameStateManager (Singleton).
+     * - Increments the "equations answered" counter in the Singleton.
+     * - If the player has answered EQUATIONS_TO_WIN equations → triggers win.
+     * - Otherwise spawns a new round.
      *
      * Wrong answer:
-     *   - Deducts a life via GameStateManager.
-     *   - If lives reach 0 → triggers game over via MathGameScene.
-     *   - Otherwise deactivates only this asteroid (others remain).
+     * - Deducts a life via GameStateManager.
+     * - If lives reach 0 → triggers game over via MathGameScene.
+     * - Otherwise deactivates only this asteroid (others remain).
      */
     @Override
     public void onCollision(Entity self, Entity other) {
         if (!other.getTag().equals("PLAYER")) return;
+
+        // --- I-Frames Check ---
+        // We know 'other' is the player based on the tag check above, so we safely cast it.
+        PlayableEntity player = (PlayableEntity) other;
+        
+        // If the player recently took damage and is currently blinking (invulnerable), 
+        // we exit early and ignore the collision completely!
+        if (player.isInvulnerable()) return; 
 
         // Retrieve the single Singleton instance
         GameStateManager gsm = GameStateManager.getInstance();
@@ -92,6 +101,12 @@ public class NumberCollectionBehavior implements CollisionBehavior {
 
         } else {
             // ---- WRONG ANSWER ------------------------------------------
+            
+            // --- Activate Safety Timer ---
+            // Give the player 1.5 seconds of Invulnerability. This prevents an unfair 
+            // instant Game Over if two or three wrong asteroids are physically overlapping.
+            player.setInvulnerable(1.5f);
+
             scene.playWrongAnswerSfx();
             boolean stillAlive = gsm.deductLife();
             scene.spawnFloatingText("-1 Life", self.getX(), self.getY() + 30, Color.RED);
