@@ -23,6 +23,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
 import io.github.team6.managers.SceneManager;
+import io.github.team6.mathgame.HowToPlayScene;
 import io.github.team6.mathgame.IntroScene;
 import io.github.team6.mathgame.LeaderboardScene;
 
@@ -140,6 +141,7 @@ public class MainMenuScene extends Scene {
         title.setFontScale(2.0f);
 
         TextButton startBtn = new TextButton("Start Game", skin);
+        TextButton howToPlayBtn = new TextButton("How to Play", skin);
         TextButton leaderboardBtn = new TextButton("Leaderboard", skin);
         TextButton settingsBtn = new TextButton("Settings", skin);
         TextButton exitBtn = new TextButton("Exit", skin);
@@ -165,6 +167,14 @@ public class MainMenuScene extends Scene {
                 //scenes.setScene(new MainScene(scenes));
                 // NOTE: To change back to the original MainScene from Abstract Engine Part 1, just replace IntroScene with MainScene here.
                 scenes.setScene(new IntroScene(scenes));
+            }
+        });
+
+        howToPlayBtn.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                outputManager.playUiClick();
+                scenes.setScene(new HowToPlayScene(scenes));
             }
         });
 
@@ -202,6 +212,7 @@ public class MainMenuScene extends Scene {
         table.add(title).padBottom(50).row();
         table.defaults().width(280).height(60).pad(8);
         table.add(startBtn).row();
+        table.add(howToPlayBtn).row();
         table.add(leaderboardBtn).row();
         table.add(settingsBtn).row();
         table.add(exitBtn).row();

@@ -72,7 +72,7 @@ public class PowerUpCollisionBehavior implements CollisionBehavior {
 
             case SCORE_MULTIPLIER:
                 gsm.activateScoreMultiplier();
-                scene.spawnFloatingText("2× Score Next!",
+                scene.spawnFloatingText("2x Score Next!",
                     self.getX(), self.getY() + 40,
                     com.badlogic.gdx.graphics.Color.YELLOW);
                 break;
