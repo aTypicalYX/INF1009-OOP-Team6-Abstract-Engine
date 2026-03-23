@@ -89,6 +89,8 @@ public class GameStateManager {
         timeSeconds       = STARTING_TIME;
         gameOver          = false;
         scoreMultiplierActive = false;
+        currentStreak = 0;
+
     }
 
     // -----------------------------------------------------------------------
@@ -102,6 +104,7 @@ public class GameStateManager {
 
     /** Called by NumberCollectionBehavior after awarding bonus points. */
     public void consumeScoreMultiplier() { scoreMultiplierActive = false; }
+
 
     // -----------------------------------------------------------------------
     // Lives

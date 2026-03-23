@@ -74,7 +74,7 @@ public class MathGameScene extends Scene {
     private static final float ASTEROID_SIZE          = 60f;
     private static final float ASTEROID_SPEED         = 0.8f;
     private static final float POWERUP_SIZE           = 48f;
-    private static final float POWERUP_SPAWN_INTERVAL = 20f;
+    private static final float POWERUP_SPAWN_INTERVAL = 5f;  // adjusts the frequency of power-ups (lower = more frequent)
 
 
     // Screen-width viewport — no tile borders visible
@@ -88,12 +88,10 @@ public class MathGameScene extends Scene {
     
     /**
      * AsteroidFactory (Factory Pattern) – creates asteroids.
-     * Internally it uses the Abstract Factory pattern to choose between
-     * ChasingAsteroidFactory and StationaryAsteroidFactory.
+     * Internally it uses the Abstract Factory pattern to choose between ChasingAsteroidFactory and StationaryAsteroidFactory.
      */
     private AsteroidFactory asteroidFactory;
     private PauseOverlay      pauseOverlay;
-
     // -----------------------------------------------------------------
     // Tiled map / camera
     // -----------------------------------------------------------------
@@ -554,6 +552,9 @@ public class MathGameScene extends Scene {
 
         batch.end();
 
+        
+        
+
         //  HUD (screen space) 
         batch.setProjectionMatrix(new com.badlogic.gdx.math.Matrix4()
             .setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
@@ -690,6 +691,9 @@ public class MathGameScene extends Scene {
         if (rocket != null) {
             rocket.dispose(); // Cleans up the rocket's audio/texture
         }
+
+        if (planet != null) planet.dispose();
+        if (pauseOverlay != null) pauseOverlay.dispose();
     }
 
     // -----------------------------------------------------------------
@@ -749,8 +753,8 @@ public class MathGameScene extends Scene {
     private void spawnPowerUp() {
         PowerUpType[] types     = PowerUpType.values();
         PowerUpType   type      = types[ThreadLocalRandom.current().nextInt(types.length)];
-        String[]      textures  = { "powerup_time.png", "powerup_life.png", "powerup_multiplier.png" };
-        String[]      sounds    = { "sfx_time.wav",     "sfx_life.wav",     "sfx_multiplier.wav"    };
+        String[]      textures  = { "powerup_time.png", "powerup_life.png", "powerup_multiplier.png", "powerup_shield.png" };
+        String[]      sounds    = { "sfx_time.wav",     "sfx_life.wav",     "sfx_multiplier.wav"   };
         int           idx       = type.ordinal();
 
         float spawnX = 0, spawnY = 0;
@@ -777,7 +781,7 @@ public class MathGameScene extends Scene {
             }
         }
         
-        // If the screen is completely full (very rare), just skip spawning this power-up
+        // If the screen is completely full, just skip spawning this power-up
         if (!safePosFound) return; 
         // ----------------------------------------------------------------
 

@@ -101,8 +101,8 @@ public class NumberCollectionBehavior implements CollisionBehavior {
 
         } else {
             // ---- WRONG ANSWER ------------------------------------------
-            
-            // --- Activate Safety Timer ---
+        
+
             // Give the player 1.5 seconds of Invulnerability. This prevents an unfair 
             // instant Game Over if two or three wrong asteroids are physically overlapping.
             player.setInvulnerable(1.5f);

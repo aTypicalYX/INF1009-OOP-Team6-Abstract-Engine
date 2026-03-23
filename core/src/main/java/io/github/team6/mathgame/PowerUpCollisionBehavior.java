@@ -80,6 +80,7 @@ public class PowerUpCollisionBehavior implements CollisionBehavior {
                     self.getX(), self.getY() + 40,
                     com.badlogic.gdx.graphics.Color.YELLOW);
                 break;
+
         }
 
         // Remove power-up from world
