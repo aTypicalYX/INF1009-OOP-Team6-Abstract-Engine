@@ -47,23 +47,62 @@ public class SettingsScene extends Scene {
         // Title label
         Label title = new Label("Settings", skin);
         title.setAlignment(Align.center);
-        title.setFontScale(1.2f);
+        title.setFontScale(1.8f); // Slightly larger title for visual hierarchy
         
-        // Various buttons and sliders for settings
-        TextButton backBtn = new TextButton("Back", skin);
+        // Master Volume Controls
         Label masterLabel = new Label("Master Volume: " + (int)(outputManager.getMasterVolume() * 100) + "%", skin);
+        masterLabel.setAlignment(Align.center);
+        
         Slider masterSlider = new Slider(0f, 1f, 0.01f, false, skin);
         masterSlider.setValue(outputManager.getMasterVolume());
 
-        // BUTTON LISTENERS
+        // --- NEW: Quick Preset Buttons ---
+        TextButton muteBtn = new TextButton("Mute", skin);
+        TextButton halfBtn = new TextButton("50%", skin);
+        TextButton fullBtn = new TextButton("100%", skin);
+
+        // Preset Listeners (Observer Pattern) - These update the slider, which in turn updates the volume
+        muteBtn.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                outputManager.playUiClick();
+                masterSlider.setValue(0f);
+            }
+        });
+        halfBtn.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                outputManager.playUiClick();
+                masterSlider.setValue(0.5f);
+            }
+        });
+        fullBtn.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                outputManager.playUiClick();
+                masterSlider.setValue(1f);
+            }
+        });
+
+        // Group the preset buttons into their own mini-table horizontally
+        Table presetTable = new Table();
+        presetTable.add(muteBtn).width(90).height(40).padRight(10);
+        presetTable.add(halfBtn).width(90).height(40).padRight(10);
+        presetTable.add(fullBtn).width(90).height(40);
+        // ----------------------------------
+
+        TextButton backBtn = new TextButton("Back to Menu", skin);
+
+        // SLIDER LISTENER
         masterSlider.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 outputManager.setMasterVolume(masterSlider.getValue());  // Update global volume value
-                System.out.println("Master = " + outputManager.getMasterVolume()); // Print for debugging
-                masterLabel.setText("Master Volume: " + (int)(outputManager.getMasterVolume() * 100) + "%"); // Update UI label to reflect new percentage
+                masterLabel.setText("Master Volume: " + (int)(outputManager.getMasterVolume() * 100) + "%"); 
             }
         });
+
+        // BACK BUTTON LISTENER
         backBtn.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -72,20 +111,19 @@ public class SettingsScene extends Scene {
             }
         });
 
-        // Volume slider updates master volume in OutputManager
-        // Table-based UI layout
+        // Main Layout Table
         Table table = new Table();
         table.setFillParent(true);
         table.center();
-        table.defaults().width(300).height(60).pad(10);
+        
         // Add UI elements vertically
-        table.add(title).padBottom(25).row();
-        table.add(masterLabel).row();
-        table.add(masterSlider).width(320).row();
-        table.add(backBtn).row();
-        stage.addActor(table); // Add table to stage
-
-        System.out.println("TESTING: Settings Scene");
+        table.add(title).padBottom(40).row();
+        table.add(masterLabel).padBottom(10).row();
+        table.add(masterSlider).width(300).padBottom(15).row();
+        table.add(presetTable).padBottom(40).row(); // Insert the new preset buttons
+        table.add(backBtn).width(280).height(60).row();
+        
+        stage.addActor(table); 
     }
 
     @Override
@@ -95,7 +133,8 @@ public class SettingsScene extends Scene {
 
     @Override
     public void render(SpriteBatch batch) {
-        Gdx.gl.glClearColor(0.10f, 0.10f, 0.14f, 1f); 
+        // Keeps the same dark blue/grey background as the main menu
+        Gdx.gl.glClearColor(0.08f, 0.08f, 0.12f, 1f); 
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         stage.draw(); // Draw all UI actors

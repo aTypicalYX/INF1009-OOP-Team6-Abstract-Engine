@@ -41,13 +41,8 @@ public class WinScene extends Scene {
     @Override
     public void update(float dt) {
         if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
-            try {
-                AudioSource clickSfx = new AudioSource("buttonClick.wav");
-                clickSfx.setVolume(0.3f);
-                outputManager.play(clickSfx);
-            } catch (Exception e) {
-                System.out.println("[DEBUG] buttonClick.wav not found.");
-            }
+            // Play click sound
+            outputManager.playUiClick();
 
             // Reset Singleton state before starting a new session
             GameStateManager.getInstance().reset();

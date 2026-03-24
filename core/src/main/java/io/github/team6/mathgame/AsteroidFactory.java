@@ -167,7 +167,7 @@ public class AsteroidFactory {
         // Fallback: place just above the rocket centre
         float fallbackX = Math.max(0,
             Math.min(targetRocket.getX(), mapWidth - width));
-        float fallbackY = Math.min(rocketY + VERTICAL_SPAWN_OFFSET_MIN + 50f, mapHeight - height);
+        float fallbackY = Math.min(rocketY + VERTICAL_SPAWN_OFFSET_MAX - 50f, mapHeight - height);
         return new float[]{ fallbackX, fallbackY };
     }
 
