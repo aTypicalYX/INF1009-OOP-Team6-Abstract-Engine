@@ -2,7 +2,6 @@ package io.github.team6.scenes;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
@@ -33,14 +32,11 @@ public class MainMenuScene extends Scene {
 
     private Stage stage; // Scene2D container for UI elements
     private Skin skin;   // JSON style definitions for buttons/fonts
-    //private Texture bgTexture;
-    //private Image bgImage;
     private Texture logoTexture;
     private Image logoImage;
     private Texture planetTexture;
     private AnimatedImage planetImage;
     private Group logoGroup;
-    //private static final float BG_SCALE_FACTOR = 1.8f;
 
     // Track window size so we can update the Stage viewport on resize (e.g. maximize)
     private int lastWidth = -1;
@@ -51,9 +47,15 @@ public class MainMenuScene extends Scene {
     }
 
     @Override
-        public boolean isBackgroundVisible() {
-            return true;
-        }
+    public boolean isBackgroundVisible() {
+        return true;
+    }
+
+    @Override 
+    public boolean isAmbientAudioEnabled() {
+        return true;
+    }
+
 
     @Override
     public void onEnter() {
@@ -69,27 +71,7 @@ public class MainMenuScene extends Scene {
         stage.getViewport().update(lastWidth, lastHeight, true);
 
         skin = new Skin(Gdx.files.internal("uiskin.json"));
-    
 
-        // // Loads space background
-        // bgTexture = new Texture(Gdx.files.internal("space_background.png"));
-        // bgImage = new Image(bgTexture);
-
-        // // Increases background size for buffer space
-        // float bgWidth = Gdx.graphics.getWidth() * BG_SCALE_FACTOR;
-        // float bgHeight = Gdx.graphics.getHeight() * BG_SCALE_FACTOR;
-        // bgImage.setSize(bgWidth, bgHeight);
-
-        // // Scene starts from the top-right of background image
-        // bgImage.setPosition(Gdx.graphics.getWidth() - bgWidth, Gdx.graphics.getHeight() - bgHeight);
-
-        // // Adds animation to background
-        // bgImage.addAction(Actions.forever(Actions.sequence(
-        //     Actions.moveBy(30,20,5f,Interpolation.sine)   // Drifts up-right
-        // )));
-
-        // // Adds background to stage first
-        // stage.addActor(bgImage);
 
         // Loads 'SPACE COUNT' logo
         logoTexture = new Texture(Gdx.files.internal("space_count_logo.png"));
@@ -244,11 +226,7 @@ public class MainMenuScene extends Scene {
             stage.getViewport().update(width, height, true);
         }
 
-        // background colour
-        //Gdx.gl.glClearColor(0.08f, 0.08f, 0.12f, 1f);
-        //Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-        // render the UI
+        // Renders the UI
         stage.draw();
     }
 

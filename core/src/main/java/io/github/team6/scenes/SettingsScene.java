@@ -1,7 +1,6 @@
 package io.github.team6.scenes;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -36,11 +35,25 @@ public class SettingsScene extends Scene {
         this.scenes = scenes;
     }
 
+    // --- NEW: Tell GameMaster to draw the global scrolling space background ---
+    @Override
+    public boolean isBackgroundVisible() {
+        return true;
+    }
+
+    // Tells GameMaster to play background SFX
+    @Override 
+    public boolean isAmbientAudioEnabled() {
+        return true;
+    }
+    // ------------------------------------------------------------------------
+
     @Override
     public void onEnter() {
         // Create Stage for UI and set it as active input processor
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
+
         // Load default UI skin (buttons, fonts, sliders, etc.)
         skin = new Skin(Gdx.files.internal("uiskin.json"));
         
@@ -50,13 +63,13 @@ public class SettingsScene extends Scene {
         title.setFontScale(1.8f); // Slightly larger title for visual hierarchy
         
         // Master Volume Controls
-        Label masterLabel = new Label("Master Volume: " + (int)(outputManager.getMasterVolume() * 100) + "%", skin);
+        final Label masterLabel = new Label("Master Volume: " + (int)(outputManager.getMasterVolume() * 100) + "%", skin);
         masterLabel.setAlignment(Align.center);
         
-        Slider masterSlider = new Slider(0f, 1f, 0.01f, false, skin);
+        final Slider masterSlider = new Slider(0f, 1f, 0.01f, false, skin);
         masterSlider.setValue(outputManager.getMasterVolume());
 
-        // --- NEW: Quick Preset Buttons ---
+        // --- Quick Preset Buttons ---
         TextButton muteBtn = new TextButton("Mute", skin);
         TextButton halfBtn = new TextButton("50%", skin);
         TextButton fullBtn = new TextButton("100%", skin);
@@ -133,11 +146,7 @@ public class SettingsScene extends Scene {
 
     @Override
     public void render(SpriteBatch batch) {
-        // Keeps the same dark blue/grey background as the main menu
-        Gdx.gl.glClearColor(0.08f, 0.08f, 0.12f, 1f); 
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-        stage.draw(); // Draw all UI actors
+        stage.draw(); // Draw all UI actors on top of the GameMaster's background
     }
 
     @Override

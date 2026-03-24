@@ -156,6 +156,10 @@ public class OutputManager {
         if (bgm != null) {
             bgm.setVolume(clamp(masterVolume * musicVolume));
         }
+
+        for (AudioSource s : activeSfx) {
+            s.setVolume(clamp(masterVolume * sfxVolume));
+        }
     }
 
     public float getMasterVolume() {

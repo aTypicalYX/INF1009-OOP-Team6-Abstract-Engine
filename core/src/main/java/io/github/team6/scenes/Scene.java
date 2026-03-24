@@ -23,6 +23,11 @@ public abstract class Scene {
         return false;
     }
 
+    // Mutes background SFX
+    public boolean isAmbientAudioEnabled() {
+        return false;
+    }
+
     //Injects the single instances of the managers so state is preserved across scenes.
 
     public void initialize(InputManager input, OutputManager output, EntityManager entity, CollisionManager collision, MovementManager movement) {

@@ -3,7 +3,6 @@ package io.github.team6.mathgame;
 import java.util.List;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -74,10 +73,19 @@ public class LeaderboardScene extends Scene {
     // Scene lifecycle
     // -----------------------------------------------------------------------
 
+
+    // --- NEW: Tell GameMaster to draw the global scrolling space background ---
     @Override
-        public boolean isBackgroundVisible() {
-            return true;
-        }
+    public boolean isBackgroundVisible() {
+        return true;
+    }
+
+    // Tells GameMaster to play background SFX
+    @Override 
+    public boolean isAmbientAudioEnabled() {
+        return true;
+    }
+    // ------------------------------------------------------------------------
         
     @Override
     public void onEnter() {
@@ -104,6 +112,7 @@ public class LeaderboardScene extends Scene {
             lastW = w; lastH = h;
             stage.getViewport().update(w, h, true);
         }
+
         stage.draw();
     }
 

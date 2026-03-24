@@ -22,7 +22,8 @@ public class AudioSource {
     private float volume;          // local volume (0.0 to 1.0)
     private float lastMaster = 1f; // cache of the master volume
     private long loopId = -1;      // active loop ID (used to control looping sound)
-
+    private boolean playing = false; // state audio tracking
+    
     // Constructors (Overloading for flexibility)
     public AudioSource(String internalAssetPath) {
         this(internalAssetPath, false, 1f);
@@ -48,7 +49,7 @@ public class AudioSource {
     public void play(float masterVolume) {
         lastMaster = clamp01(masterVolume);
         float finalVol = clamp01(volume * lastMaster);
-        
+
         System.out.println("[DEBUG AudioSource] Playing sound - volume: " + volume + ", masterVolume: " + masterVolume + ", finalVol: " + finalVol);
 
         if (looping) {
@@ -58,11 +59,18 @@ public class AudioSource {
             sound.play(finalVol);
             System.out.println("[DEBUG AudioSource] sound.play() called with volume: " + finalVol);
         }
+        
+        this.playing = true;
     }
 
     public void stop() {
         sound.stop();
         loopId = -1;
+        this.playing = false; // marks as inactive
+    }
+
+    public boolean isPlaying() {    // getter for 'playing' state
+        return playing;
     }
 
     public void setLooping(boolean looping) {
