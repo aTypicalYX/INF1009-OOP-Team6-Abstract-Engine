@@ -18,6 +18,11 @@ public abstract class Scene {
     protected CollisionManager collisionManager;
     protected MovementManager movementManager;
 
+    // Hides default background
+    public boolean isBackgroundVisible() {
+        return false;
+    }
+
     //Injects the single instances of the managers so state is preserved across scenes.
 
     public void initialize(InputManager input, OutputManager output, EntityManager entity, CollisionManager collision, MovementManager movement) {

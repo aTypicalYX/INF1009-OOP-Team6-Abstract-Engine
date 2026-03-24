@@ -75,15 +75,20 @@ public class LeaderboardScene extends Scene {
     // -----------------------------------------------------------------------
 
     @Override
+        public boolean isBackgroundVisible() {
+            return true;
+        }
+        
+    @Override
     public void onEnter() {
         outputManager.stopBgm();
 
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
 
-        lastW = Gdx.graphics.getWidth();
-        lastH = Gdx.graphics.getHeight();
-        stage.getViewport().update(lastW, lastH, true);
+        //lastW = Gdx.graphics.getWidth();
+        //lastH = Gdx.graphics.getHeight();
+        //stage.getViewport().update(lastW, lastH, true);
 
         skin = new Skin(Gdx.files.internal("uiskin.json"));
         buildUI(false);
@@ -99,8 +104,6 @@ public class LeaderboardScene extends Scene {
             lastW = w; lastH = h;
             stage.getViewport().update(w, h, true);
         }
-        Gdx.gl.glClearColor(0.06f, 0.06f, 0.10f, 1f);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         stage.draw();
     }
 

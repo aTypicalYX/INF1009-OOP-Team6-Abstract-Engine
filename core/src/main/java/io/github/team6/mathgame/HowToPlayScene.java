@@ -1,7 +1,6 @@
 package io.github.team6.mathgame;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -27,7 +26,7 @@ public class HowToPlayScene extends Scene {
     private final SceneManager scenes;
 
     private Stage stage; 
-    private Skin skin;   
+    private Skin skin; 
 
     private int lastWidth = -1;
     private int lastHeight = -1;
@@ -37,13 +36,14 @@ public class HowToPlayScene extends Scene {
     }
 
     @Override
+        public boolean isBackgroundVisible() {
+            return true;
+        }
+
+    @Override
     public void onEnter() {
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);   
-
-        lastWidth = Gdx.graphics.getWidth();
-        lastHeight = Gdx.graphics.getHeight();
-        stage.getViewport().update(lastWidth, lastHeight, true);
 
         skin = new Skin(Gdx.files.internal("uiskin.json"));
 
@@ -112,9 +112,6 @@ public class HowToPlayScene extends Scene {
             lastHeight = height;
             stage.getViewport().update(width, height, true);
         }
-
-        Gdx.gl.glClearColor(0.08f, 0.08f, 0.12f, 1f);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         stage.draw();
     }

@@ -52,6 +52,11 @@ public class SceneManager {
         }
     }
 
+    // getScene method
+    public Scene getCurrentScene() {
+        return activeScene;
+    }
+
     // Delegates the update loop to the currently active scene
     public void update(float dt) {
         if (activeScene != null) {

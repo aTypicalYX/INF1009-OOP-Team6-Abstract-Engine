@@ -33,14 +33,14 @@ public class MainMenuScene extends Scene {
 
     private Stage stage; // Scene2D container for UI elements
     private Skin skin;   // JSON style definitions for buttons/fonts
-    private Texture bgTexture;
-    private Image bgImage;
+    //private Texture bgTexture;
+    //private Image bgImage;
     private Texture logoTexture;
     private Image logoImage;
     private Texture planetTexture;
     private AnimatedImage planetImage;
     private Group logoGroup;
-    private static final float BG_SCALE_FACTOR = 1.8f;
+    //private static final float BG_SCALE_FACTOR = 1.8f;
 
     // Track window size so we can update the Stage viewport on resize (e.g. maximize)
     private int lastWidth = -1;
@@ -49,6 +49,11 @@ public class MainMenuScene extends Scene {
     public MainMenuScene(SceneManager scenes) {
         this.scenes = scenes;
     }
+
+    @Override
+        public boolean isBackgroundVisible() {
+            return true;
+        }
 
     @Override
     public void onEnter() {
@@ -66,25 +71,25 @@ public class MainMenuScene extends Scene {
         skin = new Skin(Gdx.files.internal("uiskin.json"));
     
 
-        // Loads space background
-        bgTexture = new Texture(Gdx.files.internal("space_background.png"));
-        bgImage = new Image(bgTexture);
+        // // Loads space background
+        // bgTexture = new Texture(Gdx.files.internal("space_background.png"));
+        // bgImage = new Image(bgTexture);
 
-        // Increases background size for buffer space
-        float bgWidth = Gdx.graphics.getWidth() * BG_SCALE_FACTOR;
-        float bgHeight = Gdx.graphics.getHeight() * BG_SCALE_FACTOR;
-        bgImage.setSize(bgWidth, bgHeight);
+        // // Increases background size for buffer space
+        // float bgWidth = Gdx.graphics.getWidth() * BG_SCALE_FACTOR;
+        // float bgHeight = Gdx.graphics.getHeight() * BG_SCALE_FACTOR;
+        // bgImage.setSize(bgWidth, bgHeight);
 
-        // Scene starts from the top-right of background image
-        bgImage.setPosition(Gdx.graphics.getWidth() - bgWidth, Gdx.graphics.getHeight() - bgHeight);
+        // // Scene starts from the top-right of background image
+        // bgImage.setPosition(Gdx.graphics.getWidth() - bgWidth, Gdx.graphics.getHeight() - bgHeight);
 
-        // Adds animation to background
-        bgImage.addAction(Actions.forever(Actions.sequence(
-            Actions.moveBy(30,20,5f,Interpolation.sine)   // Drifts up-right
-        )));
+        // // Adds animation to background
+        // bgImage.addAction(Actions.forever(Actions.sequence(
+        //     Actions.moveBy(30,20,5f,Interpolation.sine)   // Drifts up-right
+        // )));
 
-        // Adds background to stage first
-        stage.addActor(bgImage);
+        // // Adds background to stage first
+        // stage.addActor(bgImage);
 
         // Loads 'SPACE COUNT' logo
         logoTexture = new Texture(Gdx.files.internal("space_count_logo.png"));
@@ -211,11 +216,10 @@ public class MainMenuScene extends Scene {
         table.add(logoGroup).padTop(20).padBottom(50).row();
         table.add(title).padBottom(50).row();
         table.defaults().width(280).height(60).pad(8);
-        table.add(startBtn).row();
-        table.add(howToPlayBtn).row();
-        table.add(leaderboardBtn).row();
-        table.add(settingsBtn).row();
-        table.add(exitBtn).row();
+        
+        for (TextButton btn: menuButtons) {
+            table.add(btn).row();
+        }
 
         // UI Fade-in effect on game startup
         table.getColor().a = 0;
@@ -241,8 +245,8 @@ public class MainMenuScene extends Scene {
         }
 
         // background colour
-        Gdx.gl.glClearColor(0.08f, 0.08f, 0.12f, 1f);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        //Gdx.gl.glClearColor(0.08f, 0.08f, 0.12f, 1f);
+        //Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         // render the UI
         stage.draw();
@@ -252,7 +256,7 @@ public class MainMenuScene extends Scene {
     public void dispose() {
         if (stage != null) stage.dispose();
         if (skin != null) skin.dispose();
-        if (bgTexture != null) bgTexture.dispose();
+        //if (bgTexture != null) bgTexture.dispose();
         if (logoTexture != null) logoTexture.dispose();
         if (planetTexture != null) planetTexture.dispose();
     }
