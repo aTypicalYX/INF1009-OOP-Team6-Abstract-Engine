@@ -1,7 +1,6 @@
 package io.github.team6.scenes;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -36,6 +35,13 @@ public class SettingsScene extends Scene {
         this.scenes = scenes;
     }
 
+    // --- NEW: Tell GameMaster to draw the global scrolling space background ---
+    @Override
+    public boolean isBackgroundVisible() {
+        return true;
+    }
+    // ------------------------------------------------------------------------
+
     @Override
     public void onEnter() {
         // Create Stage for UI and set it as active input processor
@@ -56,7 +62,7 @@ public class SettingsScene extends Scene {
         Slider masterSlider = new Slider(0f, 1f, 0.01f, false, skin);
         masterSlider.setValue(outputManager.getMasterVolume());
 
-        // --- NEW: Quick Preset Buttons ---
+        // --- Quick Preset Buttons ---
         TextButton muteBtn = new TextButton("Mute", skin);
         TextButton halfBtn = new TextButton("50%", skin);
         TextButton fullBtn = new TextButton("100%", skin);
@@ -133,11 +139,7 @@ public class SettingsScene extends Scene {
 
     @Override
     public void render(SpriteBatch batch) {
-        // Keeps the same dark blue/grey background as the main menu
-        Gdx.gl.glClearColor(0.08f, 0.08f, 0.12f, 1f); 
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-        stage.draw(); // Draw all UI actors
+        stage.draw(); // Draw all UI actors on top of the GameMaster's background
     }
 
     @Override
