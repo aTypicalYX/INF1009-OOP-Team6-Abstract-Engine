@@ -23,12 +23,12 @@ import io.github.team6.scenes.Scene;
  * LeaderboardScene
  * Two modes controlled by the constructor:
  *
- *   POST_GAME mode (scoreToSave > 0):
- *     Shows a name-entry TextField, then saves the score and refreshes
- *     the list. Used immediately after VictoryScene.
+ * POST_GAME mode (scoreToSave > 0):
+ * Shows a name-entry TextField, then saves the score and refreshes
+ * the list. Used immediately after VictoryScene.
  *
- *   VIEW mode (scoreToSave = -1):
- *     Shows the leaderboard read-only. Used from the main menu.
+ * VIEW mode (scoreToSave = -1):
+ * Shows the leaderboard read-only. Used from the main menu.
  *
  * OOP Concepts:
  * - Inheritance    : Extends Scene — standard lifecycle.
@@ -73,8 +73,7 @@ public class LeaderboardScene extends Scene {
     // Scene lifecycle
     // -----------------------------------------------------------------------
 
-
-    // --- NEW: Tell GameMaster to draw the global scrolling space background ---
+    // --- Tell GameMaster to draw the global scrolling space background ---
     @Override
     public boolean isBackgroundVisible() {
         return true;
@@ -94,9 +93,9 @@ public class LeaderboardScene extends Scene {
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
 
-        //lastW = Gdx.graphics.getWidth();
-        //lastH = Gdx.graphics.getHeight();
-        //stage.getViewport().update(lastW, lastH, true);
+        lastW = Gdx.graphics.getWidth();
+        lastH = Gdx.graphics.getHeight();
+        stage.getViewport().update(lastW, lastH, true);
 
         skin = new Skin(Gdx.files.internal("uiskin.json"));
         buildUI(false);
@@ -112,7 +111,6 @@ public class LeaderboardScene extends Scene {
             lastW = w; lastH = h;
             stage.getViewport().update(w, h, true);
         }
-
         stage.draw();
     }
 
