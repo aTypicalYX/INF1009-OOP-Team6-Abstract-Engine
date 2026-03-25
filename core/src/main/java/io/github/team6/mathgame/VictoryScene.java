@@ -166,15 +166,15 @@ public class VictoryScene extends Scene {
         });
 
         // Next level button
-        boolean hasNextLevel = levelCompleted < 2;
+        boolean hasNextLevel = LevelConfig.hasNextLevel(levelCompleted);
         TextButton nextBtn = new TextButton(
             hasNextLevel ? "Next Level" : "Play Again", skin);
         nextBtn.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if (levelCompleted < 2) {
-                    // Show Level 2 cutscene before starting Level 2
-                    scenes.setScene(new IntroScene(scenes, 2));
+                if (LevelConfig.hasNextLevel(levelCompleted)) {
+                    // Show next level's cutscene before starting it
+                    scenes.setScene(new IntroScene(scenes, levelCompleted + 1));
                 } else {
                     GameStateManager.getInstance().reset();
                     scenes.setScene(new MathGameScene(scenes));
