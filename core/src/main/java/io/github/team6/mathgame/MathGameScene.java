@@ -72,7 +72,7 @@ public class MathGameScene extends Scene {
     // -----------------------------------------------------------------
     private static final int   ASTEROID_COUNT         = 7;    // more asteroids per round
     private static final float ASTEROID_SIZE          = 60f;
-    private static final float ASTEROID_SPEED         = 0.8f;
+    private static final float ASTEROID_SPEED         = 0.4f;
     private static final float POWERUP_SIZE           = 48f;
     private static final float POWERUP_SPAWN_INTERVAL = 5f;  // adjusts the frequency of power-ups (lower = more frequent)
 
@@ -367,7 +367,7 @@ public class MathGameScene extends Scene {
 
         int   correctIndex  = ThreadLocalRandom.current().nextInt(0, ASTEROID_COUNT);
         int   level         = computeLevel();
-        float dynamicSpeed  = Math.min(2.5f, ASTEROID_SPEED + (level - 1) * 0.15f);
+        float dynamicSpeed  = Math.min(2.5f, ASTEROID_SPEED + (level - 1) * 0.05f);
 
         for (int i = 0; i < ASTEROID_COUNT; i++) {
             int value = (i == correctIndex)
@@ -566,8 +566,8 @@ public class MathGameScene extends Scene {
         int sh = Gdx.graphics.getHeight();
 
         // Equation background image + prompt
-        float eqBgW = 420f;
-        float eqBgH = 52f;
+        float eqBgW = 560f;
+        float eqBgH = 70f;
         float eqBgX = sw / 2f - eqBgW / 2f;
         float eqBgY = sh - eqBgH - 8f;
         if (equationBg != null) {
@@ -575,37 +575,38 @@ public class MathGameScene extends Scene {
         }
         outputManager.drawText(batch,
             "Solve: " + equationGenerator.getCurrentEquation(),
-            sw / 2f - 120, sh - 25, 2.0f);
+            sw / 2f - 150, sh - 25, 3f);
 
         // Stats HUD background image
         if (infoBg != null) {
-            batch.draw(infoBg, 10, sh - 185, 280, 180);
+            batch.draw(infoBg, 8, sh - 210, 360, 210);
         }
 
         // Score
         outputManager.drawText(batch,
             "SCORE: " + gsm.getScore(),
-            20, Gdx.graphics.getHeight() - 20, 1.5f);
+            20, Gdx.graphics.getHeight() - 20, 2.5f);
 
         // Timer
         int secs = (int) Math.ceil(gsm.getTimeSeconds());
         Color timerColor = secs <= 20 ? Color.RED : Color.WHITE;
         outputManager.drawText(batch,
-            "TIME: " + secs + "s", 20, sh - 55, 1.3f, timerColor);
+            "TIME: " + secs + "s", 20, sh - 55, 1.8f, timerColor);
 
         // Level
         outputManager.drawText(batch,
-            "Level: " + gsm.getLevel(), 20, sh - 85, 1.2f);
+            "Level: " + gsm.getLevel(), 20, sh - 85, 1.8f);
 
         // --- Draw Streak Indicator if player are doing well ---
         if (gsm.getCurrentStreak() >= 3) {
             outputManager.drawText(batch, 
-                "STREAK! 2X POINTS!", sw / 2f - 130, sh - 75, 1.5f, Color.ORANGE);
+                "STREAK! 2X POINTS!", sw / 2f - 130, sh - 75, 2.0f, Color.ORANGE);
         }
 
         // Lives Label
-        outputManager.drawText(batch, "LIVES: ", 20, sh - 112, 1.5f);
-        float heartX = 90f, heartY = sh - 137f;
+        outputManager.drawText(batch, "LIVES: ", 20, sh - 115, 1.8f);
+        float heartX = 100f, heartY = sh - 140f;
+        
         for (int i = 0; i < GameStateManager.STARTING_LIVES; i++)
             batch.draw(emptyHeart,  heartX + i * 40, heartY, 32, 32);
         for (int i = 0; i < gsm.getLives(); i++)
@@ -614,7 +615,7 @@ public class MathGameScene extends Scene {
         // Equations answered counter
         outputManager.drawText(batch,
             "Equations Solved: " + gsm.getEquationsAnswered(),
-            20, Gdx.graphics.getHeight() - 150, 1.3f);
+            20, Gdx.graphics.getHeight() - 150, 2.0f);
 
         // Pause hint
         outputManager.drawText(batch,
