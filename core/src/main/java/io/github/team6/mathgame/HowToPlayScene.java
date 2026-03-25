@@ -61,7 +61,7 @@ public class HowToPlayScene extends Scene {
         // Instructions
         String instructionsText = 
             "[CONTROLS]\n" +
-            "Use the Arrow Keys or WASD to steer your rocket.\n\n" +
+            "Use the Arrow Keys to steer your spaceship.\n\n" +
             "[OBJECTIVE]\n" +
             "A math equation will appear at the top of the screen.\n" +
             "Fly into the asteroid that has the CORRECT answer.\n\n" +
