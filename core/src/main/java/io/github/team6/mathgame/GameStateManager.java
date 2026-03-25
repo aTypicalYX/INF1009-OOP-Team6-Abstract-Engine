@@ -66,11 +66,12 @@ public class GameStateManager {
     private int   lives;
     private int   score;
     private int   equationsAnswered;
+    private int   levelEquationsAnswered;
     private int   level;
     private float timeSeconds;
     private boolean gameOver;
-    private boolean scoreMultiplierActive; // true = next correct answer scores double
-    private int currentStreak; // number of correct answers in a row, reset to 0 when player answers incorrectly
+    private boolean scoreMultiplierActive;
+    private int currentStreak;
 
     // ---------------------------------------------------------------
     // Lifecycle
@@ -82,14 +83,15 @@ public class GameStateManager {
      * Singleton does not carry stale data from a previous play-through.
      */
     public void reset() {
-        lives             = STARTING_LIVES;
-        score             = 0;
-        equationsAnswered = 0;
-        level             = 1;
-        timeSeconds       = STARTING_TIME;
-        gameOver          = false;
+        lives                 = STARTING_LIVES;
+        score                 = 0;
+        equationsAnswered     = 0;
+        levelEquationsAnswered = 0;
+        level                 = 1;
+        timeSeconds           = STARTING_TIME;
+        gameOver              = false;
         scoreMultiplierActive = false;
-        currentStreak = 0;
+        currentStreak         = 0;
 
     }
 
@@ -130,9 +132,10 @@ public class GameStateManager {
      * and equationsAnswered count so progress carries over between levels.
      */
     public void refreshLivesAndTimer() {
-        lives       = STARTING_LIVES;
-        timeSeconds = STARTING_TIME;
-        gameOver    = false;
+        lives                  = STARTING_LIVES;
+        timeSeconds            = STARTING_TIME;
+        gameOver               = false;
+        levelEquationsAnswered = 0; 
     }
 
     public boolean isGameOver() { return gameOver; }
@@ -153,12 +156,14 @@ public class GameStateManager {
     // Equations / win condition
     // -----------------------------------------------------------------------
 
-    public int getEquationsAnswered() { return equationsAnswered; }
+    public int getEquationsAnswered()      { return equationsAnswered; }
+    public int getLevelEquationsAnswered() { return levelEquationsAnswered; }
 
     public int getCurrentStreak() { return currentStreak; }
 
     public boolean recordCorrectAnswer() {
         equationsAnswered++;
+        levelEquationsAnswered++;
         currentStreak++;
         return equationsAnswered >= EQUATIONS_TO_WIN;
     }

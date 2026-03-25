@@ -807,7 +807,7 @@ public class MathGameScene extends Scene {
     }
 
     private int computeLevel() {
-        return Math.max(1, GameStateManager.getInstance().getEquationsAnswered() + 1);
+        return Math.max(1, GameStateManager.getInstance().getLevelEquationsAnswered() + 1);
     }
 
     private String friendlyPowerUpLabel(String tag) {

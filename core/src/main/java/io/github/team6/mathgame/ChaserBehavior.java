@@ -24,7 +24,7 @@ public class ChaserBehavior implements MovementBehavior {
 
     private static final float BASE_SPEED             = 0.5f;
     private static final float LEVEL_INCREMENT        = 0.15f;
-    private static final float MAX_SPEED              = 5.0f;   
+    private static final float MAX_SPEED              = 4.0f;   
 
     // --- NEW: Rubber-Band Tuning Constants ---
     private static final float RUBBER_BAND_DISTANCE   = 700f; // Roughly one screen height
