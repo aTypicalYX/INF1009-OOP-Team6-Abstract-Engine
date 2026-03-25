@@ -35,10 +35,18 @@ public class HowToPlayScene extends Scene {
         this.scenes = scenes;
     }
 
+    // --- NEW: Tell GameMaster to draw the global scrolling space background ---
     @Override
-        public boolean isBackgroundVisible() {
-            return true;
-        }
+    public boolean isBackgroundVisible() {
+        return true;
+    }
+
+    // Tells GameMaster to play background SFX
+    @Override 
+    public boolean isAmbientAudioEnabled() {
+        return true;
+    }
+    // ------------------------------------------------------------------------
 
     @Override
     public void onEnter() {

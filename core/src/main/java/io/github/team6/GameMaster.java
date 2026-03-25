@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.ScreenUtils;
 
+import io.github.team6.inputoutput.AudioSource;
 import io.github.team6.managers.CollisionManager;
 import io.github.team6.managers.EntityManager;
 import io.github.team6.managers.InputManager;
@@ -36,6 +37,7 @@ public class GameMaster extends ApplicationAdapter {
     private Stage bgStage;
     private Texture bgTexture;
     private Image bgImage;
+    private AudioSource ambientSfx;
 
     // create() is called once when the application starts. This is used to set up the other Managers
     @Override
@@ -50,6 +52,15 @@ public class GameMaster extends ApplicationAdapter {
 
         //  Maximise window on launch
         Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
+
+         // Initialize Managers
+        inputManager     = new InputManager();
+        outputManager    = new OutputManager();
+        entityManager    = new EntityManager();
+        collisionManager = new CollisionManager();
+        movementManager  = new MovementManager();
+        batch            = new SpriteBatch();
+
 
         // Global space background
         bgStage = new Stage(new com.badlogic.gdx.utils.viewport.ScreenViewport());
@@ -72,13 +83,15 @@ public class GameMaster extends ApplicationAdapter {
 
         bgStage.addActor(bgImage);
 
-        // Initialize Managers
-        inputManager     = new InputManager();
-        outputManager    = new OutputManager();
-        entityManager    = new EntityManager();
-        collisionManager = new CollisionManager();
-        movementManager  = new MovementManager();
-        batch            = new SpriteBatch();
+        // Adds background SFX
+        try {
+            ambientSfx = new AudioSource("background.wav");
+            ambientSfx.setLooping(true);
+            ambientSfx.setVolume(1f);
+            outputManager.play(ambientSfx);
+        } catch (Exception e) {
+            System.out.println("[DEBUG] background.wav not found.");
+        }
 
         // Initialize SceneManager with tools. Pass the created managers into SceneManager.
         // This ensures SceneManager has access to all the systems it needs to pass down
@@ -89,7 +102,8 @@ public class GameMaster extends ApplicationAdapter {
         
         // sceneManager.setScene(new MainMenuScene(sceneManager));
         sceneManager.setScene(new MainMenuScene(sceneManager));
-    }
+    
+       }
 
     // render() runs approximately 60 times per second.
     @Override
@@ -97,10 +111,20 @@ public class GameMaster extends ApplicationAdapter {
         try {
             ScreenUtils.clear(0.05f, 0.05f, 0.08f, 1f);
             float dt = Gdx.graphics.getDeltaTime();
-
             io.github.team6.scenes.Scene currentScene = sceneManager.getCurrentScene();
             
-            // Updates and draws background
+            // --- AUDIO CONTROLLER ---
+            if (currentScene != null && ambientSfx != null) {
+                if (currentScene.isAmbientAudioEnabled()) {
+                    if (!ambientSfx.isPlaying()) {
+                        outputManager.play(ambientSfx);
+                    }
+                } else {
+                    ambientSfx.stop();
+                }
+            }
+
+            // --- SPACE BACKGROUND RENDERING ---
             if (currentScene != null && currentScene.isBackgroundVisible()) {
                 bgStage.act(dt);
                 bgStage.draw();

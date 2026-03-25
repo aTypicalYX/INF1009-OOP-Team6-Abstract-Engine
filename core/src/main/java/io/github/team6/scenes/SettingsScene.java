@@ -40,6 +40,12 @@ public class SettingsScene extends Scene {
     public boolean isBackgroundVisible() {
         return true;
     }
+
+    // Tells GameMaster to play background SFX
+    @Override 
+    public boolean isAmbientAudioEnabled() {
+        return true;
+    }
     // ------------------------------------------------------------------------
 
     @Override
@@ -47,6 +53,7 @@ public class SettingsScene extends Scene {
         // Create Stage for UI and set it as active input processor
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
+
         // Load default UI skin (buttons, fonts, sliders, etc.)
         skin = new Skin(Gdx.files.internal("uiskin.json"));
         
@@ -56,10 +63,10 @@ public class SettingsScene extends Scene {
         title.setFontScale(1.8f); // Slightly larger title for visual hierarchy
         
         // Master Volume Controls
-        Label masterLabel = new Label("Master Volume: " + (int)(outputManager.getMasterVolume() * 100) + "%", skin);
+        final Label masterLabel = new Label("Master Volume: " + (int)(outputManager.getMasterVolume() * 100) + "%", skin);
         masterLabel.setAlignment(Align.center);
         
-        Slider masterSlider = new Slider(0f, 1f, 0.01f, false, skin);
+        final Slider masterSlider = new Slider(0f, 1f, 0.01f, false, skin);
         masterSlider.setValue(outputManager.getMasterVolume());
 
         // --- Quick Preset Buttons ---

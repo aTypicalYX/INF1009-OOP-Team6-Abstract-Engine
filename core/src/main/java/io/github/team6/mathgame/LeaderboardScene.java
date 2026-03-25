@@ -78,8 +78,14 @@ public class LeaderboardScene extends Scene {
     public boolean isBackgroundVisible() {
         return true;
     }
-    // ------------------------------------------------------------------------
 
+    // Tells GameMaster to play background SFX
+    @Override 
+    public boolean isAmbientAudioEnabled() {
+        return true;
+    }
+    // ------------------------------------------------------------------------
+        
     @Override
     public void onEnter() {
         outputManager.stopBgm();
@@ -105,7 +111,6 @@ public class LeaderboardScene extends Scene {
             lastW = w; lastH = h;
             stage.getViewport().update(w, h, true);
         }
-        
         stage.draw();
     }
 
