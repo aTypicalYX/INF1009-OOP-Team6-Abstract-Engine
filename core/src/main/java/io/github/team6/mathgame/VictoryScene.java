@@ -2,9 +2,13 @@ package io.github.team6.mathgame;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -33,11 +37,16 @@ import io.github.team6.scenes.Scene;
 public class VictoryScene extends Scene {
 
     private final SceneManager scenes;
-    private final int          levelCompleted;
+    private final int levelCompleted;
 
     private Stage stage;
+    private Stage bgStage;
     private Skin  skin;
-    private int   lastW = -1, lastH = -1;
+    
+    private Texture logoTexture;
+    private Image logoImage;
+    private Texture bgTexture;
+    private Image bgImage;
 
     public VictoryScene(SceneManager scenes, int levelCompleted) {
         this.scenes         = scenes;
@@ -49,6 +58,29 @@ public class VictoryScene extends Scene {
     // -----------------------------------------------------------------------
     @Override
     public void onEnter() {
+        
+        // ---------- BACKGROUND SETUP ----------
+        bgStage = new Stage(new ScreenViewport());
+        bgTexture = new Texture(Gdx.files.internal("victory_background.png"));
+        bgImage = new Image(bgTexture);
+
+        // Set size and position
+        bgImage.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        bgImage.setPosition(0,0);
+        bgImage.setOrigin(Align.center);
+
+        // Zoom animation adjustments
+        bgImage.addAction(Actions.scaleTo(1.1f, 1.1f, 20f, Interpolation.exp5Out));
+        
+        // Adds zooming action
+        bgStage.addActor(bgImage);
+
+        // ---------- LOGO SETUP ----------
+        logoTexture = new Texture(Gdx.files.internal("mission_success_logo.png"));
+        logoTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        logoImage = new Image(logoTexture);
+
+        // ---------- AUDIO SETUP ----------
         outputManager.stopBgm();
         try {
             outputManager.play(new AudioSource("gameWin.wav"));
@@ -56,29 +88,24 @@ public class VictoryScene extends Scene {
             System.out.println("[VictoryScene] gameWin.wav not found.");
         }
 
+        // ---------- UI SETUP ----------
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
-
-        lastW = Gdx.graphics.getWidth();
-        lastH = Gdx.graphics.getHeight();
-        stage.getViewport().update(lastW, lastH, true);
-
         skin = new Skin(Gdx.files.internal("uiskin.json"));
         buildUI();
     }
 
-    @Override
-    public void update(float dt) { stage.act(dt); }
-
+    @Override 
+    public void update(float dt) {
+        bgStage.act(dt);
+        stage.act(dt);
+    }
+    
     @Override
     public void render(SpriteBatch batch) {
-        int w = Gdx.graphics.getWidth(), h = Gdx.graphics.getHeight();
-        if (w != lastW || h != lastH) {
-            lastW = w; lastH = h;
-            stage.getViewport().update(w, h, true);
-        }
         Gdx.gl.glClearColor(0.03f, 0.06f, 0.12f, 1f); // dark space blue
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        bgStage.draw();
         stage.draw();
     }
 
@@ -86,6 +113,9 @@ public class VictoryScene extends Scene {
     public void dispose() {
         if (stage != null) stage.dispose();
         if (skin  != null) skin.dispose();
+        if (bgTexture != null) bgTexture.dispose();
+        if (bgStage != null) bgStage.dispose();
+        if (logoTexture != null) logoTexture.dispose();
     }
 
     // -----------------------------------------------------------------------
@@ -97,25 +127,34 @@ public class VictoryScene extends Scene {
         GameStateManager gsm        = GameStateManager.getInstance();
         int              finalScore = gsm.getScore();
 
-        Label titleLabel  = new Label("LEVEL " + levelCompleted + " COMPLETE!", skin);
-        titleLabel.setFontScale(2.2f);
-        titleLabel.setAlignment(Align.center);
+        // Proportionally scales logo to desired width
+        float screenWidth = Gdx.graphics.getWidth();
+        float logoWidth = screenWidth * 0.50f;      // Adjusts logo size
+        float aspect = (float) logoTexture.getHeight() / logoTexture.getWidth();
+        float logoHeight = logoWidth * aspect;
+
+        logoImage.getColor().a = 0;
+        logoImage.addAction(Actions.fadeIn(1.5f));
+       
+        // ---------- TEXT ADJUSTMENTS ----------
+        Label titleLabel  = new Label("Stage " + levelCompleted + " Secured", skin);
+        titleLabel.setFontScale(2.3f);
+        titleLabel.setColor(com.badlogic.gdx.graphics.Color.CYAN);
 
         Label scoreLabel  = new Label("Score: " + finalScore, skin);
-        scoreLabel.setFontScale(1.6f);
-        scoreLabel.setAlignment(Align.center);
-
-        Label subLabel = new Label("You escaped and reached the planet!", skin);
-        subLabel.setAlignment(Align.center);
+        scoreLabel.setFontScale(1.7f);
 
         // Check if score qualifies for leaderboard
         LeaderboardManager lb = new LeaderboardManager();
         String lbHint = lb.isHighScore(finalScore)
-            ? "New high score! Enter your name on the leaderboard."
-            : "View the leaderboard to see where you rank.";
+            ? "NEW HIGH SCORE!"
+            : "Mission logs archived. \nCheck the leaderboard.";
+        
         Label hintLabel = new Label(lbHint, skin);
+        hintLabel.setFontScale(1.4f);
         hintLabel.setAlignment(Align.center);
         hintLabel.setWrap(true);
+        hintLabel.setColor(com.badlogic.gdx.graphics.Color.GOLD);
 
         // Leaderboard button
         TextButton lbBtn = new TextButton("Leaderboard", skin);
@@ -147,10 +186,12 @@ public class VictoryScene extends Scene {
         table.setFillParent(true);
         table.center().pad(20);
 
-        table.add(titleLabel).colspan(2).padBottom(8).row();
-        table.add(scoreLabel).colspan(2).padBottom(4).row();
-        table.add(subLabel).colspan(2).padBottom(6).row();
-        table.add(hintLabel).colspan(2).width(420).padBottom(24).row();
+        table.add(logoImage).width(logoWidth).height(logoHeight).colspan(2).padBottom(20).row();
+        table.add(titleLabel).colspan(2).padBottom(4).row();
+        table.add(scoreLabel).colspan(2).padBottom(2).row();
+        table.add(hintLabel).colspan(2).width(420).padBottom(14).row();
+        
+        
         table.defaults().width(220).height(58).pad(10);
         table.add(lbBtn);
         table.add(nextBtn);

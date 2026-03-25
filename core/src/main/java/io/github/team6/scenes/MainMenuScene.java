@@ -205,7 +205,7 @@ public class MainMenuScene extends Scene {
 
         // UI Fade-in effect on game startup
         table.getColor().a = 0;
-        table.addAction(Actions.fadeIn(2.0f, Interpolation.pow2In));
+        table.addAction(Actions.fadeIn(1.0f, Interpolation.pow2In));
 
         stage.addActor(table);
     }
