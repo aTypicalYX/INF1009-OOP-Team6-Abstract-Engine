@@ -85,7 +85,7 @@ public class NumberCollectionBehavior implements CollisionBehavior {
             if (gsm.isScoreMultiplierActive()) {
                 points *= 2;
                 gsm.consumeScoreMultiplier();
-                scene.spawnFloatingText("+" + points + " (2×!)",
+                scene.spawnFloatingText("+" + points + " (2x!)",
                     self.getX(), self.getY() + 30, Color.YELLOW);
             } else {
                 scene.spawnFloatingText("+" + points,
