@@ -33,8 +33,7 @@ import io.github.team6.scenes.Scene;
 /**
  * MathGameScene – core gameplay scene.
  *
- * The player controls a rocket and must collide with the asteroid that displays
- * the correct answer to the on-screen math equation.
+ * The player controls a rocket and must collide with the asteroid that displays the correct answer to the on-screen math equation.
  *
  * === Design Patterns Used ===
  *

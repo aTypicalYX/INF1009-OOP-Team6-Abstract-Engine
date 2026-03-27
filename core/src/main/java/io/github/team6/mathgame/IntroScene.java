@@ -18,8 +18,7 @@ import io.github.team6.scenes.Scene;
 
 /**
  * IntroScene
- * Displays a series of story + tutorial text panels after the player presses
- * Start Game.
+ * Displays a background story + tutorial text panels after the player presses Start Game.
  * Each panel types itself out character by character (typewriter effect).
  *
  * Controls:

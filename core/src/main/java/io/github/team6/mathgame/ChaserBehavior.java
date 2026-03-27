@@ -8,9 +8,8 @@ import io.github.team6.entities.behavior.MovementBehavior;
 /**
  * ChaserBehavior
  * MovementBehavior for the chaser entity (black hole / lava).
- * * Uses "Rubber-Banding" logic: The base speed scales with the level, 
- * but if the player gets too far ahead, the chaser multiplies its speed 
- * to catch up, creates sense of urgency.
+ * * Uses Rubber-Banding logic: The base speed scales with the level, 
+ * but if the player gets too far ahead, the chaser multiplies its speed to catch up.
  * 
  * OOP Concepts:
  * - Strategy Pattern: ChaserBehavior is one of potentially many MovementBehaviors that can be swapped in and out for different entities or even the same entity at different times.

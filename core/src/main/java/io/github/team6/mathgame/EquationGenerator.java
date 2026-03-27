@@ -10,6 +10,9 @@ import java.util.concurrent.ThreadLocalRandom;
  * The scene can then retrieve the current equation and answer using the provided getters.
  * The equations it can generate include addition, subtraction, multiplication, and division.
  * How it chooses which type of equation to generate is based on a random operator selection.
+ * 
+ * NOTE: We decided to take out multiplication and division. The game currently supports only addition and subtraction problems.
+ * We can easily re-enable multiplication and division in the future by adjusting the operator selection logic in generateNewEquation().
  */
 public class EquationGenerator {
 
@@ -31,29 +34,16 @@ public class EquationGenerator {
      * This method updates the internal state of the object.
      */
     public void generateNewEquation() {
-        // Generate two random numbers between 1 and 10 (inclusive)
-        // Note: nextInt(origin, bound) is inclusive of origin, exclusive of bound.
-        // int num1 = ThreadLocalRandom.current().nextInt(1, 11); 
-        // int num2 = ThreadLocalRandom.current().nextInt(1, 11); 
         
-        // Calculate the answer and build the display string
-        // currentAnswer = num1 + num2;
-        // currentEquation = num1 + " + " + num2 + " = ?";
-
-        // Pick an operator: 0 = +, 1 = -, 2 = *, 3 = /
         ThreadLocalRandom rand = ThreadLocalRandom.current();
 
 
-        // Restrict the math operator based on the player's level.
-        // Level 1 = 0 (Addition only)
-        // Level 2 = 0 to 1 (Addition & Subtraction)
-        // Level 3 = 0 to 2 (Up to Multiplication)
-        // Level 4+ = 0 to 3 (All operators unlocked)
         int maxOperator = Math.min(3, currentLevel - 1); 
         int operatorType = rand.nextInt(0, maxOperator + 1);
         int num1, num2;
 
         // Generate the equation based on the randomly selected operator.
+        // For subtraction, we ensure that the first number is greater than or equal to the second to avoid negative answers.
         switch(operatorType) {
             case 0:
                 num1 = rand.nextInt(1, 21);

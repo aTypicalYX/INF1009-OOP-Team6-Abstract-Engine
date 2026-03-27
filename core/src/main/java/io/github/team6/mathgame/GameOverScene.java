@@ -94,6 +94,7 @@ public class GameOverScene extends Scene {
         buildUI();
     }
 
+    // Handles input and updates the stage actors (for animations).
     @Override
     public void update(float dt) {
         bgStage.act(dt);

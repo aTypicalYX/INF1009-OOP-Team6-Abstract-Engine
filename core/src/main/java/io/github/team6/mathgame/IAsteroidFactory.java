@@ -10,11 +10,9 @@ import io.github.team6.entities.NonPlayableEntity;
  * never depend on a specific implementation such as ChasingAsteroidFactory
  * or StationaryAsteroidFactory.
  *
- * Why Abstract Factory here?
- * We want to be able to swap entire "families" of asteroid behaviour
- * (e.g. a future "frenzied" difficulty where ALL asteroids chase the
- * player) simply by changing which factory implementation is injected,
- * without touching any scene or game-logic code.
+ * Abstract Factory is used here as we want to be able to swap entire families of asteroid behaviour,
+ * (e.g. a future "frenzied" difficulty where ALL asteroids chase the player),
+ * simply by changing which factory implementation is injected, without touching any scene or game-logic code.
  *
  * Relationship to the other patterns:
  * - AsteroidFactory (Factory Pattern) acts as the "director" and holds a

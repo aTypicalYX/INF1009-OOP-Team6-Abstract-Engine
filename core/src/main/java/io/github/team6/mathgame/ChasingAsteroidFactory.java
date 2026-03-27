@@ -10,7 +10,7 @@ import io.github.team6.entities.behavior.ChasingMovementBehavior;
 /**
  * ChasingAsteroidFactory – Concrete Factory (Abstract Factory Pattern)
  *
- * Produces asteroids that actively chase the player rocket using ChasingMovementBehavior.  
+ * Produces asteroids that actively chase the player using ChasingMovementBehavior.  
  * Design Pattern: Abstract Factory (Concrete Product Creator)
  * - Implements IAsteroidFactory.
  * - The caller (AsteroidFactory / MathGameScene) only knows the

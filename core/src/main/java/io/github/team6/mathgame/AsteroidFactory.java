@@ -15,11 +15,8 @@ import io.github.team6.entities.PlayableEntity;
  * Responsible for:
  * 1. Deciding WHICH concrete factory to use for each asteroid
  * (chasing vs stationary) – the Factory Pattern decision layer.
- * 2. Calculating a SAFE spawn position ABOVE the player, ensuring asteroids
- * appear dynamically as the player scrolls upward, without overlapping.
- * 3. Delegating the actual object construction to the appropriate IAsteroidFactory implementation – the Abstract Factory
- * Pattern delegation layer.
- *
+ * 2. Calculating a safe spawn position above the player, ensuring asteroids appear dynamically as the player moves upward, without overlapping.
+ * 3. Delegating the actual object construction to the appropriate IAsteroidFactory implementation – the Abstract Factory pattern delegation layer.
  * Pattern relationships:
  * MathGameScene  AsteroidFactory (Factory) then delegates ChasingAsteroidFactory StationaryAsteroidFactory
  */
@@ -147,6 +144,7 @@ public class AsteroidFactory {
         return new float[]{ fallbackX, fallbackY };
     }
 
+    // Checks if the candidate rectangle overlaps the player.
     private boolean overlapsRocket(float cx, float cy, float w, float h) {
         return cx < targetRocket.getX() + targetRocket.getWidth()
             && cx + w > targetRocket.getX()
@@ -154,6 +152,7 @@ public class AsteroidFactory {
             && cy + h > targetRocket.getY();
     }
 
+    // Checks if the candidate rectangle overlaps any active asteroid in the obstacles list.
     private boolean overlapsObstacle(float cx, float cy, float w, float h) {
         for (Entity obs : obstaclesList) {
             if (!obs.isActive()) continue;
@@ -167,6 +166,7 @@ public class AsteroidFactory {
         return false;
     }
 
+    // Checks if the candidate rectangle overlaps any wall colliders in the world.
     private boolean overlapsWall(float cx, float cy, float w, float h) {
         for (Rectangle wall : worldColliders) {
             if (cx < wall.x + wall.width  && cx + w > wall.x

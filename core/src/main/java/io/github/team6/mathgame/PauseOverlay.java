@@ -24,8 +24,7 @@ import io.github.team6.scenes.MainMenuScene;
 /**
  * PauseOverlay
  * Rendered ON TOP of MathGameScene when the player presses P or ESC.
- * NOT a Scene - it is owned by MathGameScene so the game world stays
- * visible (and dimmed) behind it.
+ * NOT a Scene - it is owned by MathGameScene so the game world stays visible behind it.
  *
  * Contains three actions:
  *   Resume   - unpauses and returns input to the game

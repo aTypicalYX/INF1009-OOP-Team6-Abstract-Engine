@@ -109,8 +109,7 @@ public class LeaderboardManager {
     // Private helpers
     // -----------------------------------------------------------------------
 
-    
-
+    // save the provided list of entries back to Preferences, overwriting old values.
     private void save(List<ScoreEntry> entries) {
         Preferences prefs = Gdx.app.getPreferences(PREFS_NAME);
         // Clear old values first so stale entries don't linger

@@ -84,8 +84,8 @@ public class LeaderboardScene extends Scene {
     public boolean isAmbientAudioEnabled() {
         return true;
     }
-    // ------------------------------------------------------------------------
-        
+
+    // onEnter: setup Stage, Skin, and build the UI based on mode    
     @Override
     public void onEnter() {
         outputManager.stopBgm();
@@ -124,6 +124,7 @@ public class LeaderboardScene extends Scene {
     // UI
     // -----------------------------------------------------------------------
 
+    // Builds the entire UI from scratch based on the current mode and state.
     private void buildUI(boolean justSaved) {
         stage.clear();
 
@@ -201,6 +202,7 @@ public class LeaderboardScene extends Scene {
             }
         });
 
+        // Show Next Level button if they just saved a score and there's a next level, otherwise show Play Again.
         if (scoreToSave >= 0) {
             // Check if there's a next level or not
             boolean hasNextLevel = levelReached < 2;
@@ -225,6 +227,8 @@ public class LeaderboardScene extends Scene {
             btnRow.add(nextBtn).width(200).height(55).padRight(16);
             btnRow.add(menuBtn).width(200).height(55);
             root.add(btnRow).colspan(3).padTop(10).row();
+
+            // If they just saved a score, show both Next Level and Main Menu buttons side by side. Otherwise, just show Main Menu.
         } else {
             root.add(menuBtn).colspan(3).width(200).height(55).padTop(10).row();
         }

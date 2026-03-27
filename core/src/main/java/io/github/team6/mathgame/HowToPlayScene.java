@@ -19,6 +19,13 @@ import io.github.team6.scenes.Scene;
 /**
  * HowToPlayScene
  * * A static UI screen that explains the controls and objectives to the player.
+ * * OOP Concepts:
+ * - Inheritance    : Extends Scene - standard lifecycle.
+ * - Composition    : Owns a Stage and Skin for UI rendering.
+ * - Encapsulation  : All UI setup and logic is contained within this class, making it easy to modify without affecting other parts of the codebase.
+ * - Observer Pattern: Scene2D
+ * ChangeListeners on buttons.
+ * - Open/Closed    : Adding new sections to the instructions or new buttons requires only changes to this class, not the entities or game logic.
  * Accessible from the MainMenuScene.
  */
 public class HowToPlayScene extends Scene {
@@ -48,6 +55,7 @@ public class HowToPlayScene extends Scene {
     }
     // ------------------------------------------------------------------------
 
+    // onEnter: setup Stage, Skin, and build the UI based on mode
     @Override
     public void onEnter() {
         stage = new Stage(new ScreenViewport());
