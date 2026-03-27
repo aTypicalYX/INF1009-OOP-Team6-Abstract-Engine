@@ -24,7 +24,7 @@ public class AudioSource {
     private long loopId = -1;      // active loop ID (used to control looping sound)
     private boolean playing = false; // state audio tracking
     
-    // Constructors (Overloading for flexibility)
+    // constructors (Overloading for flexibility)
     public AudioSource(String internalAssetPath) {
         this(internalAssetPath, false, 1f);
     }
@@ -34,7 +34,7 @@ public class AudioSource {
         FileHandle file = Gdx.files.internal(internalAssetPath);
         System.out.println("[DEBUG AudioSource] File exists: " + file.exists() + ", Path: " + file.path());
 
-        // Load sound from internal assets
+        // load sound from internal assets
         this.sound = Gdx.audio.newSound(file);
         this.looping = looping;
         this.volume = clamp01(volume);

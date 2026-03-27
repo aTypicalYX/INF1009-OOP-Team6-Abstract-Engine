@@ -12,7 +12,7 @@ import io.github.team6.inputoutput.MusicSource;
 /**
  * OutputManager:
  * Centralizes all audio and basic text output control for the game.
- * * * OOP Concepts & Design Patterns:
+ * OOP Concepts & Design Patterns:
  * - Facade Pattern: Wraps the low-level LibGDX audio and font systems into a simplified interface.
  * - Separation of Concerns: Isolates output (sound/text) from game logic.
  */
@@ -32,12 +32,12 @@ public class OutputManager {
     private float sfxVolume;
     private float musicVolume;
 
-    // NEW: Text Rendering Engine Component
+    // text rendering
     private BitmapFont font;
 
-    /*
-    OutputManager constructor initializes the audio system and the font engine.
-    */
+    
+    // OutputManager constructor initializes the audio system and font engine
+    
     public OutputManager() {
         activeSfx = new ArrayList<>();
         masterVolume = 1f;
@@ -45,14 +45,11 @@ public class OutputManager {
         musicVolume = 0.3f;  // softer bgm by default
         uiClickSfx = null;
         
-        // Initialize the default font engine
+        // initialize the default font engine
         font = new BitmapFont(); 
     }
 
-    /**
-     * Draws white text to the screen using the provided SpriteBatch.
-     * This abstracts the font scaling and color settings away from the Scene.
-     */
+    // abstracts the font scaling and color settings away from the scene
     public void drawText(SpriteBatch batch, String text, float x, float y, float scale) {
         if (font != null && batch != null) {
             font.setColor(1, 1, 1, 1); // Default to white text
@@ -61,10 +58,9 @@ public class OutputManager {
         }
     }
 
-    /*
-    Overloaded method to allow specifying text color, providing more flexibility for different UI elements or game states.
-    Can be used for things like red damage numbers, green healing text, or any other color-coded information.
-    */
+    // specifying text color, providing more flexibility for different UI elements
+    // can be used for things like red damage numbers n green healing text
+    
     public void drawText(SpriteBatch batch, String text, float x, float y, float scale, com.badlogic.gdx.graphics.Color color) {
         if (font != null && batch != null) {
             font.setColor(color); 
@@ -75,7 +71,7 @@ public class OutputManager {
 
     // ---- Sound Effects ----
 
-    // Play a sound effect, ensuring it is tracked for volume control and cleanup
+    // play sound effect
     public void play(AudioSource sfx) {
         if (sfx == null) return;
 
@@ -87,14 +83,14 @@ public class OutputManager {
         sfx.play(finalVolume);
     }
 
-    // Stop all currently playing sound effects
+    // stop all currently playing sound effects
     public void stopAllSfx() {
         for (AudioSource s : activeSfx) {
             s.stop();
         }
     }
 
-    // Set the volume for sound effects
+    // set the volume for sound effects
     public void setSfxVolume(float volume) {
         sfxVolume = clamp(volume);
     }
@@ -168,7 +164,7 @@ public class OutputManager {
 
    // ---- Cleanup ----
 
-   // Dispose of all audio resources and the font engine when no longer needed
+   // dispose of all audio resources and the font engine when no longer needed
     public void dispose() {
         stopAllSfx();
 
@@ -196,7 +192,7 @@ public class OutputManager {
         }
     }
 
-    // Utility method to ensure volume values are within the valid range of 0.0f to 1.0f
+    // utility method to ensure volume values are within the valid range of 0.0f to 1.0f
     private float clamp(float v) {
         return Math.max(0f, Math.min(1f, v));
     }

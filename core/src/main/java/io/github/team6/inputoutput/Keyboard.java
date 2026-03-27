@@ -13,13 +13,12 @@ import io.github.team6.entities.Entity;
  * * OOP Concepts & Design Patterns:
  * - Facade Pattern / Abstraction: Hides the low-level LibGDX key polling (Input.Keys.LEFT) behind 
  * semantic methods (isLeft()). This abstracts the hardware away from the rest of the engine.
- * - Decoupling: The PlayableEntity does not know how to read the keyboard. Instead, this class reads the keyboard and applies a Vector2 mathematical translation to the Entity. If the game later supports 
- * gamepads, the Entity code remains unchanged.
+ * - Decoupling: The PlayableEntity does not know how to read the keyboard. Instead, this class reads the keyboard and applies a vector2 math translation to the Entity
  */
 
 public class Keyboard {
 
-    // --- Key polling (kept here so game code doesn't touch Input.Keys directly) ---
+    // Key polling (kept here so game code doesn't touch Input.Keys directly)
     // these abstract the specific LibGDX key codes (Input.Keys.LEFT) from the game logic
     public boolean isLeft() {
         return Gdx.input.isKeyPressed(Input.Keys.LEFT);
@@ -54,10 +53,9 @@ public class Keyboard {
         
     }
 
-    /**
-     * Control Scheme: Arrow Keys
-     * converts key presses into a direction vector, then applies movement to the entity
-     */
+    
+    // arrow Keys converts key presses into a direction vector, then applies movement to the entity
+     
     public void getArrowInput(Entity e) {
     Vector2 direction = new Vector2(0, 0);
 
@@ -81,9 +79,9 @@ public class Keyboard {
         if (!direction.isZero()) {
             direction.nor();
 
-            // --- Frame-rate independent movement ---
+            // frame-rate independent movement
             float dt = Gdx.graphics.getDeltaTime();
-            // Multiply by 60 so your current speed tuning (e.g., speed=5) feels exactly the same!
+            // multiply by 60 so your current speed tuning (e.g., speed=5) feels exactly the same
             float actualSpeed = e.getSpeed() * 60f * dt;
 
             float newX = e.getX() + direction.x * actualSpeed;

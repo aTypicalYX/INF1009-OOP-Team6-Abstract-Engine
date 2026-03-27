@@ -6,11 +6,10 @@ import com.badlogic.gdx.audio.Music;
 
 /**
 * Class: MusicSource
- * A wrapper around the LibGDX Music API, for streaming large background tracks.
- * * OOP Concepts & Design Patterns:
+ * OOP Concepts & Design Patterns:
  * - Single Responsibility Principle: By splitting AudioSource (short loaded sounds) and 
- * MusicSource (long streamed music) into two different classes, the engine respects how the underlying hardware handles audio memory differently.
- * - Encapsulation: Hides the LibGDX framework implementation details. It enforces safe volume boundaries using clamp01() and exposes only necessary playback controls (play, stop, setVolume) to the OutputManager.
+ * MusicSource (long streamed music) into two different classes, the engine respects how the underlying hardware handles audio memory differently
+ * - Encapsulation: Hides the LibGDX framework implementation details. enforces safe volume boundaries using clamp01() and exposes only necessary playback controls to OutputManager
  */
 public class MusicSource {
     private final Music music;
@@ -20,9 +19,9 @@ public class MusicSource {
         this.music = Gdx.audio.newMusic(Gdx.files.internal(internalAssetPath));
     }
 
-    /**
-     * start playback, looping can be enabled depending on the scene's needs.
-     */
+    
+    // start playback, looping can be enabled depending on the scene's needs.
+    
     public void play(boolean looping) {
         music.setLooping(looping);
         music.play();
