@@ -11,18 +11,12 @@ import io.github.team6.managers.OutputManager;
 /**
  * HUDRenderer
  * Handles ALL heads-up display drawing for MathGameScene.
- *
- * Extracted from MathGameScene to satisfy the Single Responsibility Principle:
  * MathGameScene is responsible for game logic; HUDRenderer is responsible
  * for drawing the UI overlay on top of the game world.
  *
- * === Design Patterns ===
- * - Single Responsibility Principle (SRP): this class has exactly one reason
- *   to change - if the HUD layout or style needs updating.
- * - Facade: wraps all HUD drawing calls behind a single render() method,
- *   consistent with how OutputManager wraps LibGDX audio.
- * - Singleton: reads live game state from GameStateManager.getInstance()
- *   so it always shows authoritative values without needing state passed in.
+ * Design Patterns Notes:
+ * - Single Responsibility Principle (SRP): extracted from MathGameScene to its own class.
+ * - Singleton: reads live game state from GameStateManager.getInstance() so it always shows authoritative values without needing state passed in.
  */
 public class HUDRenderer {
 
@@ -58,7 +52,7 @@ public class HUDRenderer {
 
     public void render(SpriteBatch batch, float rocketY, Entity chaser) {
 
-        // ── Singleton: read live values for the HUD ───────────────────
+        // Singleton: read live values for the HUD
         GameStateManager gsm = GameStateManager.getInstance();
         int sw = Gdx.graphics.getWidth();
         int sh = Gdx.graphics.getHeight();
@@ -95,7 +89,7 @@ public class HUDRenderer {
         outputManager.drawText(batch,
             "Level: " + gsm.getLevel(), 20, sh - 85, 1.8f);
 
-        // --- Draw Streak Indicator if player is doing well ---
+        // Draw Streak Indicator if player is doing well
         if (gsm.getCurrentStreak() >= 3) {
             outputManager.drawText(batch,
                 "STREAK! 2X POINTS!", sw / 2f - 130, sh - 75, 2.0f, Color.ORANGE);
@@ -114,11 +108,11 @@ public class HUDRenderer {
             "Equations Solved: " + gsm.getEquationsAnswered(),
             20, Gdx.graphics.getHeight() - 150, 2.0f);
 
-        // Pause hint
+        // Pause text
         outputManager.drawText(batch,
             "[P] Pause", sw - 100, sh - 20, 1.0f);
 
-        // --- Dynamic Distance Progress Bar ---
+        // Dynamic Distance Progress Bar
         float progress = rocketY / finishLineY;
         progress = Math.max(0f, Math.min(1f, progress));
 
@@ -134,7 +128,7 @@ public class HUDRenderer {
         float currentY = barBottom + (progress * (barTop - barBottom));
         batch.draw(progressIcon, barX, currentY - 16f, 32, 32);
 
-        // --- Danger Warning (Pulsing Text) ---
+        // Danger Warning (Pulsing Text)
         // Only check if the chaser actually exists and is active
         if (chaser != null && chaser.isActive()) {
 

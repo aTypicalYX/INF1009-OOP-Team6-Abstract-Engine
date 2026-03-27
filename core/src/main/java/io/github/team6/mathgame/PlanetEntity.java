@@ -12,10 +12,6 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
  * Not an Entity subclass - it is a simple self-contained renderer owned by
  * MathGameScene, drawn in world space after all other entities.
  *
- * Sprite sheet: planet_sheet.png
- *   - 60 frames in a single horizontal row
- *   - Each frame is 128 x 128 px
- *
  * OOP Concepts:
  * - Composition  : Owned by MathGameScene ("has-a" PlanetEntity).
  * - Encapsulation: Texture, animation, and timer are all private.
@@ -38,11 +34,6 @@ public class PlanetEntity {
 
     private float stateTime = 0f;
 
-    /**
-     * @param centerX  World X centre of the planet.
-     * @param bottomY  World Y of the bottom edge of the planet.
-     * @param size     Rendered size in pixels (width and height).
-     */
     public PlanetEntity(float centerX, float bottomY, float size) {
         sheet = new Texture(Gdx.files.internal("planet_sheet.png"));
 
@@ -59,29 +50,23 @@ public class PlanetEntity {
         drawY = bottomY;
     }
 
-    /**
-     * Updates the animation timer. Call from MathGameScene.update().
-     * @param dt Delta time in seconds.
-     */
+    // Updates the animation timer. Call from MathGameScene.update()
+
     public void update(float dt) {
         stateTime += dt;
     }
 
-    /**
-     * Draws the current animation frame.
-     * Must be called between batch.begin() / batch.end() in world space.
-     */
     public void draw(SpriteBatch batch) {
         TextureRegion frame = animation.getKeyFrame(stateTime, true);
         batch.draw(frame, drawX, drawY, drawW, drawH);
     }
 
-    /** Returns the bounding box Y for win-zone collision reference. */
+    // Returns the bounding box Y for win-zone collision reference.
     public float getTopY()    { return drawY + drawH; }
     public float getBottomY() { return drawY; }
     public float getCenterX() { return drawX + drawW / 2f; }
 
-    /** Release GPU resources. Call from MathGameScene.dispose(). */
+    // Release GPU resources. Call from MathGameScene.dispose()
     public void dispose() {
         sheet.dispose();
     }

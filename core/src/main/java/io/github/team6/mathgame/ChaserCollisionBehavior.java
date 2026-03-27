@@ -6,7 +6,7 @@ import io.github.team6.entities.behavior.CollisionBehavior;
 /**
  * ChaserCollisionBehavior
  * Fires when the chaser entity (black hole / lava) overlaps the player rocket.
- * Instantly triggers game over — no life deduction, just immediate loss.
+ * Instantly triggers game over - no life deduction, just immediate loss.
  *
  * OOP Concepts:
  * - Strategy Pattern: Implements CollisionBehavior, injected into ChaserEntity.

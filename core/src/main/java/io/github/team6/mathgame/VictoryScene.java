@@ -53,13 +53,11 @@ public class VictoryScene extends Scene {
         this.levelCompleted = levelCompleted;
     }
 
-    // -----------------------------------------------------------------------
     // Scene Lifecycle
-    // -----------------------------------------------------------------------
     @Override
     public void onEnter() {
         
-        // ---------- BACKGROUND SETUP ----------
+        // BACKGROUND SETUP
         bgStage = new Stage(new ScreenViewport());
         bgTexture = new Texture(Gdx.files.internal("victory_background.png"));
         bgImage = new Image(bgTexture);
@@ -75,12 +73,12 @@ public class VictoryScene extends Scene {
         // Adds zooming action
         bgStage.addActor(bgImage);
 
-        // ---------- LOGO SETUP ----------
+        // LOGO SETUP
         logoTexture = new Texture(Gdx.files.internal("mission_success_logo.png"));
         logoTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
         logoImage = new Image(logoTexture);
 
-        // ---------- AUDIO SETUP ----------
+        // AUDIO SETUP
         outputManager.stopBgm();
         try {
             outputManager.play(new AudioSource("gameWin.wav"));
@@ -88,7 +86,7 @@ public class VictoryScene extends Scene {
             System.out.println("[VictoryScene] gameWin.wav not found.");
         }
 
-        // ---------- UI SETUP ----------
+        // UI SETUP
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
         skin = new Skin(Gdx.files.internal("uiskin.json"));
@@ -118,9 +116,7 @@ public class VictoryScene extends Scene {
         if (logoTexture != null) logoTexture.dispose();
     }
 
-    // -----------------------------------------------------------------------
     // UI
-    // -----------------------------------------------------------------------
 
     // Builds the victory screen UI with labels and buttons.
     private void buildUI() {
@@ -136,7 +132,7 @@ public class VictoryScene extends Scene {
         logoImage.getColor().a = 0;
         logoImage.addAction(Actions.fadeIn(1.5f));
        
-        // ---------- TEXT ADJUSTMENTS ----------
+        // TEXT ADJUSTMENTS
         Label titleLabel  = new Label("Stage " + levelCompleted + " Secured", skin);
         titleLabel.setFontScale(2.3f);
         titleLabel.setColor(com.badlogic.gdx.graphics.Color.CYAN);

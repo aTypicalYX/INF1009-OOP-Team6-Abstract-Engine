@@ -32,10 +32,6 @@ public class LevelConfig {
         this.chaserTexture  = chaserTexture;
     }
 
-    /**
-     * Returns the config for the given level number.
-     * Falls back to level 1 if the level is not defined.
-     */
     public static LevelConfig forLevel(int level) {
         for (LevelConfig config : LEVELS) {
             if (config.levelNumber == level) return config;
@@ -44,10 +40,7 @@ public class LevelConfig {
         return LEVELS[0];
     }
 
-    /**
-     * Returns true if there is a defined config for the next level.
-     * Used by VictoryScene to decide whether to show Next Level or Play Again.
-     */
+    // Returns true if next level exists
     public static boolean hasNextLevel(int currentLevel) {
         for (LevelConfig config : LEVELS) {
             if (config.levelNumber == currentLevel + 1) return true;

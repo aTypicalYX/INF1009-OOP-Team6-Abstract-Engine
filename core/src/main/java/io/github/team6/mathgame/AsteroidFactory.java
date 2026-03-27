@@ -17,19 +17,11 @@ import io.github.team6.entities.PlayableEntity;
  * (chasing vs stationary) – the Factory Pattern decision layer.
  * 2. Calculating a SAFE spawn position ABOVE the player, ensuring asteroids
  * appear dynamically as the player scrolls upward, without overlapping.
- * 3. Delegating the actual object construction to the appropriate
- * {@link IAsteroidFactory} implementation – the Abstract Factory
+ * 3. Delegating the actual object construction to the appropriate IAsteroidFactory implementation – the Abstract Factory
  * Pattern delegation layer.
  *
  * Pattern relationships:
- * MathGameScene  ──creates──▶  AsteroidFactory (Factory)
- * │ delegates to
- * ┌────────────┴────────────────┐
- * ChasingAsteroidFactory      StationaryAsteroidFactory
- * (Abstract Factory impl)     (Abstract Factory impl)
- *
- * GameStateManager (Singleton) is NOT touched here; it is accessed
- * inside NumberCollectionBehavior at collision time.
+ * MathGameScene  AsteroidFactory (Factory) then delegates ChasingAsteroidFactory StationaryAsteroidFactory
  */
 public class AsteroidFactory {
 
@@ -57,17 +49,7 @@ public class AsteroidFactory {
     private final IAsteroidFactory chasingFactory;
     private final IAsteroidFactory stationaryFactory;
 
-    /**
-     * Constructor – receives all environment context via Dependency Injection.
-     *
-     * @param mapWidth        World width in pixels.
-     * @param mapHeight       World height in pixels.
-     * @param target          The player rocket.
-     * @param obstaclesList   Already-placed asteroids (overlap + steering).
-     * @param generator       Shared EquationGenerator.
-     * @param scene           Back-reference for score/life callbacks.
-     * @param worldColliders  Map colliders (e.g., walls).
-     */
+    // Constructor – receives all environment context via Dependency Injection
     public AsteroidFactory(float mapWidth, float mapHeight,
                            PlayableEntity target,
                            List<Entity> obstaclesList,
@@ -93,11 +75,6 @@ public class AsteroidFactory {
      * 1. Finds a safe spawn position ABOVE the player (Vertical Scroller).
      * 2. Randomly picks chasing or stationary factory (50 / 50).
      * 3. Delegates construction to the chosen IAsteroidFactory.
-     *
-     * @param numberValue The answer number displayed on the asteroid.
-     * @param size        Sprite width/height in pixels.
-     * @param speed       Base movement speed (stationary factory ignores this).
-     * @return Fully constructed, ready-to-add NonPlayableEntity.
      */
     public NonPlayableEntity createAsteroid(int numberValue, float size, float speed) {
         // Step 1 – safe spawn position in a vertical window above the player
@@ -133,8 +110,7 @@ public class AsteroidFactory {
      * X: anywhere across the full map width.
      * Y: between VERTICAL_SPAWN_OFFSET_MIN and VERTICAL_SPAWN_OFFSET_MAX pixels above the rocket.
      *
-     * Falls back gracefully after 50 attempts if all candidate positions
-     * overlap existing asteroids.
+     * Falls back gracefully after 50 attempts if all candidate positions overlap existing asteroids.
      */
     private float[] getScreenSpaceSpawnPosition(float width, float height) {
         ThreadLocalRandom rand = ThreadLocalRandom.current();

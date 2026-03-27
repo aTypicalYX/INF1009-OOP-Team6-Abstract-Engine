@@ -43,20 +43,20 @@ import io.github.team6.scenes.Scene;
  *    of equations answered.  Every system that needs this data – the collision
  *    behaviour, the HUD renderer here, and the end-screens – all read/write the
  *    same instance, so state is always consistent.
- *    ▶ See: GameStateManager.getInstance()
+ *    - See: GameStateManager.getInstance()
  *
  * 2. FACTORY  (AsteroidFactory)
  *    MathGameScene asks AsteroidFactory.createAsteroid() for a ready-to-use
  *    NonPlayableEntity.  The scene never directly calls 'new NonPlayableEntity()'
  *    or decides which movement strategy to apply – that responsibility belongs
  *    entirely to the factory.
- *    ▶ See: asteroidFactory.createAsteroid(...)
+ *    - See: asteroidFactory.createAsteroid(...)
  *
  * 3. ABSTRACT FACTORY  (IAsteroidFactory / ChasingAsteroidFactory / StationaryAsteroidFactory)
  *    AsteroidFactory itself delegates to one of two concrete factories that both
  *    implement IAsteroidFactory.  Swapping in a new "family" of asteroid behaviour
  *    (e.g. all chasing, or a future "zigzag" type) requires zero changes here.
- *    ▶ See: AsteroidFactory constructor, IAsteroidFactory interface
+ *    - See: AsteroidFactory constructor, IAsteroidFactory interface
  *
  * Other patterns already present in the engine:
  * - Strategy  (MovementBehavior / CollisionBehavior)
@@ -77,7 +77,7 @@ public class MathGameScene extends Scene {
     private static final float POWERUP_SPAWN_INTERVAL = 5f;  // adjusts the frequency of power-ups (lower = more frequent)
 
 
-    // Screen-width viewport — no tile borders visible
+    // Screen-width viewport - no tile borders visible
     private static final float VIEW_W = 1280f;
     private static final float VIEW_H = 720f;
 
@@ -159,7 +159,7 @@ public class MathGameScene extends Scene {
 
     @Override
     public void onEnter() {
-        System.out.println("[MathGame] Entering — Level " + GameStateManager.getInstance().getLevel());
+        System.out.println("[MathGame] Entering - Level " + GameStateManager.getInstance().getLevel());
 
         // Only reset fully if starting fresh (level 1).
         // Level 2 carries the score over but refreshes lives and timer.
@@ -217,7 +217,7 @@ public class MathGameScene extends Scene {
             planetZone = new Rectangle(0, mapPixelHeight - 80, mapPixelWidth, 80);
         }
 
-        //  Animated planet — centred on the win zone 
+        //  Animated planet - centred on the win zone 
         float planetSize = 600f;
         planet = new PlanetEntity(
             mapPixelWidth / 2f,              // centre X
@@ -484,7 +484,7 @@ public class MathGameScene extends Scene {
         float targetCamY = rocket.getY() + rocket.getHeight() / 2f;
         float halfH      = VIEW_H / 2f;
         float clampedY   = Math.max(halfH, Math.min(targetCamY, mapPixelHeight - halfH));
-        // Fixed X (screen-width map — no horizontal scroll needed)
+        // Fixed X (screen-width map - no horizontal scroll needed)
         float clampedX   = mapPixelWidth / 2f;
         camera.position.set(clampedX, clampedY, 0);
         camera.update();
@@ -625,7 +625,7 @@ public class MathGameScene extends Scene {
 
         LevelConfig config    = LevelConfig.forLevel(level);
         String chaserTexture  = config.chaserTexture;
-        float  chaserW       = mapPixelWidth; // full width — unavoidable
+        float  chaserW       = mapPixelWidth; // full width - unavoidable
 
         // Read the actual image height so the hitbox matches the sprite exactly
         float chaserH;

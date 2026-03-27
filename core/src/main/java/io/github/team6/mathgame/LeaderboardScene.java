@@ -31,7 +31,7 @@ import io.github.team6.scenes.Scene;
  * Shows the leaderboard read-only. Used from the main menu.
  *
  * OOP Concepts:
- * - Inheritance    : Extends Scene — standard lifecycle.
+ * - Inheritance    : Extends Scene - standard lifecycle.
  * - Composition    : Owns a LeaderboardManager instance.
  * - State Pattern  : Mode (post-game vs view) drives which UI is shown.
  * - Observer Pattern: Scene2D ChangeListeners on buttons.
@@ -56,12 +56,12 @@ public class LeaderboardScene extends Scene {
     // Constructors
     // -----------------------------------------------------------------------
 
-    /** View mode — called from main menu. */
+    /** View mode - called from main menu. */
     public LeaderboardScene(SceneManager scenes) {
         this(scenes, -1, 1);
     }
 
-    /** Post-game mode — called from VictoryScene after a win. */
+    /** Post-game mode - called from VictoryScene after a win. */
     public LeaderboardScene(SceneManager scenes, int scoreToSave, int levelReached) {
         this.scenes       = scenes;
         this.scoreToSave  = scoreToSave;
@@ -73,7 +73,7 @@ public class LeaderboardScene extends Scene {
     // Scene lifecycle
     // -----------------------------------------------------------------------
 
-    // --- Tell GameMaster to draw the global scrolling space background ---
+    // Tell GameMaster to draw the global scrolling space background
     @Override
     public boolean isBackgroundVisible() {
         return true;
@@ -137,7 +137,7 @@ public class LeaderboardScene extends Scene {
         title.setAlignment(Align.center);
         root.add(title).colspan(3).padBottom(10).row();
 
-        // Name entry — only shown in post-game mode BEFORE the score is saved
+        // Name entry - only shown in post-game mode BEFORE the score is saved
         if (scoreToSave >= 0 && !justSaved) {
             Label prompt = new Label("You scored " + scoreToSave + "! Enter your name:", skin);
             prompt.setAlignment(Align.center);
@@ -173,7 +173,7 @@ public class LeaderboardScene extends Scene {
         // Score rows
         List<LeaderboardManager.ScoreEntry> entries = leaderboard.getEntries();
         if (entries.isEmpty()) {
-            Label empty = new Label("No scores yet — be the first!", skin);
+            Label empty = new Label("No scores yet - be the first!", skin);
             empty.setAlignment(Align.center);
             root.add(empty).colspan(3).padTop(12).row();
         } else {
@@ -202,7 +202,7 @@ public class LeaderboardScene extends Scene {
         });
 
         if (scoreToSave >= 0) {
-            // --- Offer "Next Level" or "Play Again" dynamically ---
+            // Check if there's a next level or not
             boolean hasNextLevel = levelReached < 2;
             TextButton nextBtn = new TextButton(hasNextLevel ? "Next Level" : "Play Again", skin);
             
@@ -212,12 +212,9 @@ public class LeaderboardScene extends Scene {
                     
                     outputManager.playUiClick();
 
-                    // If the player just completed Level 1, offer the intro cutscene for Level 2.
                     if (hasNextLevel) {
-                        // Progress to the intro cutscene for the next level (Level 2)
                         scenes.setScene(new IntroScene(scenes, levelReached + 1));
                     } else {
-                        // Game fully complete! Reset the singleton and start from Level 1
                         GameStateManager.getInstance().reset();
                         scenes.setScene(new MathGameScene(scenes));
                     }
@@ -229,7 +226,6 @@ public class LeaderboardScene extends Scene {
             btnRow.add(menuBtn).width(200).height(55);
             root.add(btnRow).colspan(3).padTop(10).row();
         } else {
-            // View Mode (From Main Menu) - Just show the Main Menu button
             root.add(menuBtn).colspan(3).width(200).height(55).padTop(10).row();
         }
 

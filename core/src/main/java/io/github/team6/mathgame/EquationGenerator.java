@@ -6,7 +6,7 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * EquationGenerator is responsible for creating simple math equations for the game. 
  * It encapsulates the logic for generating random equations and checking answers, keeping this concern separate from the game logic.
- * How it works: When the MathGameScene needs a new equation, it calls generateNewEquation(), which updates the internal state of the EquationGenerator with a new equation and its answer.
+ * When the MathGameScene needs a new equation, it calls generateNewEquation(), which updates the internal state of the EquationGenerator with a new equation and its answer.
  * The scene can then retrieve the current equation and answer using the provided getters.
  * The equations it can generate include addition, subtraction, multiplication, and division.
  * How it chooses which type of equation to generate is based on a random operator selection.
@@ -86,7 +86,7 @@ public class EquationGenerator {
         }
     }
 
-    // --- GETTERS ---
+    // GETTERS 
     // Allow other classes (like MathGameScene) to read the data without modifying it.
     
     public String getCurrentEquation() { 
@@ -97,11 +97,7 @@ public class EquationGenerator {
         return currentAnswer; 
     }
     
-    /**
-     * Evaluates if the provided answer matches the currently generated equation.
-     * @param answer The number collected by the player.
-     * @return true if correct, false otherwise.
-     */
+    // Evaluates if the provided answer matches the currently generated equation.
     public boolean checkAnswer(int answer) { 
         return answer == currentAnswer; 
     }

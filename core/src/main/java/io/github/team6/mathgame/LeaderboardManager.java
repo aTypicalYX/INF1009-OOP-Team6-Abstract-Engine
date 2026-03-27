@@ -10,17 +10,6 @@ import com.badlogic.gdx.Preferences;
 /**
  * LeaderboardManager
  * Persists and retrieves the top 5 high scores using LibGDX Preferences.
- *
- * Storage format (key : value):
- *   "name_1" : "Alice"     "score_1" : 980
- *   "name_2" : "Bob"       "score_2" : 750
- *   ... up to rank 5
- *
- * LibGDX Preferences automatically maps to:
- *   Windows : %APPDATA%\ExtremeEquations\leaderboard.xml
- *   Linux   : ~/.prefs/ExtremeEquations/leaderboard
- *   macOS   : ~/Library/Preferences/ExtremeEquations/leaderboard
- *
  * OOP Concepts:
  * - Encapsulation  : Raw Preferences I/O is hidden; callers only use
  *                    addEntry() and getEntries().

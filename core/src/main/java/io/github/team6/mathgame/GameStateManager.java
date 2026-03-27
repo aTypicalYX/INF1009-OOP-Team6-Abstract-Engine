@@ -7,13 +7,6 @@ package io.github.team6.mathgame;
  * game-session data: lives remaining, current score, and the number of
  * equations answered correctly.
  *
- * Why Singleton here?
- * Multiple systems (MathGameScene, NumberCollectionBehavior, GameOverScene)
- * need to READ and WRITE the same game state.  Without a Singleton those
- * systems would each hold their own copy and quickly fall out of sync.
- * The Singleton guarantees that every call to getInstance() returns the
- * exact same object, so state is always consistent.
- *
  * Design Pattern: Singleton
  * - Private constructor prevents external instantiation.
  * - Static getInstance() returns (and lazily creates) the one instance.
@@ -25,7 +18,7 @@ public class GameStateManager {
     // ---------------------------------------------------------------
     // Game rules / tuning constants
     // ---------------------------------------------------------------
-    /** How many lives the player begins every session with. */
+    /** Set number of lives the player begins every session with. */
     public static final int STARTING_LIVES = 4;
 
     /** Number of correct answers required to WIN the game. */
@@ -43,11 +36,7 @@ public class GameStateManager {
     /** The one-and-only instance of this class. */
     private static GameStateManager instance;
 
-    /**
-     * Returns the single shared instance, creating it on the first call.
-     * This is a "lazy initialisation" Singleton – the object is not built
-     * until something actually needs it.
-     */
+    // Returns the single shared instance, creating it on the first call.
     public static GameStateManager getInstance() {
         if (instance == null) {
             instance = new GameStateManager();
@@ -77,11 +66,7 @@ public class GameStateManager {
     // Lifecycle
     // ---------------------------------------------------------------
 
-    /**
-     * Resets every field back to its starting value.
-     * Call this at the beginning of each new game session so that the
-     * Singleton does not carry stale data from a previous play-through.
-     */
+    // Resets all fields to their initial values. Called by MathGameScene when starting a new session.
     public void reset() {
         lives                 = STARTING_LIVES;
         score                 = 0;
@@ -99,12 +84,12 @@ public class GameStateManager {
     // Score multiplier power-up
     // -----------------------------------------------------------------------
 
-    /** Activates the 2× score multiplier for the next correct answer only. */
+    // Activates the 2x score multiplier for the next correct answer only
     public void activateScoreMultiplier() { scoreMultiplierActive = true; }
 
     public boolean isScoreMultiplierActive() { return scoreMultiplierActive; }
 
-    /** Called by NumberCollectionBehavior after awarding bonus points. */
+    // Called by NumberCollectionBehavior after awarding bonus points
     public void consumeScoreMultiplier() { scoreMultiplierActive = false; }
 
 
@@ -121,16 +106,12 @@ public class GameStateManager {
         return lives > 0;
     }
 
-    /** Power-up: restore one life, capped at STARTING_LIVES. */
+    // Power-up: restore one life, capped at STARTING_LIVES.
     public void addLife() {
         if (lives < STARTING_LIVES) lives++;
     }
 
-    /**
-     * Called when entering Level 2.
-     * Restores lives to full and resets the timer, but preserves the score
-     * and equationsAnswered count so progress carries over between levels.
-     */
+    // Refresh lives and timers when in a new level
     public void refreshLivesAndTimer() {
         lives                  = STARTING_LIVES;
         timeSeconds            = STARTING_TIME;
@@ -147,7 +128,7 @@ public class GameStateManager {
     public int  getScore()           { return score; }
     
     public void addScore(int points) { 
-        // --- Double points if streak is 3 or more ---
+        // Double points if streak is 3 or more
         int multiplier = (currentStreak >= 3) ? 2 : 1;
         score = Math.max(0, score + (points * multiplier)); 
     }
@@ -183,12 +164,12 @@ public class GameStateManager {
 
     public float getTimeSeconds()  { return timeSeconds; }
 
-    /** Called each frame by MathGameScene (only when not paused). */
+    // Called each frame by MathGameScene (only when not paused).
     public void tickTime(float dt) {
         timeSeconds = Math.max(0, timeSeconds - dt);
     }
 
-    /** Power-up: extend the timer. */
+    // Power-up: extend the timer.
     public void addTime(float seconds) {
         timeSeconds += seconds;
     }

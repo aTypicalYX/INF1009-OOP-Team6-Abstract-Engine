@@ -31,13 +31,7 @@ public class NumberCollectionBehavior implements CollisionBehavior {
     private final EquationGenerator equationGenerator;
     private final int numberValue;
     private final MathGameScene scene;
-
-    /**
-     * @param generator   Shared EquationGenerator (to verify the answer).
-     * @param numberValue The number displayed on this asteroid.
-     * @param scene       Back-reference to MathGameScene for floating text
-     * and round/scene transitions.
-     */
+    
     public NumberCollectionBehavior(EquationGenerator generator,
                                     int numberValue,
                                     MathGameScene scene) {
@@ -80,7 +74,7 @@ public class NumberCollectionBehavior implements CollisionBehavior {
             // ---- CORRECT ANSWER ----------------------------------------
             scene.playCorrectAnswerSfx();
 
-            // Apply 2× multiplier if active, then consume it
+            // Apply 2x multiplier if active, then consume it
             int points = GameStateManager.POINTS_PER_CORRECT;
             if (gsm.isScoreMultiplierActive()) {
                 points *= 2;

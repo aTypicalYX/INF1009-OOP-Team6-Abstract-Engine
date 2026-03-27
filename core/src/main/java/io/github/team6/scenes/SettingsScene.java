@@ -35,7 +35,7 @@ public class SettingsScene extends Scene {
         this.scenes = scenes;
     }
 
-    // --- NEW: Tell GameMaster to draw the global scrolling space background ---
+    // Tell GameMaster to draw the global scrolling space background
     @Override
     public boolean isBackgroundVisible() {
         return true;
@@ -46,7 +46,6 @@ public class SettingsScene extends Scene {
     public boolean isAmbientAudioEnabled() {
         return true;
     }
-    // ------------------------------------------------------------------------
 
     @Override
     public void onEnter() {
@@ -69,7 +68,7 @@ public class SettingsScene extends Scene {
         final Slider masterSlider = new Slider(0f, 1f, 0.01f, false, skin);
         masterSlider.setValue(outputManager.getMasterVolume());
 
-        // --- Quick Preset Buttons ---
+        // Quick Preset Buttons 
         TextButton muteBtn = new TextButton("Mute", skin);
         TextButton halfBtn = new TextButton("50%", skin);
         TextButton fullBtn = new TextButton("100%", skin);
@@ -102,7 +101,7 @@ public class SettingsScene extends Scene {
         presetTable.add(muteBtn).width(90).height(40).padRight(10);
         presetTable.add(halfBtn).width(90).height(40).padRight(10);
         presetTable.add(fullBtn).width(90).height(40);
-        // ----------------------------------
+        // -
 
         TextButton backBtn = new TextButton("Back to Menu", skin);
 

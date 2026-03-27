@@ -10,12 +10,9 @@ import io.github.team6.entities.behavior.ChasingMovementBehavior;
 /**
  * ChasingAsteroidFactory – Concrete Factory (Abstract Factory Pattern)
  *
- * Produces asteroids that actively chase the player rocket using
- * {@link ChasingMovementBehavior}.  Inject this factory when you want
- * a more challenging set of asteroids that home in on the player.
- *
+ * Produces asteroids that actively chase the player rocket using ChasingMovementBehavior.  
  * Design Pattern: Abstract Factory (Concrete Product Creator)
- * - Implements {@link IAsteroidFactory}.
+ * - Implements IAsteroidFactory.
  * - The caller (AsteroidFactory / MathGameScene) only knows the
  *   interface; it never imports this class directly.
  */
@@ -27,11 +24,6 @@ public class ChasingAsteroidFactory implements IAsteroidFactory {
     /** The rocket target that chasing asteroids will move towards. */
     private final PlayableEntity targetRocket;
 
-    /**
-     * @param obstaclesList  All active asteroids – used by the chasing
-     *                       algorithm to steer around sibling asteroids.
-     * @param targetRocket   The player entity to chase.
-     */
     public ChasingAsteroidFactory(List<Entity> obstaclesList, PlayableEntity targetRocket) {
         this.obstaclesList = obstaclesList;
         this.targetRocket  = targetRocket;
@@ -39,8 +31,7 @@ public class ChasingAsteroidFactory implements IAsteroidFactory {
 
     /**
      * Builds a chasing asteroid entity.
-     * The asteroid's movement strategy is {@link ChasingMovementBehavior},
-     * so it will continuously pursue the player each frame.
+     * The asteroid's movement uses ChasingMovementBehavior meaning it will continuously pursue the player each frame. 
      */
     @Override
     public NonPlayableEntity createAsteroid(int numberValue,
@@ -55,7 +46,7 @@ public class ChasingAsteroidFactory implements IAsteroidFactory {
             spawnX, spawnY,
             speed,
             size, size,
-            "ASTEROID_" + numberValue,           // tag encodes displayed number
+            "ASTEROID_" + numberValue,
             new ChasingMovementBehavior(obstaclesList),
             new NumberCollectionBehavior(equationGenerator, numberValue, scene),
             targetRocket

@@ -27,25 +27,12 @@ import io.github.team6.entities.NonPlayableEntity;
  */
 public interface IAsteroidFactory {
 
-    /**
-     * Assembles and returns a fully initialised asteroid entity.
-     *
-     * @param numberValue  The answer number displayed on the asteroid.
-     * @param size         Width and height (square) of the sprite in pixels.
-     * @param speed        Movement speed in world-units per frame.
-     * @param spawnX       Pre-calculated safe X coordinate.
-     * @param spawnY       Pre-calculated safe Y coordinate.
-     * @param equationGenerator  Shared generator so the collision behavior
-     *                           can verify the answer at impact time.
-     * @param scene        Back-reference to MathGameScene used for score /
-     *                     life updates and floating-text spawning.
-     * @return A ready-to-use NonPlayableEntity (asteroid).
-     */
-    NonPlayableEntity createAsteroid(int numberValue,
-                                     float size,
-                                     float speed,
-                                     float spawnX,
-                                     float spawnY,
-                                     EquationGenerator equationGenerator,
-                                     MathGameScene scene);
+    // Assembles and returns a fully initialised asteroid entity.
+    NonPlayableEntity createAsteroid(int numberValue, // answer number
+                                     float size, // width and height of the asteroid sprite
+                                     float speed, // movement speed in world units per frame
+                                     float spawnX, // pre-calculated safe X coordinate
+                                     float spawnY, // pre-calculated safe Y coordinate
+                                     EquationGenerator equationGenerator, // shared generator for collision behavior
+                                     MathGameScene scene); // back-reference for score/life updates and floating text
 }

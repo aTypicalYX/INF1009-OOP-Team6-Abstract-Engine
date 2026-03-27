@@ -13,8 +13,6 @@ import io.github.team6.entities.behavior.StationaryMovementBehavior;
  * or mix asteroid behaviour without changing any game-logic code.
  *
  * Design Pattern: Abstract Factory (Concrete Product Creator)
- * - Implements {@link IAsteroidFactory}.
- * - Speed is forced to 0 so the physics engine does not try to move it.
  */
 public class StationaryAsteroidFactory implements IAsteroidFactory {
 

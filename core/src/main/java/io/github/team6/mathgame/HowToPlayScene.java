@@ -35,7 +35,7 @@ public class HowToPlayScene extends Scene {
         this.scenes = scenes;
     }
 
-    // --- NEW: Tell GameMaster to draw the global scrolling space background ---
+    // Tell GameMaster to draw the global scrolling space background
     @Override
     public boolean isBackgroundVisible() {
         return true;

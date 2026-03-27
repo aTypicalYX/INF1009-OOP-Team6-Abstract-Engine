@@ -10,14 +10,14 @@ import io.github.team6.entities.behavior.MovementBehavior;
  * MovementBehavior for the chaser entity (black hole / lava).
  * * Uses "Rubber-Banding" logic: The base speed scales with the level, 
  * but if the player gets too far ahead, the chaser multiplies its speed 
- * to catch up, guaranteeing constant tension.
+ * to catch up, creates sense of urgency.
  * 
  * OOP Concepts:
  * - Strategy Pattern: ChaserBehavior is one of potentially many MovementBehaviors that can be swapped in and out for different entities or even the same entity at different times.
  *  The Chaser entity simply calls its assigned MovementBehavior's move() method without needing to know the details of how it calculates movement.
  * - Single Responsibility: Only moves the entity upward. All game-over logic is handled by ChaserCollisionBehavior.
  * - Open/Closed: Adding a new chase pattern (e.g. sinusoidal) requires
- *   only a new class implementing MovementBehavior — no entity changes.
+ *   only a new class implementing MovementBehavior - no entity changes.
  * - Encapsulation: The internal logic of how the speed is calculated and applied is hidden within this class, allowing for easy adjustments without affecting other parts of the codebase.
  */
 public class ChaserBehavior implements MovementBehavior {
@@ -26,7 +26,7 @@ public class ChaserBehavior implements MovementBehavior {
     private static final float LEVEL_INCREMENT        = 0.1f;
     private static final float MAX_SPEED              = 1.0f;   
 
-    // --- NEW: Rubber-Band Tuning Constants ---
+    // Rubber-Band Tuning Constants
     private static final float RUBBER_BAND_DISTANCE   = 700f; // Roughly one screen height
     private static final float RUBBER_BAND_MULTIPLIER = 2.5f; // Max speed boost when catching up
 
@@ -51,10 +51,10 @@ public class ChaserBehavior implements MovementBehavior {
             }
         }
 
-        // 3. Hard clamp the absolute maximum speed so it doesn't break physics
+        // 3. Set maximum speed cap so it's not too fast
         currentSpeed = Math.min(currentSpeed, MAX_SPEED);
 
-        // --- Frame-rate independent movement ---
+        // Frame-rate independent movement
         float dt = Gdx.graphics.getDeltaTime();
         float actualSpeed = currentSpeed * 150f * dt;
 

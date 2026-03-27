@@ -2,7 +2,6 @@ package io.github.team6.mathgame;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -151,7 +150,7 @@ public class IntroScene extends Scene {
     private com.badlogic.gdx.graphics.Texture iconTime;
     private com.badlogic.gdx.graphics.Texture iconLife;
     private com.badlogic.gdx.graphics.Texture iconMultiplier;
-    private static final int POWERUP_PANEL_INDEX = 5; // index of the power-up panel in LEVEL1_PANELS
+    private static final int POWERUP_PANEL_INDEX = 5;
 
     private int lastWidth = -1;
     private int lastHeight = -1;

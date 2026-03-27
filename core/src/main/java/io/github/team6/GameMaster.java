@@ -20,7 +20,7 @@ import io.github.team6.managers.SceneManager;
 import io.github.team6.scenes.MainMenuScene;
 
 /**
- * GameMaster is the entry point of the application. It initializes all the global managers and starts the first scene.
+ * GameMaster is the entry point of the application. It initialises all the global managers and starts the first scene.
  * It delegates all game logic and rendering to the active scene via the SceneManager.
  */
 public class GameMaster extends ApplicationAdapter {
@@ -113,7 +113,7 @@ public class GameMaster extends ApplicationAdapter {
             float dt = Gdx.graphics.getDeltaTime();
             io.github.team6.scenes.Scene currentScene = sceneManager.getCurrentScene();
             
-            // --- AUDIO CONTROLLER ---
+            //  AUDIO CONTROLLER 
             if (currentScene != null && ambientSfx != null) {
                 if (currentScene.isAmbientAudioEnabled()) {
                     if (!ambientSfx.isPlaying()) {
@@ -124,7 +124,7 @@ public class GameMaster extends ApplicationAdapter {
                 }
             }
 
-            // --- SPACE BACKGROUND RENDERING ---
+            //  SPACE BACKGROUND RENDERING 
             if (currentScene != null && currentScene.isBackgroundVisible()) {
                 bgStage.act(dt);
                 bgStage.draw();

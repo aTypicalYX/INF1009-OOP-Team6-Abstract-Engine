@@ -24,12 +24,6 @@ public class PowerUpCollisionBehavior implements CollisionBehavior {
     private final MathGameScene   scene;
     private final OutputManager   outputManager;
 
-    /**
-     * @param type          Which effect to apply.
-     * @param scene         Back-reference for equation refresh.
-     * @param outputManager Used to play the power-up SFX.
-     * @param soundPath     Asset path for the power-up sound (or null).
-     */
     public PowerUpCollisionBehavior(PowerUpType type, MathGameScene scene,
                                      OutputManager outputManager, String soundPath) {
         this.type          = type;
